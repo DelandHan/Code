@@ -208,6 +208,13 @@ void xml::XMLNode::convertType(NodeType type)
 			theAtt->clear();
 			theAtt = nullptr;
 		}
+		XMLNode* node = getFirstChild();
+		while (node)
+		{
+			XMLNode* temp = node;
+			node = node->getNext();
+			delete temp;
+		}
 	}
 	theType = type;
 }

@@ -13,6 +13,12 @@ ExpWnd::ExpWnd()
 	theButton.param = 0;
 	theRightPanel.param = 0;
 	theEdit.subitem = 0;
+	theContext.param = 0;
+
+	theContext.obj.addMenuItem(L"Del", 1);
+	theContext.obj.addMenuItem(L"InsertBefore", 2);
+	theContext.obj.addMenuItem(L"InsertAfter", 3);
+	theContext.obj.addMenuItem(L"ChangeType", 4);
 }
 
 
@@ -32,6 +38,7 @@ void ExpWnd::init(IModule * module)
 		{ WM_SIZE,{ this,&ExpWnd::updateLayout } },
 		{ 0,{ this,&ExpWnd::setAttribute } }
 	};
+
 	static MsgSet mainWndMsgs(msg_proc_list, 3);
 	mainWndMsgs.addMsgPair(WM_DESTROY, &autownd::msg_quit);
 
@@ -93,8 +100,6 @@ void ExpWnd::init(IModule * module)
 
 void ExpWnd::updateItemlist(LPARAM param)
 {
-	theLeftPanel.param = param;
-
 	BulletChain chain(3);
 	chain.first()->fill("items");
 	chain.at()->fill(param);
@@ -103,7 +108,10 @@ void ExpWnd::updateItemlist(LPARAM param)
 	//the up button
 	chain.first(); chain.at(); chain.at();
 	if (chain.at()->data<int>()) return;
-	
+
+	//begin refresh
+	theLeftPanel.param = param;
+
 	chain.line();
 	SetWindowText(theButton.obj.wnd(), chain.at()->data<TCHAR>());
 	chain.at(); chain.at()->inject(&theButton.param, 1);
@@ -133,9 +141,10 @@ void ExpWnd::updateAttlist(LPARAM param)
 	BulletChain chain(2);
 	chain.first()->fill("read");
 	chain.at()->fill(param);
-	theRightPanel.param = param;
 	theData->pull(&chain);
 
+	//begin refresh
+	theRightPanel.param = param;
 	chain.first();
 	while (chain.line())
 	{
@@ -155,21 +164,37 @@ int ExpWnd::beNotified(WndObj *obj, WPARAM wp, LPARAM lp)
 	if (data->hwndFrom==theLeftPanel.obj.wnd())//left panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
-		if (data->code == LVN_ITEMCHANGED)//on change
+		switch (data->code)
 		{
-			if(temp->uNewState) updateAttlist(temp->lParam);
+		case LVN_ITEMCHANGED:
+		{
+			if (temp->uNewState) updateAttlist(temp->lParam);
 		}
-		if (data->code == NM_DBLCLK) //on double click
+		break;
+		case NM_DBLCLK:
 		{
 			if (temp->iItem == -1) return 1;
 			updateItemlist(theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam);
 		}
-		if (data->code == LVN_ENDLABELEDIT)
+		break;
+		case LVN_ENDLABELEDIT:
 		{
 			NMLVDISPINFO* info = (NMLVDISPINFO*)data;
 			if (info->item.pszText == nullptr) return 1;
 			theData->push({ { "setstr",info->item.pszText },{ "item",info->item.lParam } });
 			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, info->item.pszText);
+		}
+		case NM_RCLICK:
+		{
+			if (temp->iItem != -1)
+			{
+				theContext.obj.show(temp->ptAction.x, temp->ptAction.y, theMainWnd.wnd());
+				theContext.param = theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam;
+			}
+		}
+		break;
+		default:
+			break;
 		}
 	}
 
@@ -215,6 +240,38 @@ int ExpWnd::clickButton(WndObj *obj, WPARAM wp, LPARAM lp)
 	if ((HWND)lp == theButton.obj.wnd())
 	{
 		updateItemlist(theButton.param);
+	}
+	else
+	{
+		if (HIWORD(wp) == 0)
+		{
+			switch (LOWORD(wp))
+			{
+			case 1:
+			{
+				theData->push({ {"del",theContext.param} });
+			}
+			break;
+			case 2:
+			{
+				theData->push({ { "ins_b",theContext.param } });
+			}
+			break;
+			case 3:
+			{
+				theData->push({ { "ins_a",theContext.param } });
+			}
+			break;
+			case 4:
+			{
+				theData->push({ { "chgtyp",theContext.param } });
+			}
+			break;
+			default:
+				break;
+			}
+			updateItemlist(theLeftPanel.param);
+		}
 	}
 
 	return 1;

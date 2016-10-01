@@ -96,6 +96,32 @@ void XMLPool::push(memory::ParamChain chain)
 		convertToStr(str, (chain.begin())->second.pdata<TCHAR>());
 		node = (xml::XMLNode*)*((chain.begin() + 1)->second.data<long>());
 		node->setString(str);
+		return;
+	}
+	if (memory::streql(chain.begin()->first, "del")) {
+		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
+		if(node) delete node;
+		return;
+	}
+	if (memory::streql(chain.begin()->first, "ins_a")) {
+		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
+			*neNode = new XMLNode;
+		node->insert(neNode, true);	
+		neNode->setString("New Node");
+		return;
+	}
+	if (memory::streql(chain.begin()->first, "ins_b")) {
+		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
+			*neNode = new XMLNode;
+		neNode->setString("New Node");
+		node->insert(neNode, false);
+		return;
 	}
 
+	if (memory::streql(chain.begin()->first, "chgtyp")) {
+		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
+		if(node->getType()==xml::ELEMENT_NODE) node->convertType(xml::TEXT_NODE);
+		else node->convertType(xml::ELEMENT_NODE);
+		return;
+	}
 }

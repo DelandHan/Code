@@ -145,4 +145,19 @@ namespace autownd
 		static LRESULT CALLBACK subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	};
+
+	class ContextMsg
+	{
+	public:
+		ContextMsg();
+		~ContextMsg();
+
+		void addMenuItem(TCHAR* itemname, UINT_PTR param, UINT pos = -1);
+
+		void show(int x, int y, HWND parent);
+
+	private:
+		HMENU thePopup;
+	};
+
 }

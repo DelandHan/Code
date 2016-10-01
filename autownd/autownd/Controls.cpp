@@ -403,3 +403,25 @@ LRESULT autownd::Edit::subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lPa
 	}
 	return CallWindowProc(theOldEditProc, wnd, msg, wParam, lParam);
 }
+
+autownd::ContextMsg::ContextMsg()
+{
+	thePopup = CreatePopupMenu();
+}
+
+autownd::ContextMsg::~ContextMsg()
+{
+	DeleteObject(thePopup);
+}
+
+void autownd::ContextMsg::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT pos)
+{
+	InsertMenu(thePopup, pos, MF_BYPOSITION | MF_STRING, param, itemname);
+}
+
+void autownd::ContextMsg::show(int x, int y, HWND parent)
+{
+	RECT rect; GetWindowRect(parent, &rect);
+	SetForegroundWindow(parent);
+	TrackPopupMenu(thePopup, TPM_TOPALIGN | TPM_LEFTALIGN, rect.left + x, rect.top + y, 0, parent, NULL);
+}

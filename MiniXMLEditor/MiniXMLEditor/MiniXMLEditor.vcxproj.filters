@@ -13,11 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Wnd">
-      <UniqueIdentifier>{dd0f9dee-f812-4f42-a8fd-fbb032fcd63b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data">
+    <Filter Include="_Data">
       <UniqueIdentifier>{0137a216-75c0-423f-8899-e2631cb399a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Wnd">
+      <UniqueIdentifier>{dd0f9dee-f812-4f42-a8fd-fbb032fcd63b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,13 +34,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExpWnd.h">
-      <Filter>Wnd</Filter>
+      <Filter>_Wnd</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XMLPool.h">
-      <Filter>Data</Filter>
+      <Filter>_Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -51,10 +51,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpWnd.cpp">
-      <Filter>Wnd</Filter>
+      <Filter>_Wnd</Filter>
     </ClCompile>
     <ClCompile Include="XMLPool.cpp">
-      <Filter>Data</Filter>
+      <Filter>_Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

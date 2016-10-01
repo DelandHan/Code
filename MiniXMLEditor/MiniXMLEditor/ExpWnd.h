@@ -21,7 +21,9 @@ public:
 	//use to receive the edit result of the right panel
 	int setAttribute(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
 
+	//reset the layout
 	int updateLayout(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
+
 private:
 	autownd::WndObj theMainWnd;
 
@@ -49,8 +51,13 @@ private:
 		autownd::WndObj obj; 
 		LPARAM param;
 	}theButton;
-		
-
+	
+	struct
+	{
+		autownd::ContextMsg obj;
+		LPARAM param;
+	}theContext;
+	
 	IModule * theData;
 };
 
