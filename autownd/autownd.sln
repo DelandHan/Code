@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "autownd", "autownd\autownd.vcxproj", "{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{86B00592-1B59-4FB8-B745-821B661E9FA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244} = {1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4} = {D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3} = {4F9953BC-4B7D-4570-AA98-60F07C87B8E3}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{511451B7-C01A-47B6-87DB-D557642D68D5}"
+	ProjectSection(SolutionItems) = preProject
+		main.h = main.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExplorerForm", "ExplorerForm\ExplorerForm.vcxproj", "{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmllab", "..\xmllab\xmllab\xmllab.vcxproj", "{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Debug|x64.ActiveCfg = Debug|x64
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Debug|x64.Build.0 = Debug|x64
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Debug|x86.ActiveCfg = Debug|Win32
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Debug|x86.Build.0 = Debug|Win32
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x64.ActiveCfg = Release|x64
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x64.Build.0 = Release|x64
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x86.ActiveCfg = Release|Win32
+		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x86.Build.0 = Release|Win32
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Debug|x64.ActiveCfg = Debug|x64
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Debug|x64.Build.0 = Debug|x64
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Debug|x86.ActiveCfg = Debug|Win32
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Debug|x86.Build.0 = Debug|Win32
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Release|x64.ActiveCfg = Release|x64
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Release|x64.Build.0 = Release|x64
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Release|x86.ActiveCfg = Release|Win32
+		{86B00592-1B59-4FB8-B745-821B661E9FA8}.Release|x86.Build.0 = Release|Win32
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Debug|x64.ActiveCfg = Debug|x64
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Debug|x64.Build.0 = Debug|x64
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Debug|x86.Build.0 = Debug|Win32
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Release|x64.ActiveCfg = Release|x64
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Release|x64.Build.0 = Release|x64
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Release|x86.ActiveCfg = Release|Win32
+		{4F9953BC-4B7D-4570-AA98-60F07C87B8E3}.Release|x86.Build.0 = Release|Win32
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x64.ActiveCfg = Debug|x64
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x64.Build.0 = Debug|x64
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x86.Build.0 = Debug|Win32
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Release|x64.ActiveCfg = Release|x64
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Release|x64.Build.0 = Release|x64
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Release|x86.ActiveCfg = Release|Win32
+		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
