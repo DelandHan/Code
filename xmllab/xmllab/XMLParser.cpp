@@ -344,6 +344,7 @@ namespace xml
 	{
 		ifstream file;
 		file.open(filename, std::ios::in | std::ios::binary);
+		if (!file.is_open()) return;
 
 		char* buff = new char[buffSize];
 
