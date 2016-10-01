@@ -49,18 +49,15 @@ namespace autownd
 	{
 	public:
 		MsgSet();
-		template<class T> MsgSet(std::pair<UINT, T>* begin, std::pair<UINT, T>* end) {
-			addMsgPairs(begin, end);
+		template<class T> MsgSet(std::pair<UINT, T>* begin, size_t size) {
+			addMsgPairs(begin, size);
 		}
 		~MsgSet();
 		IMsgProcess *retrieve(UINT msg) const;
 		void addMsgPair(UINT msg, IMsgProcess* proc);
-		template<class T> void addMsgPairs(std::pair<UINT, T>* begin, std::pair<UINT, T>* end) {
-			std::pair<UINT, T>* it = begin;
-			while (1) {
-				theMap.insert(std::pair<UINT, IMsgProcess*>(it->first, &it->second));
-				if (it == end) return;
-				it++;				
+		template<class T> void addMsgPairs(std::pair<UINT, T>* begin, size_t size) {
+			for (size_t i = 0; i < size; i++) {
+				theMap.insert(std::pair<UINT, IMsgProcess*>((begin + i)->first, &(begin + i)->second));
 			}
 		}
 	private:

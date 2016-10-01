@@ -14,12 +14,12 @@ public:
 	void updateAttlist(LPARAM param = 0);
 
 	//handle the WM_Notify message of childs
-	void beNotified(LPNMHDR data);
+	int beNotified(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
 	//handle button message
-	void clickButton(HWND wnd, int msg);
+	int clickButton(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
 
 	//use to receive the edit result of the right panel
-	void setAttribute(TCHAR * buff);
+	int setAttribute(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
 
 	int updateLayout(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
 private:

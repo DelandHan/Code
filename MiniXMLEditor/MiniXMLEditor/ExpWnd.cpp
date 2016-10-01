@@ -4,36 +4,7 @@
 
 using namespace autownd;
 using namespace memory;
-
-class MsgNotify
-	:public IMsgProcess
-{
-public:
-	MsgNotify(ExpWnd * pro) { theWnd = pro; }
-	~MsgNotify() {}
-	int handleMsg(WndObj *obj, WPARAM wp, LPARAM lp) override {
-		theWnd->beNotified((LPNMHDR)lp);
-		return 1;
-	}
-private:
-	ExpWnd * theWnd;
-};
-
-class MsgCommand
-	:public IMsgProcess
-{
-public:
-	MsgCommand(ExpWnd * pro) { theWnd = pro; }
-	~MsgCommand() {}
-	int handleMsg(WndObj *obj, WPARAM wp, LPARAM lp) override {
-		if (obj) theWnd->clickButton((HWND)lp, HIWORD(wp));//click button
-		else theWnd->setAttribute((TCHAR*)wp);//finish editing
-		return 1;
-	}
-private:
-	ExpWnd * theWnd;
-
-};
+using namespace std;
 
 ExpWnd::ExpWnd()
 	:theData(nullptr)
@@ -55,14 +26,14 @@ void ExpWnd::init(IModule * module)
 	const int mainwnd_w = 1000, mainwnd_h = 650;
 
 	//static message objects;
-	static MsgSet mainWndMsgs;
-	static MsgNotify notify(this);
-	static MsgCommand command(this);
-	static MsgProc<ExpWnd> msg_sizing(this, &ExpWnd::updateLayout);
+	static pair<UINT, MsgProc<ExpWnd>> msg_proc_list[] = {
+		{ WM_NOTIFY,{ this, &ExpWnd::beNotified } },
+		{ WM_COMMAND,{ this, &ExpWnd::clickButton } },
+		{ WM_SIZE,{ this,&ExpWnd::updateLayout } },
+		{ 0,{ this,&ExpWnd::setAttribute } }
+	};
+	static MsgSet mainWndMsgs(msg_proc_list, 3);
 	mainWndMsgs.addMsgPair(WM_DESTROY, &autownd::msg_quit);
-	mainWndMsgs.addMsgPair(WM_NOTIFY, &notify);
-	mainWndMsgs.addMsgPair(WM_COMMAND, &command);
-	mainWndMsgs.addMsgPair(WM_SIZE, &msg_sizing);
 
 	theData = module;
 
@@ -72,7 +43,8 @@ void ExpWnd::init(IModule * module)
 	Seed mainSeed;
 	mainSeed.init({});
 	mainSeed.create(&theMainWnd, {
-		{ "size",vec(mainwnd_w,mainwnd_h) }
+		{ "size",vec(mainwnd_w,mainwnd_h) },
+		{ "title",L"XMLEditor" }
 	});
 
 	//add left panel
@@ -111,7 +83,7 @@ void ExpWnd::init(IModule * module)
 	theButton.obj.show();
 
 	//set edit callback
-	theEdit.obj.setRecv(&command);
+	theEdit.obj.setRecv(&(msg_proc_list + 3)->second);
 
 	//finished
 	updateLayout(&theMainWnd,0,0);
@@ -177,8 +149,9 @@ void ExpWnd::updateAttlist(LPARAM param)
 	theRightPanel.obj.at().update();
 }
 
-void ExpWnd::beNotified(LPNMHDR data)
+int ExpWnd::beNotified(WndObj *obj, WPARAM wp, LPARAM lp)
 {
+	LPNMHDR data = (LPNMHDR)lp;
 	if (data->hwndFrom==theLeftPanel.obj.wnd())//left panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
@@ -188,13 +161,13 @@ void ExpWnd::beNotified(LPNMHDR data)
 		}
 		if (data->code == NM_DBLCLK) //on double click
 		{
-			if (temp->iItem == -1) return;
+			if (temp->iItem == -1) return 1;
 			updateItemlist(theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam);
 		}
 		if (data->code == LVN_ENDLABELEDIT)
 		{
 			NMLVDISPINFO* info = (NMLVDISPINFO*)data;
-			if (info->item.pszText == nullptr) return;
+			if (info->item.pszText == nullptr) return 1;
 			theData->push({ { "setstr",info->item.pszText },{ "item",info->item.lParam } });
 			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, info->item.pszText);
 		}
@@ -206,8 +179,8 @@ void ExpWnd::beNotified(LPNMHDR data)
 		if (data->code == NM_CLICK)
 		{
 			TCHAR buff[255]; RECT rect;
-			if (temp->iSubItem == -1) return;
-			if (temp->iItem == -1) {
+			if (temp->iSubItem == -1) return 1;
+			if (temp->iItem == -1 || temp->iItem == theRightPanel.obj.getCount() - 1) {
 				temp->iItem = theRightPanel.obj.getCount() - 1;
 				temp->iSubItem = 0;
 			}
@@ -233,24 +206,28 @@ void ExpWnd::beNotified(LPNMHDR data)
 			});
 		}
 	}
+
+	return 1;
 }
 
-void ExpWnd::clickButton(HWND wnd, int msg)
+int ExpWnd::clickButton(WndObj *obj, WPARAM wp, LPARAM lp)
 {
-	if (wnd == theButton.obj.wnd())
+	if ((HWND)lp == theButton.obj.wnd())
 	{
 		updateItemlist(theButton.param);
 	}
+
+	return 1;
 }
 
-void ExpWnd::setAttribute(TCHAR * value)
+int ExpWnd::setAttribute(WndObj *obj, WPARAM wp, LPARAM lp)
 {
 	if (theEdit.subitem)
 	{
 		theData->push({
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",theEdit.str[0].c_str() },
-			{ "value",value },
+			{ "value",(TCHAR*)wp },
 			{ "item",theRightPanel.param }
 		});
 	}
@@ -258,7 +235,7 @@ void ExpWnd::setAttribute(TCHAR * value)
 	{
 		theData->push({
 			{ "setkey",theEdit.str[0].c_str() },
-			{ "key",value },
+			{ "key",(TCHAR*)wp },
 			{ "value",theEdit.str[1].c_str() },
 			{ "item",theRightPanel.param }
 		});
@@ -266,6 +243,7 @@ void ExpWnd::setAttribute(TCHAR * value)
 
 	updateAttlist(theRightPanel.param);
 	theEdit.str[0].clear(); theEdit.str[1].clear();
+	return 1;
 }
 
 int ExpWnd::updateLayout(WndObj *obj, WPARAM wp, LPARAM lp)
