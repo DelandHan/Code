@@ -93,7 +93,7 @@ void ExpWnd::init(IModule * module)
 	theEdit.obj.setRecv(&(msg_proc_list + 3)->second);
 
 	//finished
-	updateLayout(&theMainWnd,0,0);
+	updateLayout({});
 	theMainWnd.show();
 	updateItemlist();
 }
@@ -158,9 +158,9 @@ void ExpWnd::updateAttlist(LPARAM param)
 	theRightPanel.obj.at().update();
 }
 
-int ExpWnd::beNotified(WndObj *obj, WPARAM wp, LPARAM lp)
+int ExpWnd::beNotified(memory::ParamChain params)
 {
-	LPNMHDR data = (LPNMHDR)lp;
+	LPNMHDR data = (params.begin() + 1)->second.pdata<NMHDR>();
 	if (data->hwndFrom==theLeftPanel.obj.wnd())//left panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
@@ -184,6 +184,7 @@ int ExpWnd::beNotified(WndObj *obj, WPARAM wp, LPARAM lp)
 			theData->push({ { "setstr",info->item.pszText },{ "item",info->item.lParam } });
 			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, info->item.pszText);
 		}
+		break;
 		case NM_RCLICK:
 		{
 			if (temp->iItem != -1)
@@ -235,17 +236,17 @@ int ExpWnd::beNotified(WndObj *obj, WPARAM wp, LPARAM lp)
 	return 1;
 }
 
-int ExpWnd::clickButton(WndObj *obj, WPARAM wp, LPARAM lp)
+int ExpWnd::clickButton(memory::ParamChain params)
 {
-	if ((HWND)lp == theButton.obj.wnd())
+	if ((HWND)*(params.begin() + 1)->second.data<long>() == theButton.obj.wnd())
 	{
 		updateItemlist(theButton.param);
 	}
 	else
 	{
-		if (HIWORD(wp) == 0)
+		if (HIWORD(*(params.begin())->second.data<long>()) == 0)
 		{
-			switch (LOWORD(wp))
+			switch (LOWORD(*(params.begin())->second.data<long>()))
 			{
 			case 1:
 			{
@@ -277,14 +278,14 @@ int ExpWnd::clickButton(WndObj *obj, WPARAM wp, LPARAM lp)
 	return 1;
 }
 
-int ExpWnd::setAttribute(WndObj *obj, WPARAM wp, LPARAM lp)
+int ExpWnd::setAttribute(memory::ParamChain params)
 {
 	if (theEdit.subitem)
 	{
 		theData->push({
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",theEdit.str[0].c_str() },
-			{ "value",(TCHAR*)wp },
+			{ "value",params.begin()->second.pdata<TCHAR>() },
 			{ "item",theRightPanel.param }
 		});
 	}
@@ -292,7 +293,7 @@ int ExpWnd::setAttribute(WndObj *obj, WPARAM wp, LPARAM lp)
 	{
 		theData->push({
 			{ "setkey",theEdit.str[0].c_str() },
-			{ "key",(TCHAR*)wp },
+			{ "key",params.begin()->second.pdata<TCHAR>() },
 			{ "value",theEdit.str[1].c_str() },
 			{ "item",theRightPanel.param }
 		});
@@ -303,7 +304,7 @@ int ExpWnd::setAttribute(WndObj *obj, WPARAM wp, LPARAM lp)
 	return 1;
 }
 
-int ExpWnd::updateLayout(WndObj *obj, WPARAM wp, LPARAM lp)
+int ExpWnd::updateLayout(memory::ParamChain params)
 {
 	RECT rect;
 	GetClientRect(theMainWnd.wnd(), &rect);

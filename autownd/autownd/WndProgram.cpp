@@ -138,7 +138,7 @@ LRESULT Seed::WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 	IMsgProcess * proc = current->getMsgProc(msg);
 	if (proc == nullptr) return DefWindowProc(wnd, msg, wp, lp);
-	if (proc->handleMsg(current, wp, lp)) return 0;
+	if (proc->handleMsg({ { "wp",wp },{ "lp",lp } })) return 0;
 	else return DefWindowProc(wnd, msg, wp, lp);
 }
 
@@ -162,7 +162,7 @@ INT_PTR Seed::DialProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 	IMsgProcess * proc = current->getMsgProc(msg);
 	if (proc == nullptr) return FALSE;
-	if (proc->handleMsg(current, wp, lp)) return 0;
+	if (proc->handleMsg({ { "wp",wp },{ "lp",lp } })) return 0;
 	else return FALSE;
 }
 

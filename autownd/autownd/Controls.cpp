@@ -328,7 +328,7 @@ void autownd::Edit::confirmEdit()
 	TCHAR buff[255];
 	GetWindowText(theWnd, buff, 255);
 
-	theRecv->handleMsg(nullptr, (WPARAM)buff, (LPARAM)this);
+	theRecv->handleMsg({ { "buff",buff } });
 	destroy();
 }
 

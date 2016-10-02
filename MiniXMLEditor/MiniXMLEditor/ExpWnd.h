@@ -14,15 +14,15 @@ public:
 	void updateAttlist(LPARAM param = 0);
 
 	//handle the WM_Notify message of childs
-	int beNotified(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
+	int beNotified(memory::ParamChain params);
 	//handle button message
-	int clickButton(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
+	int clickButton(memory::ParamChain params);
 
 	//use to receive the edit result of the right panel
-	int setAttribute(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
+	int setAttribute(memory::ParamChain params);
 
 	//reset the layout
-	int updateLayout(autownd::WndObj *obj, WPARAM wp, LPARAM lp);
+	int updateLayout(memory::ParamChain params);
 
 private:
 	autownd::WndObj theMainWnd;

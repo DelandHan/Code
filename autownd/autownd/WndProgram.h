@@ -40,7 +40,7 @@ namespace autownd
 	class IMsgProcess
 	{
 	public:
-		virtual int handleMsg(WndObj *obj, WPARAM wp, LPARAM lp) = 0;
+		virtual int handleMsg(memory::ParamChain params) = 0;
 	};
 
 	////////
