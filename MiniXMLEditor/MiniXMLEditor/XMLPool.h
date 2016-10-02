@@ -9,7 +9,7 @@ public:
 	~XMLPool();
 
 	virtual void pull(memory::BulletChain *chain) override;
-	virtual void push(memory::ParamChain chain) override;
+	virtual int push(memory::ParamChain chain) override;
 
 private:
 	xml::XMLNode *theRoot;

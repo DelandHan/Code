@@ -51,6 +51,8 @@ private:
 		autownd::WndObj obj; 
 		LPARAM param;
 	}theButton;
+
+	autownd::WndObj thePath;
 	
 	struct
 	{

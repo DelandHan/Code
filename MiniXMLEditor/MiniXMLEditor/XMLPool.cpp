@@ -61,11 +61,28 @@ void XMLPool::pull(memory::BulletChain * chain)
 			return;
 		}
 
-		wstring buff; convertToWStr(buff, node->getString());
+		//get path
+		xml::XMLNode *child_n = node; size_t size = 0; wstring buff; string buffA;
+		while (child_n) {
+			size += child_n->getString().size() + 1;
+			child_n = child_n->getParent();
+		}
+		buffA.resize(size + 1);
+
+		child_n = node;
+		while (child_n) {
+			memcpy(&buffA[size - child_n->getString().size()], child_n->getString().c_str(), child_n->getString().size());
+			buffA[size - child_n->getString().size() - 1] = '\\';
+			size -= child_n->getString().size() + 1;
+			child_n = child_n->getParent(); 
+		}
+
+		convertToWStr(buff, buffA);
 		chain->add()->fill(buff.c_str(), buff.size() + 1);
 		chain->add()->fill((int)node->getType());
 		chain->add()->fill((LPARAM)node->getParent());
 
+		//get child items
 		node = node->getFirstChild();
 		while (node)
 		{
@@ -78,7 +95,7 @@ void XMLPool::pull(memory::BulletChain * chain)
 	}
 }
 
-void XMLPool::push(memory::ParamChain chain)
+int XMLPool::push(memory::ParamChain chain)
 {
 	if (memory::streql(chain.begin()->first, "setkey")) {
 		std::string oldkey, keystr, valuestr;
@@ -88,7 +105,7 @@ void XMLPool::push(memory::ParamChain chain)
 		convertToStr(valuestr, (chain.begin() + 2)->second.pdata<TCHAR>());
 		node = (xml::XMLNode*)*((chain.begin() + 3)->second.data<long>());
 		node->updateAttribute(oldkey, keystr, valuestr);
-		return;
+		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "setstr")) {
 		std::string str;
@@ -96,32 +113,42 @@ void XMLPool::push(memory::ParamChain chain)
 		convertToStr(str, (chain.begin())->second.pdata<TCHAR>());
 		node = (xml::XMLNode*)*((chain.begin() + 1)->second.data<long>());
 		node->setString(str);
-		return;
+		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "del")) {
 		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
 		if(node) delete node;
-		return;
+		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "ins_a")) {
 		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
 			*neNode = new XMLNode;
 		node->insert(neNode, true);	
-		neNode->setString("New Node");
-		return;
+		neNode->setString("NewNode");
+		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "ins_b")) {
 		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
 			*neNode = new XMLNode;
-		neNode->setString("New Node");
+		neNode->setString("NewNode");
 		node->insert(neNode, false);
-		return;
+		return 0;
 	}
 
 	if (memory::streql(chain.begin()->first, "chgtyp")) {
 		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
 		if(node->getType()==xml::ELEMENT_NODE) node->convertType(xml::TEXT_NODE);
 		else node->convertType(xml::ELEMENT_NODE);
-		return;
+		return 0;
 	}
+
+	if (memory::streql(chain.begin()->first, "append")) {
+		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
+			*neNode = new XMLNode;
+		neNode->setString("NewNode");
+		node->append(neNode);
+		return 0;
+	}
+
+	return 1;
 }

@@ -25,15 +25,11 @@ namespace autownd
 
 		int addControl(WndObj* obj, TCHAR * cname, memory::ParamChain params);
 
-		IMsgProcess* getMsgProc(UINT msg);
-		void setMsgSet(const MsgSet *set);
-
 	private:
 		friend class Seed;
-		const MsgSet *theMsgMap;
 		HWND theWnd;
 
-		static std::map<HWND, WndObj*> theWndMap;
+		static std::map<HWND, const MsgSet *> theWndMap;
 	};
 
 	//make the process
@@ -72,15 +68,15 @@ namespace autownd
 		~Seed();
 		void init(memory::ParamChain params);
 
-		int create(WndObj *obj, memory::ParamChain params);
-		int create(WndObj *obj, int resourceid);
+		int create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params);
 
 	private:
 		std::wstring theName;
 		
-		static WndObj* theAdding;
+		static const MsgSet* theAddingMsgs;
+		static WndObj* theAddingObj;
+
 		static LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-		static INT_PTR CALLBACK DialProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 	};
 
 }

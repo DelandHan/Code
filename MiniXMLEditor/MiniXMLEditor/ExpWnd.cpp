@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ExpWnd.h"
 #include "resource.h"
 
@@ -44,12 +44,10 @@ void ExpWnd::init(IModule * module)
 
 	theData = module;
 
-	theMainWnd.setMsgSet(&mainWndMsgs);
-
 	//init main wnd
 	Seed mainSeed;
 	mainSeed.init({});
-	mainSeed.create(&theMainWnd, {
+	mainSeed.create(&theMainWnd, &mainWndMsgs, {
 		{ "size",vec(mainwnd_w,mainwnd_h) },
 		{ "title",L"XMLEditor" }
 	});
@@ -84,10 +82,17 @@ void ExpWnd::init(IModule * module)
 
 	//add up button
 	theMainWnd.addControl(&theButton.obj, WC_BUTTON, {
-		{ "size",vec(mainwnd_w / 2,20) },
+		{ "title", L"Up"},
+		{ "size",vec(20,20) },
 		{ "pos",vec(20,20) },
 	});
 	theButton.obj.show();
+
+	theMainWnd.addControl(&thePath, WC_STATIC, {
+		{ "size",vec(mainwnd_w / 2,20) },
+		{ "pos",vec(50,20) },
+	});
+	thePath.show();
 
 	//set edit callback
 	theEdit.obj.setRecv(&(msg_proc_list + 3)->second);
@@ -113,7 +118,7 @@ void ExpWnd::updateItemlist(LPARAM param)
 	theLeftPanel.param = param;
 
 	chain.line();
-	SetWindowText(theButton.obj.wnd(), chain.at()->data<TCHAR>());
+	SetWindowText(thePath.wnd(), chain.at()->data<TCHAR>());
 	chain.at(); chain.at()->inject(&theButton.param, 1);
 
 	//redraw left panel
@@ -191,6 +196,14 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			{
 				theContext.obj.show(temp->ptAction.x, temp->ptAction.y, theMainWnd.wnd());
 				theContext.param = theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam;
+			}
+			else
+			{
+				if (theLeftPanel.obj.getCount() == 0)
+				{
+					theData->push({ { "append", theLeftPanel.param} });
+					updateItemlist(theLeftPanel.param);
+				}
 			}
 		}
 		break;
@@ -311,7 +324,7 @@ int ExpWnd::updateLayout(memory::ParamChain params)
 	OffsetRect(&rect, GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CXBORDER));
 
 	const int edge_blank = 10;
-	const int client_w = rect.right - rect.left - 2 * edge_blank, client_h = rect.bottom - rect.top - 2 * edge_blank;
+	const int client_w = rect.right - rect.left - edge_blank, client_h = rect.bottom - rect.top - 2 * edge_blank;
 	const int button_h = 30;
 	const int panel_w = client_w / 2 - edge_blank / 2;
 
@@ -320,12 +333,15 @@ int ExpWnd::updateLayout(memory::ParamChain params)
 	theLeftPanel.obj.resizeColumn(0, client_w / 2 - 3 * edge_blank);
 
 	MoveWindow(theRightPanel.obj.wnd(),
-		edge_blank + client_w / 2, edge_blank * 2 + button_h, panel_w, client_h - edge_blank - button_h, TRUE);
+		edge_blank + panel_w, edge_blank * 2 + button_h, panel_w, client_h - edge_blank - button_h, TRUE);
 	theRightPanel.obj.resizeColumn(0, panel_w / 2 - 4);
 	theRightPanel.obj.resizeColumn(1, panel_w / 2);
 
 	MoveWindow(theButton.obj.wnd(),
-		edge_blank, edge_blank, panel_w, button_h, TRUE);
+		edge_blank, edge_blank, button_h, button_h, TRUE);
+
+	MoveWindow(thePath.wnd(),
+		edge_blank * 2 + button_h, edge_blank, client_w - edge_blank - button_h, button_h, TRUE);
 
 	return 1;
 }
