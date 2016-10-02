@@ -341,7 +341,7 @@ int ExpWnd::updateLayout(memory::ParamChain params)
 		edge_blank, edge_blank, button_h, button_h, TRUE);
 
 	MoveWindow(thePath.wnd(),
-		edge_blank * 2 + button_h, edge_blank, client_w - edge_blank - button_h, button_h, TRUE);
+		edge_blank * 2 + button_h, edge_blank, client_w - edge_blank * 2 - button_h, button_h, TRUE);
 
 	return 1;
 }
