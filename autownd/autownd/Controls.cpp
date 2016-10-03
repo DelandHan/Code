@@ -404,24 +404,64 @@ LRESULT autownd::Edit::subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(theOldEditProc, wnd, msg, wParam, lParam);
 }
 
-autownd::ContextMsg::ContextMsg()
+autownd::ContextMenu::ContextMenu()
 {
 	thePopup = CreatePopupMenu();
 }
 
-autownd::ContextMsg::~ContextMsg()
+autownd::ContextMenu::~ContextMenu()
 {
 	DeleteObject(thePopup);
 }
 
-void autownd::ContextMsg::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT pos)
+void autownd::ContextMenu::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT pos)
 {
 	InsertMenu(thePopup, pos, MF_BYPOSITION | MF_STRING, param, itemname);
 }
 
-void autownd::ContextMsg::show(int x, int y, HWND parent)
+void autownd::ContextMenu::show(int x, int y, HWND parent)
 {
 	RECT rect; GetWindowRect(parent, &rect);
 	SetForegroundWindow(parent);
 	TrackPopupMenu(thePopup, TPM_TOPALIGN | TPM_LEFTALIGN, rect.left + x, rect.top + y, 0, parent, NULL);
+}
+
+///////////////////////////////
+
+
+FileDialog::FileDialog()
+{
+	ZeroMemory(&theData, sizeof(OPENFILENAME));
+	theData.lStructSize = OPENFILENAME_SIZE_VERSION_400;
+	thePath.resize(255);
+}
+
+FileDialog::~FileDialog()
+{
+}
+
+void autownd::FileDialog::open(memory::ParamChain params)
+{
+	theData.hwndOwner = GetForegroundWindow();												
+	theData.lpstrFilter = TEXT("Xml文件(*.xml)\0*.xml\0所有文件(*.*)\0*.*\0\0");
+	theData.lpstrFile = &thePath[0];             
+	theData.nMaxFile = thePath.size();     
+	theData.lpstrTitle = L"Open...";      
+	theData.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST /*| OFN_ALLOWMULTISELECT 允许选择多个文件*/;
+
+	if (!GetOpenFileName(&theData)) return;
+
+}
+
+void autownd::FileDialog::save(memory::ParamChain params)
+{
+	theData.hwndOwner = GetForegroundWindow();          // 拥有者句柄      
+	theData.lpstrFilter = TEXT("Xml文件(*.xml)\0*.xml\0所有文件(*.*)\0*.*\0\0");
+	theData.lpstrFile = &thePath[0];
+	theData.nMaxFile = thePath.size();
+	theData.lpstrTitle = L"Save...";
+	theData.Flags = OFN_OVERWRITEPROMPT;        // 覆盖提示  
+
+	if(!GetSaveFileName(&theData)) return;
+	
 }

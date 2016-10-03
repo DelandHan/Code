@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "XMLPool.h"
+#include <fstream>
 
 using namespace std;
 using namespace xml;
@@ -20,10 +21,6 @@ void convertToStr(std::string &dest, TCHAR * source)
 XMLPool::XMLPool()
 {
 	theRoot = nullptr;
-	xml::XMLParser ps;
-	ps.parseFile("iecu.xml");
-	theRoot = ps.pickupDocument();
-
 }
 
 
@@ -55,6 +52,8 @@ void XMLPool::pull(memory::BulletChain * chain)
 		xml::XMLNode *node;
 		if (param == 0) node = theRoot;
 		else node = (xml::XMLNode*)param;
+
+		if (node == nullptr) return;
 
 		if (node->getType() != xml::ELEMENT_NODE) {
 			chain->at()->fill(1);
@@ -147,6 +146,27 @@ int XMLPool::push(memory::ParamChain chain)
 			*neNode = new XMLNode;
 		neNode->setString("NewNode");
 		node->append(neNode);
+		return 0;
+	}
+
+	if (memory::streql(chain.begin()->first, "open")) {
+		xml::XMLParser ps;
+		string str;
+		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
+		ps.parseFile(str.c_str());
+		if (theRoot) delete theRoot;
+		theRoot = ps.pickupDocument();
+		return 0;
+	}
+
+	if (memory::streql(chain.begin()->first, "save")) {
+		xml::XMLParser ps;
+		string str;
+		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
+		if (memcmp(&str[str.size() - 5], ".xml", 4) != 0) str += ".xml";
+		ofstream of(str);
+		ps.saveNode(theRoot, &of);
+		of.close();
 		return 0;
 	}
 

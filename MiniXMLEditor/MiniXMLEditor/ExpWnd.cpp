@@ -15,10 +15,10 @@ ExpWnd::ExpWnd()
 	theEdit.subitem = 0;
 	theContext.param = 0;
 
-	theContext.obj.addMenuItem(L"Del", 1);
-	theContext.obj.addMenuItem(L"InsertBefore", 2);
-	theContext.obj.addMenuItem(L"InsertAfter", 3);
-	theContext.obj.addMenuItem(L"ChangeType", 4);
+	theContext.obj.addMenuItem(L"Del", ID_EDIT_DEL);
+	theContext.obj.addMenuItem(L"InsertBefore", ID_EDIT_INSERTBEFORE);
+	theContext.obj.addMenuItem(L"InsertAfter", ID_EDIT_INSERTAFTER);
+	theContext.obj.addMenuItem(L"ChangeType", ID_EDIT_CHANGETYPE);
 }
 
 
@@ -48,6 +48,7 @@ void ExpWnd::init(IModule * module)
 	Seed mainSeed;
 	mainSeed.init({});
 	mainSeed.create(&theMainWnd, &mainWndMsgs, {
+		{ "menu",IDR_MENU },
 		{ "size",vec(mainwnd_w,mainwnd_h) },
 		{ "title",L"XMLEditor" }
 	});
@@ -174,6 +175,7 @@ int ExpWnd::beNotified(memory::ParamChain params)
 		case LVN_ITEMCHANGED:
 		{
 			if (temp->uNewState) updateAttlist(temp->lParam);
+			theContext.param = temp->lParam;
 		}
 		break;
 		case NM_DBLCLK:
@@ -259,24 +261,51 @@ int ExpWnd::clickButton(memory::ParamChain params)
 	{
 		if (HIWORD(*(params.begin())->second.data<long>()) == 0)
 		{
+			//file menu
 			switch (LOWORD(*(params.begin())->second.data<long>()))
 			{
-			case 1:
+			case ID_FILE_EXIT:
+			{
+				PostQuitMessage(0);
+			}
+			break;
+			case ID_FILE_OPEN:
+			{
+				theOpenDialog.open({});		
+				theData->push({ {"open",theOpenDialog.getPath().c_str()} });
+				updateItemlist();
+			}
+			break;
+			case ID_FILE_SAVE:
+			{
+				theOpenDialog.save({});
+				theData->push({ {"save",theOpenDialog.getPath().c_str()} });
+			}
+			break;
+			default:
+				break;
+			}
+
+			//edit menu
+			if (theContext.param == 0) return 0;
+			switch (LOWORD(*(params.begin())->second.data<long>()))
+			{
+			case ID_EDIT_DEL:
 			{
 				theData->push({ {"del",theContext.param} });
 			}
 			break;
-			case 2:
+			case ID_EDIT_INSERTBEFORE:
 			{
 				theData->push({ { "ins_b",theContext.param } });
 			}
 			break;
-			case 3:
+			case ID_EDIT_INSERTAFTER:
 			{
 				theData->push({ { "ins_a",theContext.param } });
 			}
 			break;
-			case 4:
+			case ID_EDIT_CHANGETYPE:
 			{
 				theData->push({ { "chgtyp",theContext.param } });
 			}
@@ -284,6 +313,7 @@ int ExpWnd::clickButton(memory::ParamChain params)
 			default:
 				break;
 			}
+			theContext.param = 0;
 			updateItemlist(theLeftPanel.param);
 		}
 	}

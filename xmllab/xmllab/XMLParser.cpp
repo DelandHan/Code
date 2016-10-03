@@ -369,7 +369,14 @@ namespace xml
 
 	void XMLParser::saveNode(XMLNode *node, std::ostream * stdstream)
 	{
-		checkNode(node, 0, stdstream);
+		XMLNode *temp = node->getFirstChild();
+		while (temp)
+		{
+			if (temp->getFirstChild())
+				checkNode(node->getFirstChild(), 0, stdstream);
+
+			temp = temp->getNext();
+		}
 	}
 
 	void XMLParser::clear()

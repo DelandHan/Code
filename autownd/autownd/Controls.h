@@ -146,11 +146,12 @@ namespace autownd
 
 	};
 
-	class ContextMsg
+	///////////////////
+	class ContextMenu
 	{
 	public:
-		ContextMsg();
-		~ContextMsg();
+		ContextMenu();
+		~ContextMenu();
 
 		void addMenuItem(TCHAR* itemname, UINT_PTR param, UINT pos = -1);
 
@@ -158,6 +159,23 @@ namespace autownd
 
 	private:
 		HMENU thePopup;
+	};
+
+	/////////////////
+	class FileDialog
+	{
+	public:
+		FileDialog();
+		~FileDialog();
+
+		void open(memory::ParamChain params);
+		void save(memory::ParamChain params);
+
+		const std::wstring & getPath() { return thePath; }
+
+	private:
+		OPENFILENAME theData;
+		std::wstring thePath;
 	};
 
 }

@@ -26,6 +26,7 @@ public:
 
 private:
 	autownd::WndObj theMainWnd;
+	autownd::FileDialog theOpenDialog;
 
 	struct
 	{
@@ -56,7 +57,7 @@ private:
 	
 	struct
 	{
-		autownd::ContextMsg obj;
+		autownd::ContextMenu obj;
 		LPARAM param;
 	}theContext;
 	

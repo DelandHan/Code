@@ -86,6 +86,7 @@ int Seed::create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params)
 	HWND parent = nullptr;
 	long style = WS_OVERLAPPEDWINDOW;
 	long exstyle = 0;
+	int imenu = 0;
 
 	//stream params
 	find(params, "title", title);
@@ -94,13 +95,18 @@ int Seed::create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params)
 	find(params, "style", style);
 	find(params, "pos", pos);
 	find(params, "exstyle", exstyle);
+	find(params, "menu", imenu);
 
 	//creating
 	theAddingMsgs = msgmap;
 	theAddingObj = obj;
 
+	HMENU hmenu = LoadMenu(GetModuleHandle(0), MAKEINTRESOURCE(imenu));
+
 	CreateWindowEx(exstyle, theName.c_str(), title, style,
-		pos.first, pos.second, size.first, size.second, parent, nullptr, GetModuleHandle(0), nullptr);
+		pos.first, pos.second, size.first, size.second, parent, hmenu, GetModuleHandle(0), nullptr);
+
+	DeleteObject(hmenu);
 
 	theAddingMsgs = nullptr;
 	theAddingObj = nullptr;
