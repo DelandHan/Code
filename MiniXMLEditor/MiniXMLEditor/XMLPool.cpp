@@ -55,7 +55,7 @@ void XMLPool::pull(memory::BulletChain * chain)
 
 		if (node == nullptr) return;
 
-		if (node->getType() != xml::ELEMENT_NODE) {
+		if (node->getType() != xml::ELEMENT_NODE && node->getType() != xml::DOCUMENT_NODE) {
 			chain->at()->fill(1);
 			return;
 		}

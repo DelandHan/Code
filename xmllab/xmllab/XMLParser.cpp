@@ -265,6 +265,7 @@ namespace xml
 	{
 		theDocument = new XMLNode;
 		theRoot = theDocument;
+		theDocument->convertType(xml::DOCUMENT_NODE);
 
 		theStatus = SUCCESS;
 
@@ -363,20 +364,14 @@ namespace xml
 		XMLNode * temp = theDocument;
 		theDocument = new XMLNode;
 		theRoot = theDocument;
+		theDocument->convertType(xml::DOCUMENT_NODE);
 		return temp;
 
 	}
 
 	void XMLParser::saveNode(XMLNode *node, std::ostream * stdstream)
 	{
-		XMLNode *temp = node->getFirstChild();
-		while (temp)
-		{
-			if (temp->getFirstChild())
-				checkNode(node->getFirstChild(), 0, stdstream);
-
-			temp = temp->getNext();
-		}
+		checkNode(node, 0, stdstream);
 	}
 
 	void XMLParser::clear()
@@ -384,6 +379,7 @@ namespace xml
 		delete theDocument;
 		theDocument = new XMLNode;
 		theRoot = theDocument;
+		theDocument->convertType(xml::DOCUMENT_NODE);
 
 		theStatus = SUCCESS;
 
@@ -395,6 +391,10 @@ namespace xml
 	{
 		while (node)
 		{
+			if (node->getType() == DOCUMENT_NODE) {
+				node = node->getNext();
+				continue;
+			}
 			//for (int i = 0; i < level; i++) (*stdstream) << "   ";
 			(*stdstream) << theChecker.getOrignalString(node, false);// << endl;
 
