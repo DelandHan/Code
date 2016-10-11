@@ -29,7 +29,7 @@ XMLPool::~XMLPool()
 	delete theRoot;
 }
 
-void XMLPool::pull(memory::BulletChain * chain)
+int XMLPool::pull(memory::BulletChain * chain)
 {
 	const char *cat = chain->first()->pdata<char>();
 	LPARAM param = *chain->at()->data<LPARAM>();
@@ -55,17 +55,16 @@ void XMLPool::pull(memory::BulletChain * chain)
 		chain->add()->fill(buff.c_str(), buff.size() + 1);
 	}
 
-	if (memory::streql(cat, "items"))
+	if (memory::streql(cat, "childs"))
 	{
 		xml::XMLNode *node;
 		if (param == 0) node = theRoot;
 		else node = (xml::XMLNode*)param;
 
-		if (node == nullptr) return;
+		if (node == nullptr) return 2;
 
 		if (node->getType() != xml::ELEMENT_NODE && node->getType() != xml::DOCUMENT_NODE) {
-			chain->at()->fill(1);
-			return;
+			return 1;
 		}
 
 		//get path
@@ -100,6 +99,8 @@ void XMLPool::pull(memory::BulletChain * chain)
 			node = node->getNext();
 		}
 	}
+
+	return 0;
 }
 
 int XMLPool::push(memory::ParamChain chain)

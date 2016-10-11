@@ -41,7 +41,7 @@ namespace xml
 			AttNode *theNext, *thePrev;
 		};
 
-		XMLNode();
+		XMLNode(NodeType type = ELEMENT_NODE);
 		~XMLNode();
 
 		//tree

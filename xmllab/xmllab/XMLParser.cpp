@@ -263,9 +263,8 @@ namespace xml
 	using namespace toolbox;
 	XMLParser::XMLParser()
 	{
-		theDocument = new XMLNode;
+		theDocument = new XMLNode(xml::DOCUMENT_NODE);
 		theRoot = theDocument;
-		theDocument->convertType(xml::DOCUMENT_NODE);
 
 		theStatus = SUCCESS;
 
@@ -362,9 +361,8 @@ namespace xml
 	XMLNode * XMLParser::pickupDocument()
 	{
 		XMLNode * temp = theDocument;
-		theDocument = new XMLNode;
+		theDocument = new XMLNode(xml::DOCUMENT_NODE);
 		theRoot = theDocument;
-		theDocument->convertType(xml::DOCUMENT_NODE);
 		return temp;
 
 	}
@@ -377,9 +375,8 @@ namespace xml
 	void XMLParser::clear()
 	{
 		delete theDocument;
-		theDocument = new XMLNode;
+		theDocument = new XMLNode(xml::DOCUMENT_NODE);
 		theRoot = theDocument;
-		theDocument->convertType(xml::DOCUMENT_NODE);
 
 		theStatus = SUCCESS;
 
@@ -611,7 +608,7 @@ namespace xml
 				if (*endChar != ' ') break;
 			}
 
-			pNode = new XMLNode; pNode->convertType(COMMENT_NODE);
+			pNode = new XMLNode(COMMENT_NODE);
 
 			pNode->setString(data.getData(1), endChar - data.getData(1) + 1);
 
@@ -672,7 +669,7 @@ namespace xml
 				if (data.plus()) throw CONTINUE;
 			}
 
-			pNode = new XMLNode; pNode->convertType(PROCESSING_INSTRUCTION_NODE);
+			pNode = new XMLNode(PROCESSING_INSTRUCTION_NODE);
 			pNode->setString(data.getData(1), data.getDiff(2) - 1);
 			theRoot->append(pNode);
 
@@ -726,7 +723,7 @@ namespace xml
 				if (data.plus()) throw CONTINUE;
 			}
 
-			pNode = new XMLNode; pNode->convertType(CDATA_SECTION_NODE);
+			pNode = new XMLNode(CDATA_SECTION_NODE);
 			pNode->setString(data.getData(1), data.getDiff(2) - 2);
 			theRoot->append(pNode);
 
@@ -764,7 +761,7 @@ namespace xml
 				return 0;
 			}
 
-			XMLNode * pNode = new XMLNode; pNode->convertType(TEXT_NODE);
+			XMLNode * pNode = new XMLNode(TEXT_NODE);
 
 			pNode->setString(text.c_str(), text.size());
 

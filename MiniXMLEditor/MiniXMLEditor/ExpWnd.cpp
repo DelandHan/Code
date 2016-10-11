@@ -10,8 +10,9 @@ ExpWnd::ExpWnd()
 	:theData(nullptr)
 {
 	theLeftPanel.param = 0;
-	theButton.param = 0;
 	theRightPanel.param = 0;
+	theButton.param = 0;
+	theAttPanel.param = 0;
 	theEdit.subitem = 0;
 	theContext.param = 0;
 
@@ -60,7 +61,7 @@ void ExpWnd::init(IModule * module)
 		{ "exstyle", WS_EX_CLIENTEDGE },
 		{ "pos",vec(20,50) }
 	});
-	theLeftPanel.obj.addColumn(0).set(L"Items",6).set(mainwnd_w / 2).update();
+	theLeftPanel.obj.addColumn(0).set(L"Items", 6).set(mainwnd_w / 2).update();
 	theLeftPanel.obj.buildImageList(16, 16);
 	theLeftPanel.obj.addIcon(IDI_FILE);
 	theLeftPanel.obj.addIcon(IDI_FOLDER);
@@ -70,16 +71,29 @@ void ExpWnd::init(IModule * module)
 
 	//add right panel
 	theMainWnd.addControl(&theRightPanel.obj, WC_LISTVIEW, {
-		{ "size",vec(mainwnd_w / 2,mainwnd_h - 50) },
-		{ "style",(long)LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER  },
+		{ "size",vec(mainwnd_w / 2,mainwnd_h / 2 - 50) },
+		{ "style",(long)LVS_REPORT | LVS_EDITLABELS | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER | WS_EX_CLIENTEDGE },
 		{ "exstyle", WS_EX_CLIENTEDGE },
 		{ "pos",vec(mainwnd_w / 2 + 20,50) }
 	});
-	theRightPanel.obj.addColumn(0).set(L"Key",4).set(120).update();
-	theRightPanel.obj.addColumn(1).set(L"Value", 4).set(175).update();
-
-	theRightPanel.obj.extendStyle(LVS_EX_FULLROWSELECT| LVS_EX_GRIDLINES);//LVS_EX_GRIDLINES
+	theRightPanel.obj.addColumn(0).set(L"Items", 6).set(mainwnd_w / 2).update();
+	theRightPanel.obj.buildImageList(16, 16);
+	theRightPanel.obj.addIcon(IDI_FILE);
+	theRightPanel.obj.addIcon(IDI_FOLDER);
 	theRightPanel.obj.show();
+
+	//add att panel
+	theMainWnd.addControl(&theAttPanel.obj, WC_LISTVIEW, {
+		{ "size",vec(mainwnd_w / 2,mainwnd_h / 2 - 50) },
+		{ "style",(long)LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER  },
+		{ "exstyle", WS_EX_CLIENTEDGE },
+		{ "pos",vec(mainwnd_w / 2 + 20,mainwnd_h / 2 + 50) }
+	});
+	theAttPanel.obj.addColumn(0).set(L"Key",4).set(120).update();
+	theAttPanel.obj.addColumn(1).set(L"Value", 4).set(175).update();
+
+	theAttPanel.obj.extendStyle(LVS_EX_FULLROWSELECT| LVS_EX_GRIDLINES);//LVS_EX_GRIDLINES
+	theAttPanel.obj.show();
 
 	//add up button
 	theMainWnd.addControl(&theButton.obj, WC_BUTTON, {
@@ -107,18 +121,15 @@ void ExpWnd::init(IModule * module)
 void ExpWnd::updateItemlist(LPARAM param)
 {
 	BulletChain chain(3);
-	chain.first()->fill("items");
+	chain.first()->fill("childs");
 	chain.at()->fill(param);
-	theData->pull(&chain);
-
-	//the up button
-	chain.first(); chain.at(); chain.at();
-	if (chain.at()->data<int>()) return;
+	if (theData->pull(&chain)) return;
 
 	//begin refresh
 	theLeftPanel.param = param;
 
-	chain.line();
+	//the up button and the path
+	chain.first(); chain.line();
 	SetWindowText(thePath.wnd(), chain.at()->data<TCHAR>());
 	chain.at(); chain.at()->inject(&theButton.param, 1);
 
@@ -142,7 +153,7 @@ void ExpWnd::updateItemlist(LPARAM param)
 
 void ExpWnd::updateAttlist(LPARAM param)
 {
-	theRightPanel.obj.clear();
+	theAttPanel.obj.clear();
 	if (param == 0) return;
 	BulletChain chain(2);
 	chain.first()->fill("read");
@@ -150,18 +161,18 @@ void ExpWnd::updateAttlist(LPARAM param)
 	theData->pull(&chain);
 
 	//begin refresh
-	theRightPanel.param = param;
+	theAttPanel.param = param;
 	chain.first();
 	while (chain.line())
 	{
 		Bullet *key = chain.at();
 		Bullet *value = chain.at();
 
-		autownd::List::LSet set = theRightPanel.obj.at();
+		autownd::List::LSet set = theAttPanel.obj.at();
 		set.setText(key->data<TCHAR>(), key->size() / sizeof(TCHAR)).update();
 		set.setText(1, value->data<TCHAR>());
 	}
-	theRightPanel.obj.at().update();
+	theAttPanel.obj.at().update();
 }
 
 int ExpWnd::beNotified(memory::ParamChain params)
@@ -220,18 +231,18 @@ int ExpWnd::beNotified(memory::ParamChain params)
 		}
 	}
 
-	if (data->hwndFrom == theRightPanel.obj.wnd())//right panel
+	if (data->hwndFrom == theAttPanel.obj.wnd())//right panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
 		if (data->code == NM_CLICK)
 		{
 			TCHAR buff[255]; RECT rect;
 			if (temp->iSubItem == -1) return 1;
-			if (temp->iItem == -1 || temp->iItem == theRightPanel.obj.getCount() - 1) {
-				temp->iItem = theRightPanel.obj.getCount() - 1;
+			if (temp->iItem == -1 || temp->iItem == theAttPanel.obj.getCount() - 1) {
+				temp->iItem = theAttPanel.obj.getCount() - 1;
 				temp->iSubItem = 0;
 			}
-			List::LSet set= theRightPanel.obj.at(temp->iItem);
+			List::LSet set= theAttPanel.obj.at(temp->iItem);
 
 			set.getText(buff, 255, 0); theEdit.str[0] = buff;
 			set.getText(buff, 255, 1); theEdit.str[1] = buff;
@@ -247,7 +258,7 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			theEdit.subitem = temp->iSubItem;
 
 			theEdit.obj.init({ 
-				{"parent",theRightPanel.obj.wnd()},
+				{"parent",theAttPanel.obj.wnd()},
 				{"rect",&rect},
 				{"buff",&theEdit.str[temp->iSubItem][0]}
 			});
@@ -335,7 +346,7 @@ int ExpWnd::setAttribute(memory::ParamChain params)
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",theEdit.str[0].c_str() },
 			{ "value",params.begin()->second.pdata<TCHAR>() },
-			{ "item",theRightPanel.param }
+			{ "item",theAttPanel.param }
 		});
 	}
 	else
@@ -344,11 +355,11 @@ int ExpWnd::setAttribute(memory::ParamChain params)
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",params.begin()->second.pdata<TCHAR>() },
 			{ "value",theEdit.str[1].c_str() },
-			{ "item",theRightPanel.param }
+			{ "item",theAttPanel.param }
 		});
 	}
 
-	updateAttlist(theRightPanel.param);
+	updateAttlist(theAttPanel.param);
 	theEdit.str[0].clear(); theEdit.str[1].clear();
 	return 1;
 }
@@ -369,9 +380,13 @@ int ExpWnd::updateLayout(memory::ParamChain params)
 	theLeftPanel.obj.resizeColumn(0, client_w / 2 - 3 * edge_blank);
 
 	MoveWindow(theRightPanel.obj.wnd(),
-		edge_blank + panel_w, edge_blank * 2 + button_h, panel_w, client_h - edge_blank - button_h, TRUE);
-	theRightPanel.obj.resizeColumn(0, panel_w / 2 - 4);
-	theRightPanel.obj.resizeColumn(1, panel_w / 2);
+		edge_blank + panel_w, edge_blank * 2 + button_h, panel_w, client_h / 2 - edge_blank / 2 - button_h / 2, TRUE);
+	theRightPanel.obj.resizeColumn(0, client_w / 2 - 3 * edge_blank);
+
+	MoveWindow(theAttPanel.obj.wnd(),
+		edge_blank + panel_w, edge_blank * 2 + button_h + client_h / 2 - edge_blank / 2 - button_h / 2, panel_w, client_h / 2 - edge_blank / 2 - button_h / 2, TRUE);
+	theAttPanel.obj.resizeColumn(0, panel_w / 2 - 4);
+	theAttPanel.obj.resizeColumn(1, panel_w / 2);
 
 	MoveWindow(theButton.obj.wnd(),
 		edge_blank, edge_blank, button_h, button_h, TRUE);

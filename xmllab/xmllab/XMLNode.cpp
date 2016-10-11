@@ -40,10 +40,10 @@ XMLNode::AttNode * xml::XMLNode::AttNode::insert(const std::string & key, const 
 
 ///////////////////////XMLNode///////////////////////
 
-XMLNode::XMLNode() :
+XMLNode::XMLNode(NodeType type) :
 	thePrevious(nullptr), theNext(nullptr),
 	theParent(nullptr), theFirstChild(nullptr), theLastChild(nullptr),
-	theAtt(nullptr), theType(ELEMENT_NODE)
+	theAtt(nullptr), theType(type)
 {
 }
 
@@ -216,6 +216,7 @@ void xml::XMLNode::convertType(NodeType type)
 			delete temp;
 		}
 	}
+	theString.resize(verifyString(theString.c_str(), theString.size(), type));
 	theType = type;
 }
 

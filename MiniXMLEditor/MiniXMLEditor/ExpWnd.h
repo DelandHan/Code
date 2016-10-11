@@ -32,13 +32,19 @@ private:
 	{
 		autownd::List obj;
 		LPARAM param;
-	}theLeftPanel;
+	}theLeftPanel; //item list
 
 	struct
 	{
 		autownd::List obj;
 		LPARAM param;
-	}theRightPanel;
+	}theRightPanel; //childs list
+
+	struct
+	{
+		autownd::List obj;
+		LPARAM param;
+	}theAttPanel; //att list
 	
 	struct
 	{
