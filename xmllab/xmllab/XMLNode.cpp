@@ -223,11 +223,11 @@ void xml::XMLNode::setString(const char * source, size_t count, size_t off)
 {
 	if (off == null)
 	{
-		theString.assign(source, count);
+		theString.assign(source, verifyString(source, count));
 	}
 	else
 	{
-		theString.insert(off, source, count);
+		theString.insert(off, source, verifyString(source, count));
 	}
 }
 
@@ -309,24 +309,24 @@ void xml::XMLNode::removeAttribute(const std::string & key)
 	}
 }
 
-Result XMLNode::verifyString(const char * source, size_t count)
+size_t XMLNode::verifyString(const char * source, size_t count)
 {
 	return verifyString(source, count, theType);
 }
 
-Result XMLNode::verifyString(const char * source, size_t count, NodeType type)
+size_t XMLNode::verifyString(const char * source, size_t count, NodeType type)
 {
 	if (type == ELEMENT_NODE)
 	{
-		if (!isalpha(*source)) return FAILURE;
+		if (!isalpha(*source)) return 0;
 		for (const char * c = source + 1; c < source + count; c++)
 		{
-			if (*c <= 32 || *c == '&' || *c == ';') return FAILURE;
+			if (*c <= 32 || *c == '&' || *c == ';') return c - source;
 
 		}
 	}
 
-	return SUCCESS;
+	return count;
 }
 
 

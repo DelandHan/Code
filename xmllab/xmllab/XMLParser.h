@@ -4,6 +4,14 @@
 
 namespace xml
 {
+	enum Result
+	{
+		SUCCESS,
+		FAILURE,
+		CONTINUE,
+		DONE
+	};
+
 	namespace toolbox //the classes help to parse xml
 	{
 		class DataPack

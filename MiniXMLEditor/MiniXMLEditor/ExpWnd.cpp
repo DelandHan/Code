@@ -189,7 +189,13 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			NMLVDISPINFO* info = (NMLVDISPINFO*)data;
 			if (info->item.pszText == nullptr) return 1;
 			theData->push({ { "setstr",info->item.pszText },{ "item",info->item.lParam } });
-			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, info->item.pszText);
+			BulletChain chain(2);
+			chain.first()->fill("item");
+			chain.at()->fill(info->item.lParam);
+			theData->pull(&chain);
+
+			chain.first(); chain.line();
+			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, chain.at()->data<TCHAR>());
 		}
 		break;
 		case NM_RCLICK:

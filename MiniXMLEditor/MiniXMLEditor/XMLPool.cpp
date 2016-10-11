@@ -47,6 +47,14 @@ void XMLPool::pull(memory::BulletChain * chain)
 		}
 	}
 
+	if (memory::streql(cat, "item"))
+	{
+		xml::XMLNode *node = (xml::XMLNode*)param;	
+		std::wstring buff; convertToWStr(buff, node->getString());
+
+		chain->add()->fill(buff.c_str(), buff.size() + 1);
+	}
+
 	if (memory::streql(cat, "items"))
 	{
 		xml::XMLNode *node;
@@ -145,7 +153,12 @@ int XMLPool::push(memory::ParamChain chain)
 		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
 			*neNode = new XMLNode;
 		neNode->setString("NewNode");
-		node->append(neNode);
+		if(node) node->append(neNode);
+		else {
+			theRoot = new XMLNode;
+			theRoot->convertType(xml::DOCUMENT_NODE);
+			theRoot->append(neNode);
+		}
 		return 0;
 	}
 
@@ -163,7 +176,7 @@ int XMLPool::push(memory::ParamChain chain)
 		xml::XMLParser ps;
 		string str;
 		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
-		if (memcmp(&str[str.size() - 5], ".xml", 4) != 0) str += ".xml";
+		if (memcmp(&str[str.size() - 4], ".xml", 4) != 0) str += ".xml";
 		ofstream of(str);
 		ps.saveNode(theRoot, &of);
 		of.close();

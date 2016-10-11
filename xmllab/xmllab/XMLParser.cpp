@@ -391,12 +391,9 @@ namespace xml
 	{
 		while (node)
 		{
-			if (node->getType() == DOCUMENT_NODE) {
-				node = node->getNext();
-				continue;
+			if (node->getType() != DOCUMENT_NODE) {
+				(*stdstream) << theChecker.getOrignalString(node, false);// << endl;
 			}
-			//for (int i = 0; i < level; i++) (*stdstream) << "   ";
-			(*stdstream) << theChecker.getOrignalString(node, false);// << endl;
 
 			if (node->getFirstChild())
 				checkNode(node->getFirstChild(), level + 1, stdstream);
