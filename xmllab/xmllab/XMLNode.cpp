@@ -28,7 +28,7 @@ void XMLNode::AttNode::clear()
 XMLNode::AttNode * xml::XMLNode::AttNode::insert(const std::string & key, const std::string & value)
 {
 	AttNode * temp = new AttNode;
-	temp->theKey = key; temp->theValue = value;
+	temp->theKey.assign(key.c_str(), XMLNode::verifyString(key.c_str(), key.size(), ELEMENT_NODE)); temp->theValue = value;
 	temp->thePrev = this;
 	if (this)
 	{
@@ -257,32 +257,14 @@ const XMLNode::AttNode * xml::XMLNode::getAttribute(const AttNode * node) const
 	}
 }
 
-void xml::XMLNode::setAttribute(const std::string & key, const std::string & value)
+void xml::XMLNode::setAttribute(const std::string &key, const std::string &value, const std::string &neKey)
 {
 	if (key.size() == 0) return;
 	if (theType == ELEMENT_NODE) {
 		AttNode *node = theAtt, *prev = nullptr;
 		while (node) {
 			if (node->theKey == key) {
-				node->theValue = value;
-				return;
-			}
-			prev = node;
-			node = node->theNext;
-		}
-		prev = prev->insert(key, value);
-		if (theAtt == nullptr) theAtt = prev;
-	}
-}
-
-void xml::XMLNode::updateAttribute(const std::string & oldkey, const std::string & key, const std::string & value)
-{
-	if (key.size() == 0) return;
-	if (theType == ELEMENT_NODE) {
-		AttNode *node = theAtt, *prev = nullptr;
-		while (node) {
-			if (node->theKey == oldkey) {
-				node->theKey = key;
+				if (neKey.size() != 0) node->theKey.assign(neKey.c_str(), verifyString(neKey.c_str(), neKey.size(), ELEMENT_NODE));//verify att key name as element node name.
 				node->theValue = value;
 				return;
 			}
