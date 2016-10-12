@@ -180,14 +180,20 @@ int autownd::WndObj::addControl(WndObj * obj, TCHAR * cname, ParamChain params)
 }
 
 
-int autownd::msgLoop()
+int autownd::msgLoop(pair<HWND, int> acc)
 {
 	MSG msg;
+
+	HACCEL hAccelTable = LoadAccelerators(GetModuleHandle(0), MAKEINTRESOURCE(acc.second));
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
+		TranslateAccelerator(acc.first == 0 ? msg.hwnd : acc.first, hAccelTable, &msg);
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	DeleteObject(hAccelTable);
+
 	return msg.lParam;
 }
 

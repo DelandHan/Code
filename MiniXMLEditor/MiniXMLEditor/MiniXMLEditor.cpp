@@ -4,6 +4,7 @@
 #include <iostream>
 #include "ExpWnd.h"
 #include "XMLPool.h"
+#include "resource.h"
 
 using namespace std;
 using namespace autownd;
@@ -17,7 +18,7 @@ int main()
 	XMLPool ps;
 	exp.init(&ps);
 
-	return autownd::msgLoop();
+	return autownd::msgLoop(std::pair<HWND,int>(exp.wnd(),IDR_ACCELERATOR1));
 
 }
 

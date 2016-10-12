@@ -154,7 +154,7 @@ void ExpWnd::updateItemlist(LPARAM param)
 
 void ExpWnd::updateChildList(LPARAM param)
 {
-	theRightPanel.obj.clear();
+	theRightPanel.obj.clear(); theRightPanel.param = 0;
 	if (param == 0) return;
 	BulletChain chain(3);
 	chain.first()->fill("childs");
@@ -184,7 +184,7 @@ void ExpWnd::updateChildList(LPARAM param)
 
 void ExpWnd::updateAttlist(LPARAM param)
 {
-	theAttPanel.obj.clear();
+	theAttPanel.obj.clear(); theAttPanel.param = 0;
 	if (param == 0) return;
 	BulletChain chain(2);
 	chain.first()->fill("read");
@@ -316,64 +316,64 @@ int ExpWnd::clickButton(memory::ParamChain params)
 	}
 	else
 	{
-		if (HIWORD(*(params.begin())->second.data<long>()) == 0)
-		{
-			//file menu
-			switch (LOWORD(*(params.begin())->second.data<long>()))
-			{
-			case ID_FILE_EXIT:
-			{
-				PostQuitMessage(0);
-			}
-			break;
-			case ID_FILE_OPEN:
-			{
-				theOpenDialog.open({});		
-				theData->push({ {"open",theOpenDialog.getPath().c_str()} });
-				updateItemlist(0);
-			}
-			break;
-			case ID_FILE_SAVE:
-			{
-				theOpenDialog.save({});
-				theData->push({ {"save",theOpenDialog.getPath().c_str()} });
-			}
-			break;
-			default:
-				break;
-			}
+		if (theEdit.obj.wnd()) return 0; //if edit is activing, do nothing.
 
-			//edit menu
-			if (theContext.param == 0) return 0;
-			switch (LOWORD(*(params.begin())->second.data<long>()))
-			{
-			case ID_EDIT_DEL:
-			{
-				theData->push({ {"del",theContext.param} });
-			}
-			break;
-			case ID_EDIT_INSERTBEFORE:
-			{
-				theData->push({ { "ins_b",theContext.param } });
-			}
-			break;
-			case ID_EDIT_INSERTAFTER:
-			{
-				theData->push({ { "ins_a",theContext.param } });
-			}
-			break;
-			case ID_EDIT_CHANGETYPE:
-			{
-				theData->push({ { "chgtyp",theContext.param } });
-			}
-			break;
-			default:
-				break;
-			}
-			theContext.param = 0;
-			updateItemlist(theLeftPanel.param);
+		//file menu
+		switch (LOWORD(*(params.begin())->second.data<long>()))
+		{
+		case ID_FILE_EXIT:
+		{
+			PostQuitMessage(0);
 		}
+		break;
+		case ID_FILE_OPEN:
+		{
+			theOpenDialog.open({});
+			theData->push({ {"open",theOpenDialog.getPath().c_str()} });
+			updateItemlist(0);
+		}
+		break;
+		case ID_FILE_SAVE:
+		{
+			theOpenDialog.save({});
+			theData->push({ {"save",theOpenDialog.getPath().c_str()} });
+		}
+		break;
+		default:
+			break;
+		}
+
+		//edit menu
+		if (theContext.param == 0) return 0;
+		switch (LOWORD(*(params.begin())->second.data<long>()))
+		{
+		case ID_EDIT_DEL:
+		{
+			theData->push({ {"del",theContext.param} });
+		}
+		break;
+		case ID_EDIT_INSERTBEFORE:
+		{
+			theData->push({ { "ins_b",theContext.param } });
+		}
+		break;
+		case ID_EDIT_INSERTAFTER:
+		{
+			theData->push({ { "ins_a",theContext.param } });
+		}
+		break;
+		case ID_EDIT_CHANGETYPE:
+		{
+			theData->push({ { "chgtyp",theContext.param } });
+		}
+		break;
+		default:
+			break;
+		}
+		theContext.param = 0;
+		updateItemlist(theLeftPanel.param);
 	}
+	
 
 	return 1;
 }

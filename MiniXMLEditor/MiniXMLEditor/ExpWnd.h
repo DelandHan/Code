@@ -26,6 +26,8 @@ public:
 	//reset the layout
 	int updateLayout(memory::ParamChain params);
 
+	inline HWND wnd() { return theMainWnd.wnd(); }
+
 private:
 	autownd::WndObj theMainWnd;
 	autownd::FileDialog theOpenDialog;

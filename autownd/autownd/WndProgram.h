@@ -6,7 +6,7 @@
 
 namespace autownd
 {
-	int msgLoop();
+	int msgLoop(std::pair<HWND, int> acc = { 0,0 });
 
 	typedef std::pair<int, int> vec;
 

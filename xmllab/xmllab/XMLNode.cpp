@@ -29,6 +29,11 @@ XMLNode::AttNode * xml::XMLNode::AttNode::insert(const std::string & key, const 
 {
 	AttNode * temp = new AttNode;
 	temp->theKey.assign(key.c_str(), XMLNode::verifyString(key.c_str(), key.size(), ELEMENT_NODE)); temp->theValue = value;
+	if (temp->theKey.size() == 0) 
+	{
+		delete temp; 
+		return nullptr;
+	}
 	temp->thePrev = this;
 	if (this)
 	{
@@ -266,6 +271,11 @@ void xml::XMLNode::setAttribute(const std::string &key, const std::string &value
 			if (node->theKey == key) {
 				if (neKey.size() != 0) node->theKey.assign(neKey.c_str(), verifyString(neKey.c_str(), neKey.size(), ELEMENT_NODE));//verify att key name as element node name.
 				node->theValue = value;
+				if (node->theKey.size() == 0) //incorrect key
+				{
+					if (node == theAtt) theAtt = node->theNext;
+					delete node;
+				}
 				return;
 			}
 			prev = node;
