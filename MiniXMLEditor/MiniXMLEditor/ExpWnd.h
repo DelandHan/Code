@@ -9,9 +9,11 @@ public:
 	void init(IModule * module);
 
 	//update the left panel
-	void updateItemlist(LPARAM param = 0);
+	void updateItemlist(LPARAM param);
 	//update the right panel
-	void updateAttlist(LPARAM param = 0);
+	void updateChildList(LPARAM param);
+	//update the right panel
+	void updateAttlist(LPARAM param);
 
 	//handle the WM_Notify message of childs
 	int beNotified(memory::ParamChain params);
@@ -28,23 +30,12 @@ private:
 	autownd::WndObj theMainWnd;
 	autownd::FileDialog theOpenDialog;
 
-	struct
+	class ListPanel
 	{
+	public:
 		autownd::List obj;
 		LPARAM param;
-	}theLeftPanel; //item list
-
-	struct
-	{
-		autownd::List obj;
-		LPARAM param;
-	}theRightPanel; //childs list
-
-	struct
-	{
-		autownd::List obj;
-		LPARAM param;
-	}theAttPanel; //att list
+	}theLeftPanel, theRightPanel, theAttPanel; //item list
 	
 	struct
 	{
@@ -64,7 +55,7 @@ private:
 	struct
 	{
 		autownd::ContextMenu obj;
-		LPARAM param;
+		LPARAM param; //the para of the item that is right-clicked on.
 	}theContext;
 	
 	IModule * theData;

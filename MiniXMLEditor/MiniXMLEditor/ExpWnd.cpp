@@ -115,7 +115,7 @@ void ExpWnd::init(IModule * module)
 	//finished
 	updateLayout({});
 	theMainWnd.show();
-	updateItemlist();
+	updateItemlist(0);
 }
 
 void ExpWnd::updateItemlist(LPARAM param)
@@ -148,7 +148,38 @@ void ExpWnd::updateItemlist(LPARAM param)
 	}
 
 	//update right
-	updateAttlist();
+	updateChildList(0);
+	updateAttlist(0);
+}
+
+void ExpWnd::updateChildList(LPARAM param)
+{
+	theRightPanel.obj.clear();
+	if (param == 0) return;
+	BulletChain chain(3);
+	chain.first()->fill("childs");
+	chain.at()->fill(param);
+	if (theData->pull(&chain)) return;
+
+	//begin refresh
+	theRightPanel.param = param;
+
+	chain.first(); 
+	chain.line();//ignore the params
+
+	//redraw right panel
+	while (chain.line())
+	{
+		int type = 0; LPARAM param = 0;
+		Bullet *node = chain.at();
+		chain.at()->inject(&type, 1); chain.at()->inject(&param, 1);
+		theRightPanel.obj.at()
+			.setText(node->data<TCHAR>(), node->size() / sizeof(TCHAR))
+			.setImage(type == 1 ? 1 : 0)
+			.setParam(param)
+			.update();
+	}
+
 }
 
 void ExpWnd::updateAttlist(LPARAM param)
@@ -178,21 +209,29 @@ void ExpWnd::updateAttlist(LPARAM param)
 int ExpWnd::beNotified(memory::ParamChain params)
 {
 	LPNMHDR data = (params.begin() + 1)->second.pdata<NMHDR>();
-	if (data->hwndFrom==theLeftPanel.obj.wnd())//left panel
+	ListPanel *panel = nullptr;
+	if (data->hwndFrom == theLeftPanel.obj.wnd()) panel = &theLeftPanel;
+	if (data->hwndFrom == theRightPanel.obj.wnd()) panel = &theRightPanel;
+
+	if (panel)//left panel and right panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
 		switch (data->code)
 		{
 		case LVN_ITEMCHANGED:
 		{
-			if (temp->uNewState) updateAttlist(temp->lParam);
-			theContext.param = temp->lParam;
+			if (temp->uNewState)
+			{
+				updateAttlist(temp->lParam);
+				if (panel == &theLeftPanel) updateChildList(temp->lParam);
+				theContext.param = temp->lParam;
+			}
 		}
 		break;
 		case NM_DBLCLK:
 		{
 			if (temp->iItem == -1) return 1;
-			updateItemlist(theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam);
+			updateItemlist(panel->obj.at(temp->iItem).setParam(0).sync()->lParam);
 		}
 		break;
 		case LVN_ENDLABELEDIT:
@@ -206,7 +245,7 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			theData->pull(&chain);
 
 			chain.first(); chain.line();
-			ListView_SetItemText(theLeftPanel.obj.wnd(), info->item.iItem, info->item.iSubItem, chain.at()->data<TCHAR>());
+			ListView_SetItemText(panel->obj.wnd(), info->item.iItem, info->item.iSubItem, chain.at()->data<TCHAR>());
 		}
 		break;
 		case NM_RCLICK:
@@ -214,14 +253,15 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			if (temp->iItem != -1)
 			{
 				theContext.obj.show(temp->ptAction.x, temp->ptAction.y, theMainWnd.wnd());
-				theContext.param = theLeftPanel.obj.at(temp->iItem).setParam(0).sync()->lParam;
+				theContext.param = panel->obj.at(temp->iItem).setParam(0).sync()->lParam;
 			}
 			else
 			{
-				if (theLeftPanel.obj.getCount() == 0)
+				if (panel->obj.getCount() == 0)
 				{
-					theData->push({ { "append", theLeftPanel.param} });
-					updateItemlist(theLeftPanel.param);
+					theData->push({ { "append", panel->param} });
+					if (panel == &theLeftPanel) updateItemlist(theLeftPanel.param);
+					else updateChildList(theRightPanel.param);
 				}
 			}
 		}
@@ -231,7 +271,7 @@ int ExpWnd::beNotified(memory::ParamChain params)
 		}
 	}
 
-	if (data->hwndFrom == theAttPanel.obj.wnd())//right panel
+	if (data->hwndFrom == theAttPanel.obj.wnd())//att panel
 	{
 		LPNMITEMACTIVATE temp = (LPNMITEMACTIVATE)data;
 		if (data->code == NM_CLICK)
@@ -290,7 +330,7 @@ int ExpWnd::clickButton(memory::ParamChain params)
 			{
 				theOpenDialog.open({});		
 				theData->push({ {"open",theOpenDialog.getPath().c_str()} });
-				updateItemlist();
+				updateItemlist(0);
 			}
 			break;
 			case ID_FILE_SAVE:

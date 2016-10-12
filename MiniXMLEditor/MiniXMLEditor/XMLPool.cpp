@@ -112,8 +112,16 @@ int XMLPool::push(memory::ParamChain chain)
 		convertToStr(keystr, (chain.begin() + 1)->second.pdata<TCHAR>());
 		convertToStr(valuestr, (chain.begin() + 2)->second.pdata<TCHAR>());
 		node = (xml::XMLNode*)*((chain.begin() + 3)->second.data<long>());
-		if(oldkey.size()) node->setAttribute(oldkey, valuestr, keystr); //if we already have this key, update the key
-		else node->setAttribute(keystr, valuestr); //add a new key.
+		if (oldkey.size()) //if we already have this key,
+		{
+			if (keystr.size() == 0) node->removeAttribute(oldkey); //if it did not set a new key str, remove the key
+			else node->setAttribute(oldkey, valuestr, keystr); // update the key
+
+		}
+		else
+		{
+			node->setAttribute(keystr, valuestr); //add a new key.
+		}
 		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "setstr")) {
@@ -178,6 +186,7 @@ int XMLPool::push(memory::ParamChain chain)
 		xml::XMLParser ps;
 		string str;
 		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
+		if (str.size() <= 4) return 1;
 		if (memcmp(&str[str.size() - 4], ".xml", 4) != 0) str += ".xml";
 		ofstream of(str);
 		ps.saveNode(theRoot, &of);
