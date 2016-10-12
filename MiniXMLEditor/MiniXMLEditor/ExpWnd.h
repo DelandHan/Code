@@ -39,16 +39,22 @@ private:
 		~ExpPanel();
 
 		void setRect(autownd::vec size, autownd::vec pos);
-		void init(autownd::WndObj *parent, long addStyle, int column, bool icon, long extendStyle);
+		void init(autownd::WndObj *parent, int type);
 		void move(const RECT * clientRect);
 		void clear();
+		inline HWND wnd() { return theObj.wnd(); }
+		inline LPARAM param() { return theParam; }
+
+		//update the listview
+		void update(memory::BulletChain * chain);
 
 		autownd::List theObj;
-		LPARAM theParam;
 
 	private:
+		LPARAM theParam;
+
 		autownd::vec theSize, thePos;
-		int theColumnCount;
+		int theType;
 	}theLeftPanel, theRightPanel, theAttPanel; //item list
 	
 	struct

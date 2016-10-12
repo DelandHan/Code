@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace xml;
+using namespace memory;
 
 void convertToWStr(std::wstring &dest, const std::string &source) {
 	dest.resize(source.size());
@@ -32,12 +33,12 @@ XMLPool::~XMLPool()
 int XMLPool::pull(memory::BulletChain * chain)
 {
 	const char *cat = chain->first()->pdata<char>();
-	LPARAM param = *chain->at()->data<LPARAM>();
+	Bullet * param = chain->at();
 
 	if (memory::streql(cat, "read"))
 	{
 		const XMLNode::AttNode *att = nullptr;
-		XMLNode *node = (XMLNode*)param;
+		XMLNode *node = (XMLNode*)*param->data<LPARAM>();
 		while (att = node->getAttribute(att))
 		{
 			std::wstring buff; convertToWStr(buff, att->getKey());
@@ -49,23 +50,20 @@ int XMLPool::pull(memory::BulletChain * chain)
 
 	if (memory::streql(cat, "item"))
 	{
-		XMLNode *node = (XMLNode*)param;	
+		XMLNode *node = (XMLNode*)*param->data<LPARAM>();
 		std::wstring buff; convertToWStr(buff, node->getString());
 
 		chain->add()->fill(buff.c_str(), buff.size() + 1);
 	}
 
-	if (memory::streql(cat, "childs"))
+	if (memory::streql(cat, "path"))
 	{
 		XMLNode *node;
-		if (param == 0) node = theRoot;
-		else node = (XMLNode*)param;
+		if (*param->data<LPARAM>() == 0) node = theRoot;
+		else node = (XMLNode*)*param->data<LPARAM>();
 
 		if (node == nullptr) return 2;
-
-		if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) {
-			return 1;
-		}
+		param->fill((LPARAM)node);
 
 		//get path
 		XMLNode *child_n = node; size_t size = 0; wstring buff; string buffA;
@@ -80,13 +78,28 @@ int XMLPool::pull(memory::BulletChain * chain)
 			memcpy(&buffA[size - child_n->getString().size()], child_n->getString().c_str(), child_n->getString().size());
 			buffA[size - child_n->getString().size() - 1] = '\\';
 			size -= child_n->getString().size() + 1;
-			child_n = child_n->getParent(); 
+			child_n = child_n->getParent();
 		}
 
 		convertToWStr(buff, buffA);
 		chain->add()->fill(buff.c_str(), buff.size() + 1);
-		chain->add()->fill((int)node->getType());
 		chain->add()->fill((LPARAM)node->getParent());
+	}
+
+	if (memory::streql(cat, "childs"))
+	{
+		XMLNode *node;
+		if (*param->data<LPARAM>() == 0) node = theRoot;
+		else node = (XMLNode*)*param->data<LPARAM>();
+
+		if (node == nullptr) return 2;
+		param->fill((LPARAM)node);
+
+		if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) {
+			return 1;
+		}
+
+		wstring buff;
 
 		//get child items
 		node = node->getFirstChild();

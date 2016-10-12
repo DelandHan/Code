@@ -53,15 +53,15 @@ void ExpWnd::init(IModule * module)
 
 	//add left panel
 	theLeftPanel.setRect({ 50,100 }, { 0,0 });
-	theLeftPanel.init(&theMainWnd, LVS_EDITLABELS, 1, true, 0);
+	theLeftPanel.init(&theMainWnd, 0);
 
 	//add right panel
 	theRightPanel.setRect({ 50,50 }, { 50,0 });
-	theRightPanel.init(&theMainWnd, LVS_EDITLABELS, 1, true, 0);
+	theRightPanel.init(&theMainWnd, 0);
 
 	//add att panel
 	theAttPanel.setRect({ 50,50 }, { 50,50 });
-	theAttPanel.init(&theMainWnd, 0, 2, false, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	theAttPanel.init(&theMainWnd, 1);
 
 	//add up button
 	theMainWnd.addControl(&theButton.obj, WC_BUTTON, {
@@ -89,40 +89,31 @@ void ExpWnd::init(IModule * module)
 void ExpWnd::updateItemlist(LPARAM param)
 {
 	BulletChain chain(3);
+	//update button and path
+	chain.first()->fill("path");
+	chain.at()->fill(param);
+	if (theData->pull(&chain)) return;
+
+	chain.first();  chain.line();
+	SetWindowText(thePath.wnd(), chain.at()->data<TCHAR>());
+	chain.at()->inject(&theButton.param, 1);
+
+	//update the list
+	chain.clear(3);
 	chain.first()->fill("childs");
 	chain.at()->fill(param);
 	if (theData->pull(&chain)) return;
 
 	//begin refresh
-	theLeftPanel.clear();
-	theLeftPanel.theParam = param;
-
-	//the up button and the path
-	chain.first(); chain.line();
-	SetWindowText(thePath.wnd(), chain.at()->data<TCHAR>());
-	chain.at(); chain.at()->inject(&theButton.param, 1);
-
-	//redraw left panel
-	while (chain.line())
-	{
-		int type = 0; LPARAM param = 0;
-		Bullet *node = chain.at();
-		chain.at()->inject(&type, 1); chain.at()->inject(&param, 1);
-		theLeftPanel.theObj.at()
-			.setText(node->data<TCHAR>(), node->size() / sizeof(TCHAR))
-			.setImage(type == 1 ? 1 : 0)
-			.setParam(param)
-			.update();
-	}
+	theLeftPanel.update(&chain);
 
 	//update right
-	updateChildList(0);
-	updateAttlist(0);
+	theRightPanel.clear();
+	theAttPanel.clear();
 }
 
 void ExpWnd::updateChildList(LPARAM param)
 {
-	theRightPanel.clear();
 	if (param == 0) return;
 	BulletChain chain(3);
 	chain.first()->fill("childs");
@@ -130,29 +121,11 @@ void ExpWnd::updateChildList(LPARAM param)
 	if (theData->pull(&chain)) return;
 
 	//begin refresh
-	theRightPanel.theParam = param;
-
-	chain.first(); 
-	chain.line();//ignore the params
-
-	//redraw right panel
-	while (chain.line())
-	{
-		int type = 0; LPARAM param = 0;
-		Bullet *node = chain.at();
-		chain.at()->inject(&type, 1); chain.at()->inject(&param, 1);
-		theRightPanel.theObj.at()
-			.setText(node->data<TCHAR>(), node->size() / sizeof(TCHAR))
-			.setImage(type == 1 ? 1 : 0)
-			.setParam(param)
-			.update();
-	}
-
+	theRightPanel.update(&chain);
 }
 
 void ExpWnd::updateAttlist(LPARAM param)
 {
-	theAttPanel.clear();
 	if (param == 0) return;
 	BulletChain chain(2);
 	chain.first()->fill("read");
@@ -160,28 +133,17 @@ void ExpWnd::updateAttlist(LPARAM param)
 	theData->pull(&chain);
 
 	//begin refresh
-	theAttPanel.theParam = param;
-	chain.first();
-	while (chain.line())
-	{
-		Bullet *key = chain.at();
-		Bullet *value = chain.at();
-
-		autownd::List::LSet set = theAttPanel.theObj.at();
-		set.setText(key->data<TCHAR>(), key->size() / sizeof(TCHAR)).update();
-		set.setText(1, value->data<TCHAR>());
-	}
-	theAttPanel.theObj.at().update();
+	theAttPanel.update(&chain);
 }
 
 int ExpWnd::beNotified(memory::ParamChain params)
 {
 	LPNMHDR data = (params.begin() + 1)->second.pdata<NMHDR>();
 	ExpPanel *panel = nullptr;
-	if (data->hwndFrom == theLeftPanel.theObj.wnd()) panel = &theLeftPanel;
-	if (data->hwndFrom == theRightPanel.theObj.wnd()) 
+	if (data->hwndFrom == theLeftPanel.wnd()) panel = &theLeftPanel;
+	if (data->hwndFrom == theRightPanel.wnd()) 
 	{
-		if (theRightPanel.theParam == 0) return 1;
+		if (theRightPanel.param() == 0) return 1;
 		panel = &theRightPanel;
 	}
 
@@ -231,9 +193,9 @@ int ExpWnd::beNotified(memory::ParamChain params)
 			{
 				if (panel->theObj.getCount() == 0)
 				{
-					theData->push({ { "append", panel->theParam} });
-					if (panel == &theLeftPanel) updateItemlist(theLeftPanel.theParam);
-					else updateChildList(theRightPanel.theParam);
+					theData->push({ { "append", panel->param()} });
+					if (panel == &theLeftPanel) updateItemlist(theLeftPanel.param());
+					else updateChildList(theRightPanel.param());
 				}
 			}
 		}
@@ -353,7 +315,7 @@ int ExpWnd::clickButton(memory::ParamChain params)
 
 			if (theContext.param == 0)
 			{
-				theData->push({ { "append", theLeftPanel.theParam },{ "data",data } });
+				theData->push({ { "append", theLeftPanel.param() },{ "data",data } });
 			}
 			else
 			{
@@ -368,7 +330,7 @@ int ExpWnd::clickButton(memory::ParamChain params)
 			return 0;
 		}
 		theContext.param = 0;
-		updateItemlist(theLeftPanel.theParam);
+		updateItemlist(theLeftPanel.param());
 	}
 	
 
@@ -383,7 +345,7 @@ int ExpWnd::setAttribute(memory::ParamChain params)
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",theEdit.str[0].c_str() },
 			{ "value",params.begin()->second.pdata<TCHAR>() },
-			{ "item",theAttPanel.theParam }
+			{ "item",theAttPanel.param() }
 		});
 	}
 	else
@@ -392,11 +354,11 @@ int ExpWnd::setAttribute(memory::ParamChain params)
 			{ "setkey",theEdit.str[0].c_str() },
 			{ "key",params.begin()->second.pdata<TCHAR>() },
 			{ "value",theEdit.str[1].c_str() },
-			{ "item",theAttPanel.theParam }
+			{ "item",theAttPanel.param() }
 		});
 	}
 
-	updateAttlist(theAttPanel.theParam);
+	updateAttlist(theAttPanel.param());
 	theEdit.str[0].clear(); theEdit.str[1].clear();
 	return 1;
 }
@@ -428,7 +390,7 @@ int ExpWnd::updateLayout(memory::ParamChain params)
 /////////////////////////////////////child objects/////////////////////////////////
 
 ExpWnd::ExpPanel::ExpPanel()
-	:theParam(0), theSize(0, 0), thePos(0, 0), theColumnCount(0)
+	:theParam(0), theSize(0, 0), thePos(0, 0), theType(0)
 {
 }
 
@@ -442,31 +404,32 @@ void ExpWnd::ExpPanel::setRect(vec size, vec pos)
 	thePos = pos;
 }
 
-void ExpWnd::ExpPanel::init(WndObj *parent, long addStyle, int column, bool icon, long extendStyle)
+void ExpWnd::ExpPanel::init(WndObj *parent, int type)
 {
+	theType = type;
+
 	//create the control
 	parent->addControl(&theObj, WC_LISTVIEW, {
 		{ "size",theSize },
-		{ "style",addStyle | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
+		{ "style",(long)(type == 0 ? LVS_EDITLABELS : 0) | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
 		{ "exstyle", WS_EX_CLIENTEDGE },
 		{ "pos",thePos }
 	});
 
 	//add columns
-	for (int i = 0; i < column; i++) {
+	for (int i = 0; i < (type == 0 ? 1 : 2); i++) {
 		theObj.addColumn(i).set(L"Column", 6).set(-2).update();
 	}
-	theColumnCount = column;
 
 	//add icons
-	if (icon) {
+	if (type == 0) {
 		theObj.buildImageList(16, 16);
 		theObj.addIcon(IDI_FILE);
 		theObj.addIcon(IDI_FOLDER);
 	}
 
 	//extend style
-	if(extendStyle) theObj.extendStyle(extendStyle);
+	if (type == 1) theObj.extendStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 	//show
 	theObj.show();
@@ -482,8 +445,9 @@ void ExpWnd::ExpPanel::move(const RECT * clientRect)
 		TRUE
 	);
 
-	for (int i = 0; i < theColumnCount; i++) {
-		theObj.resizeColumn(i, (width*theSize.first / 100 - 4) / theColumnCount);
+	int count = (theType == 0 ? 1 : 2);
+	for (int i = 0; i < count; i++) {
+		theObj.resizeColumn(i, (width*theSize.first / 100 - 4) / count);
 	}
 }
 
@@ -491,4 +455,50 @@ void ExpWnd::ExpPanel::clear()
 {
 	theObj.clear();
 	theParam = 0;
+}
+
+void ExpWnd::ExpPanel::update(memory::BulletChain * chain)
+{
+	clear();
+
+	chain->first();
+	chain->at()->inject(&theParam, 1);
+	if (theParam == 0) return;
+
+	//finished, start drawing
+	switch (theType)
+	{
+	case 0: //0 means the normal explorer list
+	{
+		while (chain->line())
+		{
+			int type = 0; LPARAM param = 0;
+			Bullet *node = chain->at();
+			chain->at()->inject(&type, 1); chain->at()->inject(&param, 1);
+			theObj.at()
+				.setText(node->data<TCHAR>(), node->size() / sizeof(TCHAR))
+				.setImage(type == 1 ? 1 : 0)
+				.setParam(param)
+				.update();
+		}
+	}
+	break;
+	case 1: //1 means the att list
+	{
+		//begin refresh
+		while (chain->line())
+		{
+			Bullet *key = chain->at();
+			Bullet *value = chain->at();
+
+			autownd::List::LSet set = theObj.at();
+			set.setText(key->data<TCHAR>(), key->size() / sizeof(TCHAR)).update();
+			set.setText(1, value->data<TCHAR>());
+		}
+		theObj.at().update();
+	}
+	break;
+	default:
+		break;
+	}
 }

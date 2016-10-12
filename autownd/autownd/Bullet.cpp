@@ -93,5 +93,15 @@ int memory::BulletChain::line()
 	else return 1;
 }
 
+void memory::BulletChain::clear(size_t size)
+{
+	delete theFirst.next;
+	theFirst.next = nullptr;
+	theSize = size;
+	theCurrent = &theFirst;
+	theLast = &theFirst;
+	addLine();
+}
+
 
 
