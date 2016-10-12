@@ -32,11 +32,23 @@ private:
 	autownd::WndObj theMainWnd;
 	autownd::FileDialog theOpenDialog;
 
-	class ListPanel
+	class ExpPanel
 	{
 	public:
-		autownd::List obj;
-		LPARAM param;
+		ExpPanel();
+		~ExpPanel();
+
+		void setRect(autownd::vec size, autownd::vec pos);
+		void init(autownd::WndObj *parent, long addStyle, int column, bool icon, long extendStyle);
+		void move(const RECT * clientRect);
+		void clear();
+
+		autownd::List theObj;
+		LPARAM theParam;
+
+	private:
+		autownd::vec theSize, thePos;
+		int theColumnCount;
 	}theLeftPanel, theRightPanel, theAttPanel; //item list
 	
 	struct
