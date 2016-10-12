@@ -344,31 +344,53 @@ int ExpWnd::clickButton(memory::ParamChain params)
 		}
 
 		//edit menu
-		if (theContext.param == 0) return 0;
 		switch (LOWORD(*(params.begin())->second.data<long>()))
 		{
 		case ID_EDIT_DEL:
 		{
+			if (theContext.param == 0) return 0;
 			theData->push({ {"del",theContext.param} });
 		}
 		break;
 		case ID_EDIT_INSERTBEFORE:
 		{
+			if (theContext.param == 0) return 0;
 			theData->push({ { "ins_b",theContext.param } });
 		}
 		break;
 		case ID_EDIT_INSERTAFTER:
 		{
+			if (theContext.param == 0) return 0;
 			theData->push({ { "ins_a",theContext.param } });
 		}
 		break;
 		case ID_EDIT_CHANGETYPE:
 		{
+			if (theContext.param == 0) return 0;
 			theData->push({ { "chgtyp",theContext.param } });
 		}
 		break;
+		case ID_EDIT_PASTE:
+		{
+			OpenClipboard(theLeftPanel.obj.wnd());
+			HANDLE hmem = GetClipboardData(CF_TEXT);
+			char * data = (char *)GlobalLock(hmem);
+
+			if (theContext.param == 0)
+			{
+				theData->push({ { "append", theLeftPanel.param },{ "data",data } });
+			}
+			else
+			{
+				theData->push({ { "ins_a", theContext.param },{ "data",data } });
+			}
+
+			GlobalUnlock(hmem);
+			CloseClipboard();
+		}
+		break;
 		default:
-			break;
+			return 0;
 		}
 		theContext.param = 0;
 		updateItemlist(theLeftPanel.param);

@@ -36,8 +36,8 @@ int XMLPool::pull(memory::BulletChain * chain)
 
 	if (memory::streql(cat, "read"))
 	{
-		const xml::XMLNode::AttNode *att = nullptr;
-		xml::XMLNode *node = (xml::XMLNode*)param;
+		const XMLNode::AttNode *att = nullptr;
+		XMLNode *node = (XMLNode*)param;
 		while (att = node->getAttribute(att))
 		{
 			std::wstring buff; convertToWStr(buff, att->getKey());
@@ -49,7 +49,7 @@ int XMLPool::pull(memory::BulletChain * chain)
 
 	if (memory::streql(cat, "item"))
 	{
-		xml::XMLNode *node = (xml::XMLNode*)param;	
+		XMLNode *node = (XMLNode*)param;	
 		std::wstring buff; convertToWStr(buff, node->getString());
 
 		chain->add()->fill(buff.c_str(), buff.size() + 1);
@@ -57,18 +57,18 @@ int XMLPool::pull(memory::BulletChain * chain)
 
 	if (memory::streql(cat, "childs"))
 	{
-		xml::XMLNode *node;
+		XMLNode *node;
 		if (param == 0) node = theRoot;
-		else node = (xml::XMLNode*)param;
+		else node = (XMLNode*)param;
 
 		if (node == nullptr) return 2;
 
-		if (node->getType() != xml::ELEMENT_NODE && node->getType() != xml::DOCUMENT_NODE) {
+		if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) {
 			return 1;
 		}
 
 		//get path
-		xml::XMLNode *child_n = node; size_t size = 0; wstring buff; string buffA;
+		XMLNode *child_n = node; size_t size = 0; wstring buff; string buffA;
 		while (child_n) {
 			size += child_n->getString().size() + 1;
 			child_n = child_n->getParent();
@@ -107,11 +107,11 @@ int XMLPool::push(memory::ParamChain chain)
 {
 	if (memory::streql(chain.begin()->first, "setkey")) {
 		std::string oldkey, keystr, valuestr;
-		xml::XMLNode *node;
+		XMLNode *node;
 		convertToStr(oldkey, (chain.begin())->second.pdata<TCHAR>());
 		convertToStr(keystr, (chain.begin() + 1)->second.pdata<TCHAR>());
 		convertToStr(valuestr, (chain.begin() + 2)->second.pdata<TCHAR>());
-		node = (xml::XMLNode*)*((chain.begin() + 3)->second.data<long>());
+		node = (XMLNode*)*((chain.begin() + 3)->second.data<long>());
 		if (oldkey.size()) //if we already have this key,
 		{
 			if (keystr.size() == 0) node->removeAttribute(oldkey); //if it did not set a new key str, remove the key
@@ -126,26 +126,49 @@ int XMLPool::push(memory::ParamChain chain)
 	}
 	if (memory::streql(chain.begin()->first, "setstr")) {
 		std::string str;
-		xml::XMLNode *node;
+		XMLNode *node;
 		convertToStr(str, (chain.begin())->second.pdata<TCHAR>());
-		node = (xml::XMLNode*)*((chain.begin() + 1)->second.data<long>());
+		node = (XMLNode*)*((chain.begin() + 1)->second.data<long>());
 		node->setString(str);
 		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "del")) {
-		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
+		XMLNode *node = (XMLNode*)*((chain.begin())->second.data<long>());
 		if(node) delete node;
 		return 0;
 	}
 	if (memory::streql(chain.begin()->first, "ins_a")) {
-		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
-			*neNode = new XMLNode;
-		node->insert(neNode, true);	
-		neNode->setString("NewNode");
-		return 0;
+		XMLNode *node = (XMLNode*)*((chain.begin())->second.data<long>());
+
+		if (chain.size() == 2)//insert a string
+		{
+			XMLParser ps;
+			ps.parse((chain.begin() + 1)->second.pdata<char>(), strlen((chain.begin() + 1)->second.pdata<char>()));
+			XMLNode * nenode = ps.pickupDocument();
+			if (theRoot == nullptr) theRoot = new XMLNode(DOCUMENT_NODE);
+			if (node == nullptr) node = theRoot;
+
+			XMLNode * temp = nenode->getFirstChild();
+			while (temp)
+			{
+				XMLNode *toins = temp;
+				temp = temp->getNext();
+				toins->removeMe();
+				node->insert(toins, true);
+			}
+			delete nenode;
+
+		}
+		else //insert a new node
+		{
+			XMLNode	*neNode = new XMLNode;
+			node->insert(neNode, true);
+			neNode->setString("NewNode");
+			return 0;
+		}
 	}
 	if (memory::streql(chain.begin()->first, "ins_b")) {
-		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
+		XMLNode *node = (XMLNode*)*((chain.begin())->second.data<long>()),
 			*neNode = new XMLNode;
 		neNode->setString("NewNode");
 		node->insert(neNode, false);
@@ -153,27 +176,50 @@ int XMLPool::push(memory::ParamChain chain)
 	}
 
 	if (memory::streql(chain.begin()->first, "chgtyp")) {
-		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>());
-		if(node->getType()==xml::ELEMENT_NODE) node->convertType(xml::TEXT_NODE);
-		else node->convertType(xml::ELEMENT_NODE);
+		XMLNode *node = (XMLNode*)*((chain.begin())->second.data<long>());
+		if(node->getType()==ELEMENT_NODE) node->convertType(TEXT_NODE);
+		else node->convertType(ELEMENT_NODE);
 		return 0;
 	}
 
 	if (memory::streql(chain.begin()->first, "append")) {
-		xml::XMLNode *node = (xml::XMLNode*)*((chain.begin())->second.data<long>()),
-			*neNode = new XMLNode;
-		neNode->setString("NewNode");
-		if(node) node->append(neNode);
-		else {
-			theRoot = new XMLNode;
-			theRoot->convertType(xml::DOCUMENT_NODE);
-			theRoot->append(neNode);
+		XMLNode *node = (XMLNode*)*((chain.begin())->second.data<long>());
+
+		if (chain.size() == 2)//append a string
+		{
+			XMLParser ps;
+			ps.parse((chain.begin() + 1)->second.pdata<char>(), strlen((chain.begin() + 1)->second.pdata<char>()));
+			XMLNode * nenode = ps.pickupDocument();
+			if (theRoot == nullptr) theRoot = new XMLNode(DOCUMENT_NODE);
+			if (node == nullptr) node = theRoot;
+			
+			XMLNode * temp = nenode->getFirstChild();
+			while (temp)
+			{
+				XMLNode *toins = temp;
+				temp = temp->getNext();
+				toins->removeMe();
+				node->append(toins);
+			}
+			delete nenode;	
+		}
+		else//appedn a new node
+		{
+			XMLNode *neNode = new XMLNode;
+			neNode->setString("NewNode");
+			if (node) node->append(neNode);
+			else {
+				if (theRoot) delete theRoot;
+				theRoot = new XMLNode;
+				theRoot->convertType(DOCUMENT_NODE);
+				theRoot->append(neNode);
+			}
 		}
 		return 0;
 	}
 
 	if (memory::streql(chain.begin()->first, "open")) {
-		xml::XMLParser ps;
+		XMLParser ps;
 		string str;
 		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
 		ps.parseFile(str.c_str());
@@ -183,7 +229,7 @@ int XMLPool::push(memory::ParamChain chain)
 	}
 
 	if (memory::streql(chain.begin()->first, "save")) {
-		xml::XMLParser ps;
+		XMLParser ps;
 		string str;
 		convertToStr(str, chain.begin()->second.pdata<TCHAR>());
 		if (str.size() <= 4) return 1;
