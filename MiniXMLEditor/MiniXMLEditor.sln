@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniXMLEditor", "MiniXMLEditor\MiniXMLEditor.vcxproj", "{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmllab", "..\xmllab\xmllab\xmllab.vcxproj", "{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "autownd", "..\autownd\autownd\autownd.vcxproj", "{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244} = {1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}
 		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4} = {D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmllab", "..\xmllab\xmllab\xmllab.vcxproj", "{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "autownd", "..\autownd\autownd\autownd.vcxproj", "{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,14 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Debug|x64.ActiveCfg = Debug|x64
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Debug|x64.Build.0 = Debug|x64
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Debug|x86.ActiveCfg = Debug|Win32
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Debug|x86.Build.0 = Debug|Win32
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Release|x64.ActiveCfg = Release|x64
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Release|x64.Build.0 = Release|x64
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Release|x86.ActiveCfg = Release|Win32
-		{6CF0CAEA-1D33-4479-947A-0EC3CF9F88F8}.Release|x86.Build.0 = Release|Win32
 		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x64.ActiveCfg = Debug|x64
 		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x64.Build.0 = Debug|x64
 		{D8464E2A-EAA2-49AD-84D5-E3A556E5C9E4}.Debug|x86.ActiveCfg = Debug|Win32
@@ -45,6 +37,14 @@ Global
 		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x64.Build.0 = Release|x64
 		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x86.ActiveCfg = Release|Win32
 		{1EF03D1C-C32E-4FED-A0F2-6FF0C5502244}.Release|x86.Build.0 = Release|Win32
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Debug|x64.ActiveCfg = Debug|x64
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Debug|x64.Build.0 = Debug|x64
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Debug|x86.ActiveCfg = Debug|Win32
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Debug|x86.Build.0 = Debug|Win32
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Release|x64.ActiveCfg = Release|x64
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Release|x64.Build.0 = Release|x64
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Release|x86.ActiveCfg = Release|Win32
+		{6A8EAB9C-06C7-4259-B7E7-821A78E533FD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

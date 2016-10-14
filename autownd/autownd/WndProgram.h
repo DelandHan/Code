@@ -6,7 +6,7 @@
 
 namespace autownd
 {
-	int msgLoop();
+	int msgLoop(std::pair<HWND, int> acc = { 0,0 });
 
 	typedef std::pair<int, int> vec;
 
@@ -25,22 +25,19 @@ namespace autownd
 
 		int addControl(WndObj* obj, TCHAR * cname, memory::ParamChain params);
 
-		IMsgProcess* getMsgProc(UINT msg);
-		void setMsgSet(const MsgSet *set);
-
 	private:
 		friend class Seed;
-		const MsgSet *theMsgMap;
 		HWND theWnd;
 
-		static std::map<HWND, WndObj*> theWndMap;
+		static std::map<HWND, const MsgSet *> theWndMap;
 	};
 
 	//make the process
 	class IMsgProcess
 	{
 	public:
-		virtual int handleMsg(WndObj *obj, WPARAM wp, LPARAM lp) = 0;
+		virtual ~IMsgProcess() {}//make sure the dervid class's decon is called.
+		virtual int handleMsg(WPARAM wp, LPARAM lp) = 0;
 	};
 
 	////////
@@ -49,18 +46,15 @@ namespace autownd
 	{
 	public:
 		MsgSet();
-		template<class T> MsgSet(std::pair<UINT, T>* begin, std::pair<UINT, T>* end) {
-			addMsgPairs(begin, end);
+		template<class T> MsgSet(std::pair<UINT, T>* begin, size_t size) {
+			addMsgPairs(begin, size);
 		}
 		~MsgSet();
 		IMsgProcess *retrieve(UINT msg) const;
 		void addMsgPair(UINT msg, IMsgProcess* proc);
-		template<class T> void addMsgPairs(std::pair<UINT, T>* begin, std::pair<UINT, T>* end) {
-			std::pair<UINT, T>* it = begin;
-			while (1) {
-				theMap.insert(std::pair<UINT, IMsgProcess*>(it->first, &it->second));
-				if (it == end) return;
-				it++;				
+		template<class T> void addMsgPairs(std::pair<UINT, T>* begin, size_t size) {
+			for (size_t i = 0; i < size; i++) {
+				theMap.insert(std::pair<UINT, IMsgProcess*>((begin + i)->first, &(begin + i)->second));
 			}
 		}
 	private:
@@ -75,15 +69,15 @@ namespace autownd
 		~Seed();
 		void init(memory::ParamChain params);
 
-		int create(WndObj *obj, memory::ParamChain params);
-		int create(WndObj *obj, int resourceid);
+		int create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params);
 
 	private:
 		std::wstring theName;
 		
-		static WndObj* theAdding;
+		static const MsgSet* theAddingMsgs;
+		static WndObj* theAddingObj;
+
 		static LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-		static INT_PTR CALLBACK DialProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 	};
 
 }

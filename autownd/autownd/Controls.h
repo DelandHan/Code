@@ -145,4 +145,37 @@ namespace autownd
 		static LRESULT CALLBACK subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	};
+
+	///////////////////
+	class ContextMenu
+	{
+	public:
+		ContextMenu();
+		~ContextMenu();
+
+		void addMenuItem(TCHAR* itemname, UINT_PTR param, UINT pos = -1);
+
+		void show(int x, int y, HWND parent);
+
+	private:
+		HMENU thePopup;
+	};
+
+	/////////////////
+	class FileDialog
+	{
+	public:
+		FileDialog();
+		~FileDialog();
+
+		void open(memory::ParamChain params);
+		void save(memory::ParamChain params);
+
+		const std::wstring & getPath() { return thePath; }
+
+	private:
+		OPENFILENAME theData;
+		std::wstring thePath;
+	};
+
 }

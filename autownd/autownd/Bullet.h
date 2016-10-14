@@ -128,6 +128,8 @@ namespace memory
 		void addLine();
 		Bullet * at();
 		int line();
+
+		void clear(size_t size);
 	private:
 		struct Connect {
 			Bullet bullet;

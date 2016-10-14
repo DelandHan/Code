@@ -84,9 +84,23 @@ Bullet * memory::BulletChain::at()
 
 int memory::BulletChain::line()
 {
-	while (theCurrent->id && theCurrent->next) theCurrent = theCurrent->next;
+	do
+	{
+		if(theCurrent->next) theCurrent = theCurrent->next;
+		else break;
+	} while (theCurrent->id);
 	if (theCurrent->next == nullptr) return 0;
 	else return 1;
+}
+
+void memory::BulletChain::clear(size_t size)
+{
+	delete theFirst.next;
+	theFirst.next = nullptr;
+	theSize = size;
+	theCurrent = &theFirst;
+	theLast = &theFirst;
+	addLine();
 }
 
 

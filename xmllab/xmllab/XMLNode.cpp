@@ -28,7 +28,12 @@ void XMLNode::AttNode::clear()
 XMLNode::AttNode * xml::XMLNode::AttNode::insert(const std::string & key, const std::string & value)
 {
 	AttNode * temp = new AttNode;
-	temp->theKey = key; temp->theValue = value;
+	temp->theKey.assign(key.c_str(), XMLNode::verifyString(key.c_str(), key.size(), ELEMENT_NODE)); temp->theValue = value;
+	if (temp->theKey.size() == 0) 
+	{
+		delete temp; 
+		return nullptr;
+	}
 	temp->thePrev = this;
 	if (this)
 	{
@@ -40,10 +45,10 @@ XMLNode::AttNode * xml::XMLNode::AttNode::insert(const std::string & key, const 
 
 ///////////////////////XMLNode///////////////////////
 
-XMLNode::XMLNode() :
+XMLNode::XMLNode(NodeType type) :
 	thePrevious(nullptr), theNext(nullptr),
 	theParent(nullptr), theFirstChild(nullptr), theLastChild(nullptr),
-	theAtt(nullptr), theType(ELEMENT_NODE)
+	theAtt(nullptr), theType(type)
 {
 }
 
@@ -208,7 +213,15 @@ void xml::XMLNode::convertType(NodeType type)
 			theAtt->clear();
 			theAtt = nullptr;
 		}
+		XMLNode* node = getFirstChild();
+		while (node)
+		{
+			XMLNode* temp = node;
+			node = node->getNext();
+			delete temp;
+		}
 	}
+	theString.resize(verifyString(theString.c_str(), theString.size(), type));
 	theType = type;
 }
 
@@ -216,11 +229,11 @@ void xml::XMLNode::setString(const char * source, size_t count, size_t off)
 {
 	if (off == null)
 	{
-		theString.assign(source, count);
+		theString.assign(source, verifyString(source, count));
 	}
 	else
 	{
-		theString.insert(off, source, count);
+		theString.insert(off, source, verifyString(source, count));
 	}
 }
 
@@ -249,33 +262,20 @@ const XMLNode::AttNode * xml::XMLNode::getAttribute(const AttNode * node) const
 	}
 }
 
-void xml::XMLNode::setAttribute(const std::string & key, const std::string & value)
+void xml::XMLNode::setAttribute(const std::string &key, const std::string &value, const std::string &neKey)
 {
 	if (key.size() == 0) return;
 	if (theType == ELEMENT_NODE) {
 		AttNode *node = theAtt, *prev = nullptr;
 		while (node) {
 			if (node->theKey == key) {
+				if (neKey.size() != 0) node->theKey.assign(neKey.c_str(), verifyString(neKey.c_str(), neKey.size(), ELEMENT_NODE));//verify att key name as element node name.
 				node->theValue = value;
-				return;
-			}
-			prev = node;
-			node = node->theNext;
-		}
-		prev = prev->insert(key, value);
-		if (theAtt == nullptr) theAtt = prev;
-	}
-}
-
-void xml::XMLNode::updateAttribute(const std::string & oldkey, const std::string & key, const std::string & value)
-{
-	if (key.size() == 0) return;
-	if (theType == ELEMENT_NODE) {
-		AttNode *node = theAtt, *prev = nullptr;
-		while (node) {
-			if (node->theKey == oldkey) {
-				node->theKey = key;
-				node->theValue = value;
+				if (node->theKey.size() == 0) //incorrect key
+				{
+					if (node == theAtt) theAtt = node->theNext;
+					delete node;
+				}
 				return;
 			}
 			prev = node;
@@ -302,24 +302,24 @@ void xml::XMLNode::removeAttribute(const std::string & key)
 	}
 }
 
-Result XMLNode::verifyString(const char * source, size_t count)
+size_t XMLNode::verifyString(const char * source, size_t count)
 {
 	return verifyString(source, count, theType);
 }
 
-Result XMLNode::verifyString(const char * source, size_t count, NodeType type)
+size_t XMLNode::verifyString(const char * source, size_t count, NodeType type)
 {
 	if (type == ELEMENT_NODE)
 	{
-		if (!isalpha(*source)) return FAILURE;
+		if (!isalpha(*source)) return 0;
 		for (const char * c = source + 1; c < source + count; c++)
 		{
-			if (*c <= 32 || *c == '&' || *c == ';') return FAILURE;
+			if (*c <= 32 || *c == '&' || *c == ';') return c - source;
 
 		}
 	}
 
-	return SUCCESS;
+	return count;
 }
 
 

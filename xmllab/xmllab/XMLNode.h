@@ -20,14 +20,6 @@ namespace xml
 		NOTATION_NODE,
 	};
 
-	enum Result
-	{
-		SUCCESS,
-		FAILURE,
-		CONTINUE,
-		DONE
-	};
-
 	class XMLNode
 	{
 	public:
@@ -49,7 +41,7 @@ namespace xml
 			AttNode *theNext, *thePrev;
 		};
 
-		XMLNode();
+		XMLNode(NodeType type = ELEMENT_NODE);
 		~XMLNode();
 
 		//tree
@@ -98,8 +90,7 @@ namespace xml
 		std::string getAttribute(const std::string &key) const;
 		const AttNode* getAttribute(const AttNode * node) const;
 		//Set the Attribute
-		void setAttribute(const std::string & key, const std::string & value);
-		void updateAttribute(const std::string &oldkey, const std::string &key, const std::string &value);
+		void setAttribute(const std::string &key, const std::string &value, const std::string &neKey = "");
 		//Remove an Attribute
 		void removeAttribute(const std::string & key);
 
@@ -107,9 +98,9 @@ namespace xml
 		static const size_t null = -1;
 
 		//verify string
-		Result verifyString(const char* source, size_t count);
+		size_t verifyString(const char* source, size_t count);
 		//generally verify string
-		static Result verifyString(const char* source, size_t count, NodeType type);
+		static size_t verifyString(const char* source, size_t count, NodeType type);
 
 	private:
 		std::string theString;

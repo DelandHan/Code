@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="源文件">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="头文件">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="资源文件">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="_Data">
-      <UniqueIdentifier>{0137a216-75c0-423f-8899-e2631cb399a1}</UniqueIdentifier>
+    <Filter Include="Display">
+      <UniqueIdentifier>{6965530b-fe70-486c-a712-4bd1f26a6dc7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="_Wnd">
-      <UniqueIdentifier>{dd0f9dee-f812-4f42-a8fd-fbb032fcd63b}</UniqueIdentifier>
+    <Filter Include="Input">
+      <UniqueIdentifier>{12137116-09c9-4b99-90fe-757b3ce32107}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -25,52 +25,55 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpWnd.h">
-      <Filter>_Wnd</Filter>
+      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="XMLPool.h">
-      <Filter>_Data</Filter>
+    <ClInclude Include="Interfaces.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WndDisplay.h">
+      <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayObj.h">
+      <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayHub.h">
+      <Filter>Display</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MiniXMLEditor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ConsoleApplication1.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ExpWnd.cpp">
-      <Filter>_Wnd</Filter>
+    <ClCompile Include="WndDisplay.cpp">
+      <Filter>Display</Filter>
     </ClCompile>
-    <ClCompile Include="XMLPool.cpp">
-      <Filter>_Data</Filter>
+    <ClCompile Include="DisplayObj.cpp">
+      <Filter>Display</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayHub.cpp">
+      <Filter>Display</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MiniXMLEditor.rc">
-      <Filter>Resource Files</Filter>
+    <ResourceCompile Include="ConsoleApplication1.rc">
+      <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="file.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>资源文件</Filter>
     </Image>
     <Image Include="folder.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>资源文件</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="IECU.xml" />
   </ItemGroup>
 </Project>

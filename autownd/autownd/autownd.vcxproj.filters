@@ -37,7 +37,7 @@
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="MsgProc.h">
-      <Filter>Header Files</Filter>
+      <Filter>MsgProcess</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -51,7 +51,7 @@
       <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="MsgProc.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>MsgProcess</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
