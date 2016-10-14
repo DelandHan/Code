@@ -1,7 +1,7 @@
 #include "MsgProc.h"
 using namespace autownd;
 
-int QuitMsg::handleMsg(memory::ParamChain params)
+int QuitMsg::handleMsg(WPARAM wp, LPARAM lp)
 {
 	PostQuitMessage(0);
 	return 1;

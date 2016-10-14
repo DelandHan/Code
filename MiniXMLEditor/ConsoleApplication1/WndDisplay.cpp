@@ -1,21 +1,57 @@
 #include "stdafx.h"
+#include "DisplayObj.h"
 #include "WndDisplay.h"
-#include "resource.h"
 
 using namespace autownd;
+using namespace std;
+
+void WndDisplay::convertToWStr(std::wstring &dest, const std::string source) {
+	dest.resize(source.size());
+	std::copy(source.begin(), source.end(), dest.begin());
+}
+
+void WndDisplay::LayoutManager::addAutoObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size)
+{
+	theAutoObjList.push_back({ obj, pos, size });
+}
+
+void WndDisplay::LayoutManager::addFixedObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size)
+{
+	theFixedObjList.push_back({ obj, pos, size });
+}
+
+void WndDisplay::LayoutManager::moveAutoObj(RECT * rect)
+{
+	for (list<ObjDetail>::iterator it = theAutoObjList.begin(); it != theAutoObjList.end(); it++)
+	{
+		int width = rect->right - rect->left, height = rect->bottom - rect->top;
+
+		it->obj->drag(rect->left + width * it->pos.first / 100, rect->top + height*it->pos.second / 100,
+			width*it->size.first / 100, height*it->size.second / 100);
+	}
+}
+
+void WndDisplay::LayoutManager::moveFixedObj(RECT * rect)
+{
+	for (list<ObjDetail>::iterator it = theFixedObjList.begin(); it != theFixedObjList.end(); it++)
+	{
+		it->obj->drag(rect->left + it->pos.first, rect->top + it->pos.second,
+			it->size.first, it->size.second);
+	}
+}
+
+/////////////////////////////////////
 
 WndDisplay::WndDisplay()
 {
+	//init a base msgmap
+	theMsgSet.addMsgProc(WM_DESTROY, &msg_quit);
+	theMsgSet.addMsgProc(WM_SIZE, this, &WndDisplay::updateLayout);
 
 }
 
 WndDisplay::~WndDisplay()
 {
-	//clear the list
-	for (ObjectList::iterator it = theObjLst.begin(); it != theObjLst.end(); it++)
-	{
-		delete *it;
-	}
 }
 
 int WndDisplay::initialize()
@@ -23,53 +59,72 @@ int WndDisplay::initialize()
 	//build main wnd
 	if (buildMainWnd()) return 1;
 
-	//add panels
-	addObj(new ItemPanel, { 50,95 }, { 0,5 });
-	addObj(new ItemPanel, { 50,50 }, { 50,5 });
-	addObj(new AttPanel, { 50,45 }, { 50,55 });
-	addObj(new DisplayButton, { 5,5 }, { 0,0 });
+	//init objs
+	thePrimaryPanel.initialize(&theMainWnd);
+	theLayoutMgr.addAutoObj(&thePrimaryPanel, { 0,0 }, { 50,100 });
+
+	theSecondaryPanel.initialize(&theMainWnd);
+	theLayoutMgr.addAutoObj(&theSecondaryPanel, { 50,0 }, { 50,50 });
+
+	theAttPanel.initialize(&theMainWnd);
+	theLayoutMgr.addAutoObj(&theAttPanel, { 50,50 }, { 50,50 });
+
+	theUpButton.initialize(&theMainWnd);
+	theLayoutMgr.addFixedObj(&theUpButton, { 5,5 }, { 20,20 });
 
 	//final
 	theMainWnd.show();
 	return 0;
 }
 
-MsgSet * WndDisplay::getMap()
+void WndDisplay::addToPrimaryList(const char * str, int type, LPARAM param)
 {
-	return &theMsgMap;
+	wstring buff;
+	convertToWStr(buff, str);
+	thePrimaryPanel.addItems(buff, type, param);
 }
 
-int WndDisplay::updateLayout(memory::ParamChain params)
+void WndDisplay::addToPrimaryList(TCHAR * str, int type, LPARAM param)
+{
+	thePrimaryPanel.addItems(wstring(str), type, param);
+}
+
+void WndDisplay::addToSecondaryList(const char * str, int type, LPARAM param)
+{
+	wstring buff;
+	convertToWStr(buff, str);
+	theSecondaryPanel.addItems(buff, type, param);
+}
+
+void WndDisplay::addToAttributeList(const char * key, const char * value)
+{
+	wstring buff_k, buff_v;
+	convertToWStr(buff_k, key);
+	convertToWStr(buff_v, value);
+
+	theAttPanel.addAttribute(buff_k, buff_v);
+}
+
+int WndDisplay::updateLayout(WPARAM wp, LPARAM lp)
 {
 	RECT rect;
 	GetClientRect(theMainWnd.wnd(), &rect);
 	OffsetRect(&rect, GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CXBORDER));
 
-	for (auto it : theObjLst) {
-		it->move(&rect);
-	}
-	return 0;
-}
+	theLayoutMgr.moveFixedObj(&rect);
+	rect.top += 30;// the top 30 pix are for buttons
+	theLayoutMgr.moveAutoObj(&rect);
 
-void WndDisplay::addObj(DisplayObj * obj, autownd::vec size, autownd::vec pos)
-{
-	obj->setRect(size, pos);
-	obj->initialize(&theMainWnd);
-	theObjLst.push_back(obj);
+	return 0;
 }
 
 int WndDisplay::buildMainWnd()
 {
-	//init a base msgmap
-	static MsgProc<WndDisplay> msg_size(this, &WndDisplay::updateLayout);
-	theMsgMap.addMsgPair(WM_DESTROY, &msg_quit);
-	theMsgMap.addMsgPair(WM_SIZE, &msg_size);
-
 	//init main wnd
 	Seed mainSeed;
 	mainSeed.init({});
 
-	if(mainSeed.create(&theMainWnd, &theMsgMap, {
+	if(mainSeed.create(&theMainWnd, theMsgSet.map(), {
 		{ "size",vec(1000,650) },
 		{ "title",L"XMLEditor" }
 	})) return 1;
@@ -77,92 +132,15 @@ int WndDisplay::buildMainWnd()
 		return 0;
 }
 
-//////////////////Panel classes//////////////////
+//////////////////messages//////////////////
 
-void WndDisplay::DisplayObj::setRect(autownd::vec & size, autownd::vec & pos)
+WndMsgSet::~WndMsgSet()
 {
-		theSize = size; thePos = pos;
+	for (auto it : theList) delete it;
 }
 
-void WndDisplay::DisplayObj::move(const RECT * clientRect)
+void WndMsgSet::addMsgProc(UINT msg, autownd::IMsgProcess * msgproc)
 {
-	int width = clientRect->right - clientRect->left, height = clientRect->bottom - clientRect->top;
-
-	MoveWindow(wnd(),
-		clientRect->left + width * thePos.first / 100, clientRect->top + height*thePos.second / 100,
-		width*theSize.first / 100, height*theSize.second / 100,
-		TRUE
-		);
-
-	onSize(width*theSize.first / 100, height*theSize.second / 100);
+	theMsgMap.addMsgPair(msg, msgproc);
 }
 
-int WndDisplay::ItemPanel::initialize(autownd::WndObj * parent)
-{
-	//create the control
-	if(parent->addControl(&theObj, WC_LISTVIEW, {
-		{ "style", (long)LVS_EDITLABELS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
-		{ "exstyle", WS_EX_CLIENTEDGE },
-	}))
-		return 1;
-
-	//add columns
-	theObj.addColumn(0).set(L"Column", 6).set(-2).update();
-
-	//add icons
-	theObj.buildImageList(16, 16);
-	theObj.addIcon(IDI_FILE);
-	theObj.addIcon(IDI_FOLDER);
-
-	//show
-	theObj.show();
-
-	return 0;
-}
-
-int WndDisplay::ItemPanel::onSize(int width, int height)
-{
-	theObj.resizeColumn(0, width - 4);
-	return 1;
-}
-
-int WndDisplay::AttPanel::initialize(autownd::WndObj * parent)
-{
-	//create the control
-	if (parent->addControl(&theObj, WC_LISTVIEW, {
-		{ "style", (long)LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
-		{ "exstyle", WS_EX_CLIENTEDGE },
-	}))
-		return 1;
-
-	//add columns
-	theObj.addColumn(0).set(L"Column", 6).set(-2).update();
-	theObj.addColumn(1).set(L"Column", 6).set(-2).update();
-
-	theObj.extendStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
-	//show
-	theObj.show();
-	
-	return 0;
-}
-
-int WndDisplay::AttPanel::onSize(int width, int height)
-{
-	theObj.resizeColumn(0, (width - 4) / 2);
-	theObj.resizeColumn(1, (width - 4) / 2);
-	return 1;
-}
-
-int WndDisplay::DisplayButton::initialize(autownd::WndObj * parent)
-{
-	if(	parent->addControl(&theObj, WC_BUTTON, {{ "title", L"Up" }})) return 1;
-	theObj.show();
-
-	return 0;
-}
-
-int WndDisplay::DisplayButton::onSize(int width, int height)
-{
-	return 0;
-}

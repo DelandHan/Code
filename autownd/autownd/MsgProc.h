@@ -7,21 +7,21 @@ namespace autownd
 		:public IMsgProcess
 	{
 	public:
-		MsgProc(T* obj, int(T::*fun)(memory::ParamChain params)) :theObj(obj), theFun(fun) {}
+		MsgProc(T* obj, int(T::*fun)(WPARAM wp, LPARAM lp)) :theObj(obj), theFun(fun) {}
 		~MsgProc() {}
 
-		int handleMsg(memory::ParamChain params) override {
-			return (theObj->*theFun)(params);
+		int handleMsg(WPARAM wp, LPARAM lp) override {
+			return (theObj->*theFun)(wp, lp);
 		}
 	private:
 		T* theObj;
-		int (T::*theFun)(memory::ParamChain params);
+		int (T::*theFun)(WPARAM wp, LPARAM lp);
 	};
 
 	class QuitMsg
 		:public IMsgProcess
 	{
-		int handleMsg(memory::ParamChain params) override;
+		int handleMsg(WPARAM wp,LPARAM lp) override;
 	};
 
 	extern QuitMsg msg_quit;

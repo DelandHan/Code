@@ -1,6 +1,26 @@
 #pragma once
 #include <list>
+#include "DisplayObj.h"
 
+class WndMsgSet 
+{
+public:
+	WndMsgSet() {}
+	~WndMsgSet();
+
+	void addMsgProc(UINT msg, autownd::IMsgProcess *msgproc);
+	template<class T> void addMsgProc(UINT msg, T* obj, int(T::*fun)(WPARAM wp, LPARAM lp)) {
+		autownd::MsgProc<T> * temp = new autownd::MsgProc<T>(obj, fun);
+		addMsgProc(msg, temp);
+		theList.push_back(temp);
+	}
+	inline autownd::MsgSet * map() { return &theMsgMap; }
+private:
+	autownd::MsgSet theMsgMap;
+	std::list<autownd::IMsgProcess*> theList;
+};
+
+//make a board for holding panels and autosize them
 class WndDisplay
 {
 public:
@@ -10,73 +30,56 @@ public:
 	//initialize
 	int initialize();
 
-	//get the msgmap
-	autownd::MsgSet * getMap();
+	//to insert msg funs
+	WndMsgSet * getMsgSet() { return &theMsgSet; }
 
-	//keep the layout
-	int updateLayout(memory::ParamChain params);
+	//add data to primary
+	void addToPrimaryList(const char* str, int type, LPARAM param);
+	//add data to primary
+	void addToPrimaryList(TCHAR* str, int type, LPARAM param);
+
+	//add data to secondary
+	void addToSecondaryList(const char* str, int type, LPARAM param);
+	void addToAttributeList(const char* key, const char* value);
 
 private:
-	////////////////classes//////////////////
-	class DisplayObj {
-	public:
-		virtual ~DisplayObj() {}
-		
-		//set the ratio of size and pos. the max is 100
-		void setRect(autownd::vec &size, autownd::vec &pos);
-		//move the panel base on the ratio
-		void move(const RECT * clientRect);
-
-		//init the panel. provided by the derive class
-		virtual int initialize(autownd::WndObj *parent) = 0;
-		//get hwnd
-		virtual HWND wnd() = 0;
-	private:
-		autownd::vec theSize, thePos;
-
-		//when the wnd size changed
-		virtual int onSize(int width, int height) = 0;
-	};
-
-	class ItemPanel :public DisplayObj {
-	public:
-		int initialize(autownd::WndObj *parent) override;
-		HWND wnd() override { return theObj.wnd(); }
-	private:
-		int onSize(int width, int height) override;
-		autownd::List theObj;
-	};
-
-	class AttPanel :public DisplayObj {
-	public:
-		int initialize(autownd::WndObj *parent) override;
-		HWND wnd() override { return theObj.wnd(); }
-	private:
-		int onSize(int width, int height) override;
-		autownd::List theObj;
-	};
-
-	class DisplayButton :public DisplayObj {
-	public:
-		int initialize(autownd::WndObj *parent) override;
-		HWND wnd() override { return theObj.wnd(); }
-	private:
-		int onSize(int width, int height) override;
-		autownd::WndObj theObj;
-	};
-
-	////////////////members////////////////
-	typedef std::list<DisplayObj*> ObjectList;
-	ObjectList theObjLst;
+	//keep the layout
+	int updateLayout(WPARAM wp, LPARAM lp);
 
 	//window objects
 	autownd::WndObj theMainWnd;
 
-	//message map
-	autownd::MsgSet theMsgMap;
+	ItemPanel thePrimaryPanel, theSecondaryPanel;
+	AttPanel theAttPanel;
+	DisplayButton theUpButton;
 
-	////////////////internal fun////////////////
-	void addObj(DisplayObj* obj, autownd::vec size, autownd::vec pos);
+	////////////////////////////////////
+
+	//message map
+	WndMsgSet theMsgSet;
+
+	//manage the layout
+	class LayoutManager {
+	public:
+		//add objs
+		void addAutoObj(IMoveableWndObj* obj, autownd::vec pos, autownd::vec size);
+		void addFixedObj(IMoveableWndObj* obj, autownd::vec pos, autownd::vec size);
+
+		//move objs;
+		void moveAutoObj(RECT* rect);
+		void moveFixedObj(RECT* rect);
+	private:
+		struct ObjDetail {
+			IMoveableWndObj* obj;
+			autownd::vec pos, size;
+		};
+		std::list<ObjDetail> theAutoObjList, theFixedObjList;
+	} theLayoutMgr;
+
+	//build the mainwnd
 	int buildMainWnd();
+
+	//str fun
+	static void convertToWStr(std::wstring &dest, const std::string source);
 };
 

@@ -36,7 +36,8 @@ namespace autownd
 	class IMsgProcess
 	{
 	public:
-		virtual int handleMsg(memory::ParamChain params) = 0;
+		virtual ~IMsgProcess() {}//make sure the dervid class's decon is called.
+		virtual int handleMsg(WPARAM wp, LPARAM lp) = 0;
 	};
 
 	////////

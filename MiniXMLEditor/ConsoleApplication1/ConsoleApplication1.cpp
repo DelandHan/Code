@@ -2,17 +2,14 @@
 //
 
 #include "stdafx.h"
-
-#include "WndDisplay.h"
-
+#include "DisplayHub.h"
 
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-
-	WndDisplay display;
-	display.initialize();
+	DisplayHub dis;
+	dis.initialize();
 
 	autownd::msgLoop();
     return 0;
