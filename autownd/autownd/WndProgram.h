@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <list>
 #include "Bullet.h"
 #include <Windows.h>
 
@@ -21,7 +22,7 @@ namespace autownd
 		virtual ~WndObj();
 
 		inline HWND wnd() { return theWnd; }
-		inline void show() { ShowWindow(theWnd, SW_SHOW); }
+		inline void show(int cmd = SW_SHOW) { ShowWindow(theWnd, cmd); }
 
 		int addControl(WndObj* obj, TCHAR * cname, memory::ParamChain params);
 
@@ -45,18 +46,11 @@ namespace autownd
 	class MsgSet
 	{
 	public:
-		MsgSet();
-		template<class T> MsgSet(std::pair<UINT, T>* begin, size_t size) {
-			addMsgPairs(begin, size);
-		}
-		~MsgSet();
+		MsgSet() {}
+		~MsgSet() {}
 		IMsgProcess *retrieve(UINT msg) const;
 		void addMsgPair(UINT msg, IMsgProcess* proc);
-		template<class T> void addMsgPairs(std::pair<UINT, T>* begin, size_t size) {
-			for (size_t i = 0; i < size; i++) {
-				theMap.insert(std::pair<UINT, IMsgProcess*>((begin + i)->first, &(begin + i)->second));
-			}
-		}
+
 	private:
 		std::map<UINT, IMsgProcess*> theMap;
 	};
@@ -65,8 +59,8 @@ namespace autownd
 	class Seed
 	{
 	public:
-		Seed();
-		~Seed();
+		Seed() {}
+		~Seed() {}
 		void init(memory::ParamChain params);
 
 		int create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params);

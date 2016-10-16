@@ -39,6 +39,21 @@ void ItemPanel::addItems(wstring & str, int image, LPARAM param)
 	theObj.at().setText(&str[0], str.size()).setImage(image).setParam(param).update();
 }
 
+void ItemPanel::clear()
+{
+	theObj.clear();
+}
+
+void ItemPanel::setItemText(int item, int subitem, TCHAR * str)
+{
+	ListView_SetItemText(theObj.wnd(), item, subitem, str);
+}
+
+LPARAM ItemPanel::getParam(int item)
+{
+	return theObj.at(item).setParam(0).sync()->lParam;
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 int AttPanel::initialize(autownd::WndObj * parent)
@@ -67,6 +82,11 @@ void AttPanel::drag(int x, int y, int width, int height)
 	MoveWindow(theObj.wnd(), x, y, width, height, TRUE);
 	theObj.resizeColumn(0, (width - 4) / 2);
 	theObj.resizeColumn(1, (width - 4) / 2);
+}
+
+void AttPanel::clear()
+{
+	theObj.clear();
 }
 
 void AttPanel::addAttribute(wstring & key, wstring & value)

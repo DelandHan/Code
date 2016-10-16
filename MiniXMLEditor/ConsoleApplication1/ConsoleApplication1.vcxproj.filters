@@ -36,14 +36,20 @@
     <ClInclude Include="Interfaces.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WndDisplay.h">
-      <Filter>Display</Filter>
-    </ClInclude>
     <ClInclude Include="DisplayObj.h">
       <Filter>Display</Filter>
     </ClInclude>
     <ClInclude Include="DisplayHub.h">
       <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="WndBoard.h">
+      <Filter>Display</Filter>
+    </ClInclude>
+    <ClInclude Include="CenterUnit.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLDataHub.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,14 +59,20 @@
     <ClCompile Include="ConsoleApplication1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="WndDisplay.cpp">
-      <Filter>Display</Filter>
-    </ClCompile>
     <ClCompile Include="DisplayObj.cpp">
       <Filter>Display</Filter>
     </ClCompile>
     <ClCompile Include="DisplayHub.cpp">
       <Filter>Display</Filter>
+    </ClCompile>
+    <ClCompile Include="WndBoard.cpp">
+      <Filter>Display</Filter>
+    </ClCompile>
+    <ClCompile Include="CenterUnit.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLDataHub.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

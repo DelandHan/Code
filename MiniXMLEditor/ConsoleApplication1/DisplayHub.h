@@ -1,8 +1,11 @@
 #pragma once
-#include "WndDisplay.h"
+#include "WndBoard.h"
+#include "DisplayObj.h"
+#include <map>
 
 //manage display, params and connect to the data
 class DisplayHub
+	:public IUIHub
 {
 public:
 	DisplayHub();
@@ -10,10 +13,27 @@ public:
 
 	int initialize();
 
-	int beNotified(WPARAM wp, LPARAM lp);
-	int onCommand(WPARAM wp, LPARAM lp);
+	int connectToInputHub(IInputHub *inputhub);
+
+	virtual void refreshItemPanel(ItemPool *itemlist) override;
+	virtual void refreshChildPanel(ItemPool *itemlist) override;
+
+	virtual void refreshAttPanel(AttPool * attlist) override;
 
 private:
-	WndDisplay theDisplayBoard;
-};
+	WndBoard theDisplayBoard;
 
+	ItemPanel theItemPanel[2];
+	AttPanel theAttPanel;
+
+	DisplayButton theUpButton;
+
+	IInputHub *theInputHub;
+
+	//msg child handel
+	int activeItemPanel(int id, LPNMHDR data);
+	int activeAttPanel(LPNMHDR data);
+
+	int beNotified(WPARAM wp, LPARAM lp);
+	int onCommand(WPARAM wp, LPARAM lp);
+};

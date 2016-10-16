@@ -5,14 +5,6 @@ using namespace autownd;
 using namespace std;
 using namespace memory;
 
-MsgSet::MsgSet()
-{
-}
-
-MsgSet::~MsgSet()
-{
-}
-
 IMsgProcess * MsgSet::retrieve(UINT msg) const
 {
 	map<UINT, IMsgProcess*>::const_iterator it = theMap.find(msg);
@@ -26,16 +18,6 @@ void MsgSet::addMsgPair(UINT msg, IMsgProcess * proc)
 }
 
 ////////////////////////////////////////////////
-
-
-Seed::Seed()
-{
-
-}
-
-Seed::~Seed()
-{
-}
 
 void Seed::init(memory::ParamChain params)
 {
