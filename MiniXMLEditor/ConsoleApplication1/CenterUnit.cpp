@@ -19,28 +19,12 @@ int CenterUnit::connect(IUIHub * ui, IDataHub* data)
 	return ui == nullptr || data == nullptr ? 1 : 0;
 }
 
-int CenterUnit::changeCurrent(LPARAM param)
-{
-	ItemPool pool;
-
-	if (theData->getChildItemData(param, &pool) == 0)
-	{
-		theUI->refreshItemPanel(&pool);
-		theUI->refreshChildPanel(0);
-		theUI->refreshAttPanel(0);
-		theCurrent = param;
-		return 0;
-	}
-	else
-		return 1;
-}
-
 int CenterUnit::changeSelectOnCurrent(LPARAM param)
 {
 	ItemPool itempool;
 
-	if(theData->getChildItemData(param, &itempool)==0) 
-		theUI->refreshChildPanel(&itempool);
+	if (theData->getChildItemData(param, &itempool) == 0)
+		theUI->refreshItemPanel(&itempool, 1);
 
 	changeSelectOnChild(param);
 	return 0;
@@ -58,47 +42,52 @@ int CenterUnit::changeSelectOnChild(LPARAM param)
 
 int CenterUnit::goHighLevel()
 {
-	return changeCurrent(theData->queryParent(theCurrent));
+	return dbClick(theData->queryParent(theCurrent));
 }
 
-
-InputUnit::InputUnit()
+int CenterUnit::select(LPARAM param, int panelId)
 {
+	if (panelId) return changeSelectOnChild(param);
+	else return changeSelectOnCurrent(param);
 }
 
-
-InputUnit::~InputUnit()
+int CenterUnit::dbClick(LPARAM param)
 {
+	ItemPool pool;
+
+	if (theData->getChildItemData(param, &pool) == 0)
+	{
+		theUI->refreshItemPanel(&pool, 0);
+		theUI->refreshItemPanel(nullptr, 1);
+		theUI->refreshAttPanel(nullptr);
+		theCurrent = param;
+		return 0;
+	}
+	else
+		return 1;
 }
 
-int InputUnit::initialize()
+int CenterUnit::edit(LPARAM param, std::wstring &str)
 {
-	return 0;
-}
+	ItemData data = { str,0,param };
 
-int InputUnit::connectTo(CenterUnit * unit)
-{
-	theCenter = unit;
-	return unit == nullptr ? 1 : 0;
-}
+	if (theData->setItem(&data) == 0)
+		if (theData->queryItem(&data) == 0)
+		{
+			str = data.str;
+			return 0;
+		}			
 
-int InputUnit::select(LPARAM param, int panelId)
-{
-	if (panelId) return theCenter->changeSelectOnChild(param);
-	else return theCenter->changeSelectOnCurrent(param);
-}
-
-int InputUnit::dbClick(LPARAM param)
-{
-	return theCenter->changeCurrent(param);
-}
-
-int InputUnit::edit(LPARAM param, TCHAR * str)
-{
 	return 1;
 }
 
-int InputUnit::goHighLevel()
+int CenterUnit::updateAtt(std::wstring * oldkey, std::wstring * value, std::wstring * nekey)
 {
-	return theCenter->goHighLevel();
+	if (*oldkey == L"")
+		theData->setItemAtt(theSelected, nekey, value, nekey);
+	else
+		theData->setItemAtt(theSelected, oldkey, value, nekey);
+	
+	changeSelectOnChild(theSelected);
+	return 0;
 }

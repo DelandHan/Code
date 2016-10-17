@@ -15,8 +15,7 @@ public:
 
 	int connectToInputHub(IInputHub *inputhub);
 
-	virtual void refreshItemPanel(ItemPool *itemlist) override;
-	virtual void refreshChildPanel(ItemPool *itemlist) override;
+	virtual void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
 	virtual void refreshAttPanel(AttPool * attlist) override;
 

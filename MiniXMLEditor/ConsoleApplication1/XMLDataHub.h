@@ -6,11 +6,16 @@ public:
 	XMLDataHub();
 	~XMLDataHub();
 
-	virtual int getChildItemData(LPARAM param, ItemPool *pool) override;
-	virtual int getItemAtt(LPARAM param, AttPool *pool) override;
-	virtual LPARAM queryParent(LPARAM param) override;
+	int getChildItemData(LPARAM param, ItemPool *pool) override;
+	int getItemAtt(LPARAM param, AttPool *pool) override;
+	LPARAM queryParent(LPARAM param) override;
 
 	void loadFile(const char * name);
+
+	int queryItem(ItemData *pool) override;
+	int setItem(ItemData *source) override;
+
+	int setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey) override;
 
 private:
 	xml::XMLNode *theNode;

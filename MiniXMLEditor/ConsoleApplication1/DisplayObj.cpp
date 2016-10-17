@@ -56,6 +56,11 @@ LPARAM ItemPanel::getParam(int item)
 
 /////////////////////////////////////////////////////////////////////////
 
+AttPanel::AttPanel()
+	:theOnEditing(-1), theCallBack(this,&AttPanel::finishEditing), theParentCallBack(nullptr)
+{
+}
+
 int AttPanel::initialize(autownd::WndObj * parent)
 {
 	//create the control
@@ -89,11 +94,53 @@ void AttPanel::clear()
 	theObj.clear();
 }
 
+void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
+{
+	TCHAR temp[255]; RECT rect;
+	if (subitem == -1 || item == -1) return;
+
+	List::LSet set = theObj.at(item);
+
+	set.getText(temp, 255, 0); theBuff[0]= temp;
+	set.getText(temp, 255, 1); theBuff[1] = temp;
+	theOnEditing = subitem;
+
+	set.getRect(&rect, subitem);
+	//adjust pos
+	if (subitem == 0) {
+		rect.left += 3;
+		rect.right = rect.left + (rect.right - rect.left) / 2 - 4;
+	}
+	else rect.left += 5;
+	rect.bottom -= 1;
+		
+	theEdit.init(theObj.wnd(), &rect, &theBuff[subitem][0], &theCallBack);
+	theParentCallBack = proc;
+}
+
 void AttPanel::addAttribute(wstring & key, wstring & value)
 {
 	List::LSet set = theObj.at();
 	set.setText(&key[0], key.size()).update();
 	set.setText(1, &value[0]);
+}
+
+std::wstring * AttPanel::getEditResult()
+{
+	if (theOnEditing == -1) return nullptr;
+	theOnEditing = -1;
+	return theBuff;
+}
+
+int AttPanel::finishEditing(WPARAM wp, LPARAM lp)
+{
+	TCHAR *data = (TCHAR*)wp;
+	if (theOnEditing == 0) theBuff[2] = data;
+	if (theOnEditing == 1) theBuff[1] = data;
+
+	theParentCallBack->handleMsg(0, (LPARAM)theObj.wnd());
+
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////

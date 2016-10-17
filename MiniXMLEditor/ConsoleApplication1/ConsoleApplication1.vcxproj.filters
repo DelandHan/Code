@@ -19,6 +19,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{12137116-09c9-4b99-90fe-757b3ce32107}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{539aa574-f218-4532-b479-1c954bb56f5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -49,7 +52,7 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="XMLDataHub.h">
-      <Filter>头文件</Filter>
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +75,7 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="XMLDataHub.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,5 +90,9 @@
     <Image Include="folder.ico">
       <Filter>资源文件</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

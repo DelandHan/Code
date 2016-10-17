@@ -14,16 +14,14 @@ int main()
 	xmldata.loadFile("IECU.xml");
 
 	CenterUnit cunit;
-	InputUnit input;
 
 	DisplayHub ui;
 	ui.initialize();
 
 	cunit.connect(&ui, &xmldata);
-	ui.connectToInputHub(&input);
-	input.connectTo(&cunit);
-
-	input.dbClick(0);
+	ui.connectToInputHub(&cunit);
+	
+	cunit.dbClick(0);
 
 	autownd::msgLoop();
     return 0;

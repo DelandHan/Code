@@ -38,23 +38,13 @@ int DisplayHub::connectToInputHub(IInputHub * inputhub)
 	return inputhub == nullptr ? 1 : 0;
 }
 
-void DisplayHub::refreshItemPanel(ItemPool * itemlist)
+void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
 {
-	theItemPanel[0].clear();
+	theItemPanel[panelID].clear();
 	if (itemlist == nullptr) return;
 	for (ItemPool::iterator it = itemlist->begin(); it != itemlist->end(); it++)
 	{
-		theItemPanel[0].addItems(it->first.first, it->first.second == 1 ? 1 : 0, it->second);
-	}
-}
-
-void DisplayHub::refreshChildPanel(ItemPool * itemlist)
-{
-	theItemPanel[1].clear();
-	if (itemlist == nullptr) return;
-	for (ItemPool::iterator it = itemlist->begin(); it != itemlist->end(); it++)
-	{
-		theItemPanel[1].addItems(it->first.first, it->first.second == 1 ? 1 : 0, it->second);
+		theItemPanel[panelID].addItems(it->str, it->type == 1 ? 1 : 0, it->param);
 	}
 }
 
@@ -65,8 +55,10 @@ void DisplayHub::refreshAttPanel(AttPool * attlist)
 
 	for (AttPool::iterator it = attlist->begin(); it != attlist->end(); it++)
 	{
-		theAttPanel.addAttribute(it->first, it->second);
+		theAttPanel.addAttribute(it->key, it->value);
 	}
+
+	theAttPanel.addAttribute(wstring(L""), wstring(L""));
 }
 
 int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
@@ -83,6 +75,11 @@ int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
 int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 {
 	if (lp == (LPARAM)theUpButton.wnd()) return theInputHub->goHighLevel();
+	if (lp == (LPARAM)theAttPanel.wnd()) //attpanel finish editing
+	{
+		wstring *result = theAttPanel.getEditResult();
+		return theInputHub->updateAtt(result, result + 1, result + 2);
+	}
 	return 0;
 }
 
@@ -106,7 +103,10 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	{
 		NMLVDISPINFO* info = (NMLVDISPINFO*)data;
 		if (info->item.pszText == nullptr) return 1;
-		if (theInputHub->edit(info->item.lParam, info->item.pszText)) return 1;
+		wstring buff = info->item.pszText;
+		if (theInputHub->edit(info->item.lParam, buff)) return 1; //failed
+
+		theItemPanel[id].setItemText(info->item.iItem, info->item.iSubItem, &buff[0]);
 	}
 	break;
 	case NM_RCLICK:
@@ -114,11 +114,7 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 		return 1;
 	}
 	break;
-	case NM_CLICK:
-	{
-		return 1;
-	}
-	break;
+	
 	default:
 		return 1;
 	}
@@ -127,6 +123,22 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 
 int DisplayHub::activeAttPanel(LPNMHDR data)
 {
+	LPNMITEMACTIVATE param = (LPNMITEMACTIVATE)data;
+
+	switch (data->code)
+	{
+	case NM_CLICK:
+	{
+		if (param->iItem == -1 || param->iItem == theAttPanel.count() - 1) {
+			param->iItem = theAttPanel.count() - 1;
+			param->iSubItem = 0;
+		}
+		theAttPanel.startEditing(param->iItem, param->iSubItem, theDisplayBoard.getMsgSet()->retrieve(WM_COMMAND));
+	}
+	break;
+	default:
+		return 1;
+	}
 	return 0;
 }
 

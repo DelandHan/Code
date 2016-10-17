@@ -328,22 +328,14 @@ void autownd::Edit::confirmEdit()
 	TCHAR buff[255];
 	GetWindowText(theWnd, buff, 255);
 
-	theRecv->handleMsg(0, (LPARAM)buff);
+	theRecv->handleMsg((WPARAM)buff, (LPARAM)theWnd);
 	destroy();
 }
 
-int autownd::Edit::init(memory::ParamChain params)
+int autownd::Edit::init(HWND parent, RECT *rect, TCHAR *buff, IMsgProcess * recv)
 {
-
-	HWND parent = nullptr;
-	LPRECT rect = nullptr;
-	TCHAR *buff = nullptr;
-
-	memory::find(params, "parent", parent);
-	memory::find(params, "rect", rect);
-	memory::find(params, "buff", buff);
-
-
+	if (recv == nullptr) return 1;
+	theRecv = recv;
 	//create wnd
 	HWND edit = CreateWindowEx(0, L"Edit", L"", WS_VISIBLE | WS_CHILD | ES_AUTOHSCROLL
 		, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, parent, 0, GetModuleHandle(0), 0);
@@ -369,11 +361,6 @@ int autownd::Edit::init(memory::ParamChain params)
 
 	return 0;
 
-}
-
-void autownd::Edit::setRecv(IMsgProcess * recv)
-{
-	theRecv = recv;
 }
 
 LRESULT autownd::Edit::subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)

@@ -132,8 +132,7 @@ namespace autownd
 		void destroy();
 		void confirmEdit();
 
-		int init(memory::ParamChain params);
-		void setRecv(IMsgProcess * recv);
+		int init(HWND parent, RECT *rect, TCHAR *buff, IMsgProcess * recv);
 		HWND wnd() { return theWnd; }
 
 	private:
