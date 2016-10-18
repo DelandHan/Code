@@ -15,6 +15,8 @@ public:
 	int queryItem(ItemData *pool) override;
 	int setItem(ItemData *source) override;
 
+	int queryPath(LPARAM param, std::wstring &path) override;
+
 	int setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey) override;
 
 private:

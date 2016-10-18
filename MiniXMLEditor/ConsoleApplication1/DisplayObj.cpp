@@ -8,50 +8,45 @@ using namespace autownd;
 int ItemPanel::initialize(autownd::WndObj * parent)
 {
 	//create the control
-	if (parent->addControl(&theObj, WC_LISTVIEW, {
+	if (parent->addControl(this, WC_LISTVIEW, {
 		{ "style", (long)LVS_EDITLABELS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
 		{ "exstyle", WS_EX_CLIENTEDGE },
 	}))
 	return 1;
 
 	//add columns
-	theObj.addColumn(0).set(L"Column", 6).set(-2).update();
+	addColumn(0).set(L"Column", 6).set(-2).update();
 
 	//add icons
-	theObj.buildImageList(16, 16);
-	theObj.addIcon(IDI_FILE);
-	theObj.addIcon(IDI_FOLDER);
+	buildImageList(16, 16);
+	addIcon(IDI_FILE);
+	addIcon(IDI_FOLDER);
 
 	//show
-	theObj.show();
+	show();
 
 	return 0;
 }
 
 void ItemPanel::drag(int x, int y, int width, int height)
 {
-	MoveWindow(theObj.wnd(), x, y, width, height, TRUE);
-	theObj.resizeColumn(0, width - 4);
+	MoveWindow(wnd(), x, y, width, height, TRUE);
+	resizeColumn(0, width - 4);
 }
 
 void ItemPanel::addItems(wstring & str, int image, LPARAM param)
 {
-	theObj.at().setText(&str[0], str.size()).setImage(image).setParam(param).update();
-}
-
-void ItemPanel::clear()
-{
-	theObj.clear();
+	at().setText(&str[0], str.size()).setImage(image).setParam(param).update();
 }
 
 void ItemPanel::setItemText(int item, int subitem, TCHAR * str)
 {
-	ListView_SetItemText(theObj.wnd(), item, subitem, str);
+	ListView_SetItemText(wnd(), item, subitem, str);
 }
 
 LPARAM ItemPanel::getParam(int item)
 {
-	return theObj.at(item).setParam(0).sync()->lParam;
+	return at(item).setParam(0).sync()->lParam;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -64,34 +59,29 @@ AttPanel::AttPanel()
 int AttPanel::initialize(autownd::WndObj * parent)
 {
 	//create the control
-	if (parent->addControl(&theObj, WC_LISTVIEW, {
+	if (parent->addControl(this, WC_LISTVIEW, {
 		{ "style", (long)LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
 		{ "exstyle", WS_EX_CLIENTEDGE },
 	}))
 	return 1;
 
 	//add columns
-	theObj.addColumn(0).set(L"Column", 6).set(-2).update();
-	theObj.addColumn(1).set(L"Column", 6).set(-2).update();
+	addColumn(0).set(L"Column", 6).set(-2).update();
+	addColumn(1).set(L"Column", 6).set(-2).update();
 
-	theObj.extendStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	extendStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 	//show
-	theObj.show();
+	show();
 
 	return 0;
 }
 
 void AttPanel::drag(int x, int y, int width, int height)
 {
-	MoveWindow(theObj.wnd(), x, y, width, height, TRUE);
-	theObj.resizeColumn(0, (width - 4) / 2);
-	theObj.resizeColumn(1, (width - 4) / 2);
-}
-
-void AttPanel::clear()
-{
-	theObj.clear();
+	MoveWindow(wnd(), x, y, width, height, TRUE);
+	resizeColumn(0, (width - 4) / 2);
+	resizeColumn(1, (width - 4) / 2);
 }
 
 void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
@@ -99,7 +89,7 @@ void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
 	TCHAR temp[255]; RECT rect;
 	if (subitem == -1 || item == -1) return;
 
-	List::LSet set = theObj.at(item);
+	List::LSet set = at(item);
 
 	set.getText(temp, 255, 0); theBuff[0]= temp;
 	set.getText(temp, 255, 1); theBuff[1] = temp;
@@ -114,13 +104,13 @@ void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
 	else rect.left += 5;
 	rect.bottom -= 1;
 		
-	theEdit.init(theObj.wnd(), &rect, &theBuff[subitem][0], &theCallBack);
+	theEdit.init(wnd(), &rect, &theBuff[subitem][0], &theCallBack);
 	theParentCallBack = proc;
 }
 
 void AttPanel::addAttribute(wstring & key, wstring & value)
 {
-	List::LSet set = theObj.at();
+	List::LSet set = at();
 	set.setText(&key[0], key.size()).update();
 	set.setText(1, &value[0]);
 }
@@ -138,7 +128,7 @@ int AttPanel::finishEditing(WPARAM wp, LPARAM lp)
 	if (theOnEditing == 0) theBuff[2] = data;
 	if (theOnEditing == 1) theBuff[1] = data;
 
-	theParentCallBack->handleMsg(0, (LPARAM)theObj.wnd());
+	theParentCallBack->handleMsg(0, (LPARAM)wnd());
 
 	return 0;
 }
@@ -147,14 +137,14 @@ int AttPanel::finishEditing(WPARAM wp, LPARAM lp)
 
 int DisplayButton::initialize(autownd::WndObj * parent)
 {
-	if (parent->addControl(&theObj, WC_BUTTON, { { "title", L"Up" } })) return 1;
-	theObj.show();
+	if (parent->addControl(this, WC_BUTTON, { { "title", L"Up" } })) return 1;
+	show();
 	return 0;
 }
 
 void DisplayButton::drag(int x, int y, int width, int height)
 {
-	MoveWindow(theObj.wnd(), x, y, width, height, TRUE);
+	MoveWindow(wnd(), x, y, width, height, TRUE);
 }
 
 

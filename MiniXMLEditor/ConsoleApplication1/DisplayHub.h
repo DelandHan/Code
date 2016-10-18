@@ -19,6 +19,8 @@ public:
 
 	virtual void refreshAttPanel(AttPool * attlist) override;
 
+	void displayPath(std::wstring &path) override;
+
 private:
 	WndBoard theDisplayBoard;
 

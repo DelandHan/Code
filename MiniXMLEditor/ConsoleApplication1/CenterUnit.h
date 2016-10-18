@@ -13,8 +13,8 @@ protected:
 	int refreshChild();
 	int refreshAtt();
 
-	void setCurrent(LPARAM param, int i);
-	void setSelection(LPARAM param);
+	int setCurrent(LPARAM param, int i);
+	int setSelection(LPARAM param);
 
 	inline IUIHub * uimodule() { return theUI; }
 	inline IDataHub* datapool() { return theData; }

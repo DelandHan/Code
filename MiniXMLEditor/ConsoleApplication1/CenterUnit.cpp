@@ -33,6 +33,10 @@ int BaseCenterUnit::refreshCurrent()
 	if (theData->getChildItemData(theCurrent[0], &pool) == 0)
 	{
 		theUI->refreshItemPanel(&pool, 0);
+		
+		wstring path;
+		if (theData->queryPath(theCurrent[0], path) == 0) theUI->displayPath(path);
+
 		refreshChild();
 		refreshAtt();
 		return 0;
@@ -59,22 +63,31 @@ int BaseCenterUnit::refreshAtt()
 	return 0;
 }
 
-void BaseCenterUnit::setCurrent(LPARAM param, int i)
+int BaseCenterUnit::setCurrent(LPARAM param, int i)
 {
-	if (param == 0 && i == 0)
+	ItemData data = { L"",0,param };
+	theData->queryItem(&data);
+
+	if (data.type != 1 && data.type != 9) return 1; //not an element node nor document node
+
+	theCurrent[i] = data.param;
+
+	if (i == 0)
 	{
-		ItemData data = { L"",0,0 };
-		theData->queryItem(&data);
-		theCurrent[i] = data.param;
+		theCurrent[1] = 0;
+		theSelected = 0;
+		return refreshCurrent();
 	}
 	else
-		theCurrent[i] = param;
-	if (i == 0) theCurrent[1] = 0;
+	{
+		return refreshChild();
+	}
 }
 
-void BaseCenterUnit::setSelection(LPARAM param)
+int BaseCenterUnit::setSelection(LPARAM param)
 {
 	theSelected = param;
+	return refreshAtt();
 }
 
 //////////////////////////////////////////////////////
@@ -90,33 +103,20 @@ CenterUnit::~CenterUnit()
 
 int CenterUnit::goHighLevel()
 {
-	setCurrent(datapool()->queryParent(current(0)),0);
-	setCurrent(0, 1);
-	setSelection(0);
-	return refreshCurrent();
+	return setCurrent(datapool()->queryParent(current(0)),0);
 }
 
 int CenterUnit::select(LPARAM param, int panelId)
 {
+	if (panelId == 0) setCurrent(param, 1);
 	setSelection(param);
 
-	if (panelId) {
-		refreshAtt();
-	}
-	else {
-		setCurrent(param, 1);
-		refreshChild();
-		refreshAtt();
-	}
 	return 0;
 }
 
 int CenterUnit::dbClick(LPARAM param)
 {
-	setCurrent(param, 0);
-	setCurrent(0, 1);
-	setSelection(0);
-	return refreshCurrent();
+	return setCurrent(param, 0);
 }
 
 int CenterUnit::edit(LPARAM param, std::wstring &str)
@@ -126,7 +126,7 @@ int CenterUnit::edit(LPARAM param, std::wstring &str)
 	if (datapool()->setItem(&data) == 0)
 	{
 		datapool()->queryItem(&data);
-		str = data.str;
+		str = data.str; //it might change
 		return 0;
 	}
 	return 1;

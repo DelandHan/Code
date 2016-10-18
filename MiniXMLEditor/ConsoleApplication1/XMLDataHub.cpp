@@ -120,6 +120,35 @@ int XMLDataHub::setItem(ItemData * source)
 	return 0;
 }
 
+int XMLDataHub::queryPath(LPARAM param, std::wstring &path)
+{
+	XMLNode *node;
+	if (param == 0) node = theNode;
+	else node = (XMLNode*)param;
+
+	if (node == nullptr) return 1;
+
+	//get path
+	XMLNode *child_n = node; size_t size = 0; string buff;
+	while (child_n) {
+		size += child_n->getString().size() + 1;
+		child_n = child_n->getParent();
+	}
+	buff.resize(size + 1);
+
+	child_n = node;
+	while (child_n) {
+		memcpy(&buff[size - child_n->getString().size()], child_n->getString().c_str(), child_n->getString().size());
+		buff[size - child_n->getString().size() - 1] = '\\';
+		size -= child_n->getString().size() + 1;
+		child_n = child_n->getParent();
+	}
+
+	convertToWStr(path, buff);
+
+	return 0;
+}
+
 int XMLDataHub::setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey)
 {
 	XMLNode *node = nullptr;

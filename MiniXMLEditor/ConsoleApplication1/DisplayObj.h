@@ -1,40 +1,31 @@
 #pragma once
 
-class ItemPanel :
-	public IMoveableWndObj
+class ItemPanel
+	:public IMoveableWndObj
+	,public autownd::List
 {
 public:
 	int initialize(autownd::WndObj *parent) override;
 	void drag(int x, int y, int width, int height) override;
 
-	HWND wnd() override { return theObj.wnd(); }
-
 	//add items
 	void addItems(std::wstring &str, int image, LPARAM param);
-	//clear
-	void clear();
 	//set Text
 	void setItemText(int item, int subitem, TCHAR* str);
 
 	//get param
 	LPARAM getParam(int item);
 
-private:
-	autownd::List theObj;
 };
 
-class AttPanel : 
-	public IMoveableWndObj
+class AttPanel
+	:public IMoveableWndObj
+	,public autownd::List
 {
 public:
 	AttPanel();
 	int initialize(autownd::WndObj *parent) override;
 	void drag(int x, int y, int width, int height) override;
-
-	HWND wnd() override { return theObj.wnd(); }
-
-	//clear
-	void clear();
 
 	//startediting
 	void startEditing(int item, int subitem, autownd::IMsgProcess *proc);
@@ -45,13 +36,9 @@ public:
 	//get Editing result
 	std::wstring *getEditResult();
 
-	inline int count() { return theObj.getCount(); }
-
 private:
 	//call back for editing
 	int finishEditing(WPARAM wp, LPARAM lp);
-
-	autownd::List theObj;
 
 	autownd::Edit theEdit;
 	std::wstring theBuff[3];
@@ -61,15 +48,11 @@ private:
 	autownd::IMsgProcess *theParentCallBack;
 };
 
-class DisplayButton :
-	public IMoveableWndObj
+class DisplayButton
+	:public IMoveableWndObj
+	,public autownd::WndObj
 {
 public:
 	int initialize(autownd::WndObj *parent) override;
 	void drag(int x, int y, int width, int height) override;
-
-	HWND wnd() override { return theObj.wnd(); }
-
-private:
-	autownd::WndObj theObj;
 };

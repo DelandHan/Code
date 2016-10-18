@@ -21,7 +21,7 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(theItemPanel, { 0,0 }, { 50,100 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(theItemPanel + 1, { 50,0 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
-	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 5,5 }, { 20,20 }, 0)) return 1;
+	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
 
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
@@ -61,6 +61,11 @@ void DisplayHub::refreshAttPanel(AttPool * attlist)
 	}
 
 	theAttPanel.addAttribute(wstring(L""), wstring(L""));
+}
+
+void DisplayHub::displayPath(std::wstring & path)
+{
+	SetWindowText(theUpButton.wnd(), path.c_str());
 }
 
 int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
@@ -131,8 +136,8 @@ int DisplayHub::activeAttPanel(LPNMHDR data)
 	{
 	case NM_CLICK:
 	{
-		if (param->iItem == -1 || param->iItem == theAttPanel.count() - 1) {
-			param->iItem = theAttPanel.count() - 1;
+		if (param->iItem == -1 || param->iItem == theAttPanel.getCount() - 1) {
+			param->iItem = theAttPanel.getCount() - 1;
 			param->iSubItem = 0;
 		}
 		theAttPanel.startEditing(param->iItem, param->iSubItem, theDisplayBoard.getMsgSet()->retrieve(WM_COMMAND));
