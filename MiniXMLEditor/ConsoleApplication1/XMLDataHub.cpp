@@ -29,7 +29,7 @@ XMLDataHub::~XMLDataHub()
 int XMLDataHub::getChildItemData(LPARAM param, ItemPool * pool)
 {
 	XMLNode *node = nullptr;
-	if (param == 0) node = theNode;
+	if (param == 0) return 1;
 	else node = (XMLNode*)param;
 
 	if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) return 1;
@@ -74,7 +74,7 @@ int XMLDataHub::getItemAtt(LPARAM param, AttPool * pool)
 LPARAM XMLDataHub::queryParent(LPARAM param)
 {
 	XMLNode *node = nullptr;
-	if (param == 0) return 0;
+	if (param == 0) return (LPARAM)theNode;
 	else node = (XMLNode*)param;
 	return (LPARAM)node->getParent();
 }
@@ -91,11 +91,12 @@ void XMLDataHub::loadFile(const char * name)
 int XMLDataHub::queryItem(ItemData * pool)
 {
 	XMLNode *node = nullptr;
-	if (pool->param == 0) node=theNode;
+	if (pool->param == 0) node = theNode;
 	else node = (XMLNode*)pool->param;
 
 	convertToWStr(pool->str, node->getString());
 	pool->type = node->getType();
+	pool->param = (LPARAM)node;
 
 	return 0;
 }

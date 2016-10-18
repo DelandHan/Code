@@ -3,8 +3,83 @@
 
 using namespace std;
 
+BaseCenterUnit::BaseCenterUnit()
+	:theSelected(0), theUI(nullptr)
+{
+	theCurrent[0] = 0;
+	theCurrent[1] = 0;
+}
+
+BaseCenterUnit::~BaseCenterUnit()
+{
+}
+
+int BaseCenterUnit::connect(IUIHub * ui, IDataHub* data)
+{
+	theUI = ui;
+	theData = data;
+	
+	setCurrent(0, 0);
+	setCurrent(0, 1);
+	setSelection(0);
+
+	return ui == nullptr || data == nullptr ? 1 : 0;
+}
+
+int BaseCenterUnit::refreshCurrent()
+{
+	ItemPool pool;
+
+	if (theData->getChildItemData(theCurrent[0], &pool) == 0)
+	{
+		theUI->refreshItemPanel(&pool, 0);
+		refreshChild();
+		refreshAtt();
+		return 0;
+	}
+	else
+		return 1;
+
+}
+
+int BaseCenterUnit::refreshChild()
+{
+	ItemPool itempool;
+	theData->getChildItemData(theCurrent[1], &itempool);
+	theUI->refreshItemPanel(&itempool, 1);
+	return 0;
+}
+
+int BaseCenterUnit::refreshAtt()
+{
+	AttPool attpool;
+	theData->getItemAtt(theSelected, &attpool);
+	theUI->refreshAttPanel(&attpool);
+
+	return 0;
+}
+
+void BaseCenterUnit::setCurrent(LPARAM param, int i)
+{
+	if (param == 0 && i == 0)
+	{
+		ItemData data = { L"",0,0 };
+		theData->queryItem(&data);
+		theCurrent[i] = data.param;
+	}
+	else
+		theCurrent[i] = param;
+	if (i == 0) theCurrent[1] = 0;
+}
+
+void BaseCenterUnit::setSelection(LPARAM param)
+{
+	theSelected = param;
+}
+
+//////////////////////////////////////////////////////
+
 CenterUnit::CenterUnit()
-	:theCurrent(0), theSelected(0), theUI(nullptr)
 {
 }
 
@@ -12,82 +87,59 @@ CenterUnit::~CenterUnit()
 {
 }
 
-int CenterUnit::connect(IUIHub * ui, IDataHub* data)
-{
-	theUI = ui;
-	theData = data;
-	return ui == nullptr || data == nullptr ? 1 : 0;
-}
-
-int CenterUnit::changeSelectOnCurrent(LPARAM param)
-{
-	ItemPool itempool;
-
-	if (theData->getChildItemData(param, &itempool) == 0)
-		theUI->refreshItemPanel(&itempool, 1);
-
-	changeSelectOnChild(param);
-	return 0;
-}
-
-int CenterUnit::changeSelectOnChild(LPARAM param)
-{
-	AttPool attpool;
-	if (theData->getItemAtt(param, &attpool) == 0) theUI->refreshAttPanel(&attpool);
-	else return 1;
-	theSelected = param;
-
-	return 0;
-}
 
 int CenterUnit::goHighLevel()
 {
-	return dbClick(theData->queryParent(theCurrent));
+	setCurrent(datapool()->queryParent(current(0)),0);
+	setCurrent(0, 1);
+	setSelection(0);
+	return refreshCurrent();
 }
 
 int CenterUnit::select(LPARAM param, int panelId)
 {
-	if (panelId) return changeSelectOnChild(param);
-	else return changeSelectOnCurrent(param);
+	setSelection(param);
+
+	if (panelId) {
+		refreshAtt();
+	}
+	else {
+		setCurrent(param, 1);
+		refreshChild();
+		refreshAtt();
+	}
+	return 0;
 }
 
 int CenterUnit::dbClick(LPARAM param)
 {
-	ItemPool pool;
-
-	if (theData->getChildItemData(param, &pool) == 0)
-	{
-		theUI->refreshItemPanel(&pool, 0);
-		theUI->refreshItemPanel(nullptr, 1);
-		theUI->refreshAttPanel(nullptr);
-		theCurrent = param;
-		return 0;
-	}
-	else
-		return 1;
+	setCurrent(param, 0);
+	setCurrent(0, 1);
+	setSelection(0);
+	return refreshCurrent();
 }
 
 int CenterUnit::edit(LPARAM param, std::wstring &str)
 {
 	ItemData data = { str,0,param };
 
-	if (theData->setItem(&data) == 0)
-		if (theData->queryItem(&data) == 0)
-		{
-			str = data.str;
-			return 0;
-		}			
-
+	if (datapool()->setItem(&data) == 0)
+	{
+		datapool()->queryItem(&data);
+		str = data.str;
+		return 0;
+	}
 	return 1;
 }
 
 int CenterUnit::updateAtt(std::wstring * oldkey, std::wstring * value, std::wstring * nekey)
 {
 	if (*oldkey == L"")
-		theData->setItemAtt(theSelected, nekey, value, nekey);
+		datapool()->setItemAtt(selection(), nekey, value, nekey);
 	else
-		theData->setItemAtt(theSelected, oldkey, value, nekey);
+		datapool()->setItemAtt(selection(), oldkey, value, nekey);
 	
-	changeSelectOnChild(theSelected);
+	refreshAtt();
 	return 0;
 }
+

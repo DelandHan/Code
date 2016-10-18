@@ -40,12 +40,14 @@ int DisplayHub::connectToInputHub(IInputHub * inputhub)
 
 void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
 {
-	theItemPanel[panelID].clear();
+//	int sel = ListView_GetNextItem(theItemPanel[panelID].wnd(), -1, LVNI_SELECTED); //get last selection position
+	theItemPanel[panelID].clear(); //clear the current panel
 	if (itemlist == nullptr) return;
 	for (ItemPool::iterator it = itemlist->begin(); it != itemlist->end(); it++)
 	{
 		theItemPanel[panelID].addItems(it->str, it->type == 1 ? 1 : 0, it->param);
 	}
+//	if (sel != -1) ListView_SetItemState(theItemPanel[panelID].wnd(), sel, LVIS_SELECTED, LVIS_SELECTED);//re-select it
 }
 
 void DisplayHub::refreshAttPanel(AttPool * attlist)

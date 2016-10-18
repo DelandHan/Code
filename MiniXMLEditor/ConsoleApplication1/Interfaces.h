@@ -59,15 +59,15 @@ public:
 	virtual int getItemAtt(LPARAM param, AttPool *pool) = 0;
 	virtual LPARAM queryParent(LPARAM param) = 0;
 	virtual int queryItem(ItemData *pool) = 0;
-	virtual std::wstring getPath(LPARAM param) = 0;
 
 	virtual int setItem(ItemData *source) = 0;
 	virtual int setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey) = 0;
+
+/*	virtual std::wstring getPath(LPARAM param) = 0;
+
 	virtual int delItem(LPARAM param) = 0;
 	virtual int insertAfter(LPARAM param, std::string text = "") = 0;
 	virtual int insertBefore(LPARAM param) = 0;
-	virtual int append(LPARAM parent, std::string text = "") = 0;
+	virtual int append(LPARAM parent, std::string text = "") = 0;*/
 
-	virtual int open(const char * filename) = 0;
-	virtual int save(const char * filename) = 0;
 };
