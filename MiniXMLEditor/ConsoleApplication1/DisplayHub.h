@@ -28,6 +28,7 @@ private:
 	AttPanel theAttPanel;
 
 	DisplayButton theUpButton;
+	autownd::ContextMenu theMenu;
 
 	IInputHub *theInputHub;
 

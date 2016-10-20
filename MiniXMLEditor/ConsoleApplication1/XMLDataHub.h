@@ -17,7 +17,7 @@ public:
 
 	int queryPath(LPARAM param, std::wstring &path) override;
 
-	int setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey) override;
+	int setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey) override;
 
 private:
 	xml::XMLNode *theNode;

@@ -23,6 +23,7 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
 
+	theMenu.addMenuItem(L"Del", 1);
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
@@ -85,7 +86,7 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 	if (lp == (LPARAM)theAttPanel.wnd()) //attpanel finish editing
 	{
 		wstring *result = theAttPanel.getEditResult();
-		return theInputHub->updateAtt(result, result + 1, result + 2);
+		return theInputHub->updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
 	}
 	return 0;
 }
@@ -118,7 +119,10 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	break;
 	case NM_RCLICK:
 	{
-		return 1;
+		RECT rect; GetWindowRect(theItemPanel[id].wnd(), &rect);
+
+		if (param->iItem != -1) theMenu.show(param->ptAction.x + rect.left, param->ptAction.y + rect.top, theDisplayBoard.wnd());
+		return 0;
 	}
 	break;
 	

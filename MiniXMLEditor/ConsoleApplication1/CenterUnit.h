@@ -42,7 +42,7 @@ public:
 	int edit(LPARAM param, std::wstring &str)override;
 	int goHighLevel()override;
 
-	int updateAtt(std::wstring *oldkey, std::wstring *value, std::wstring *nekey)override;
+	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)override;
 
 
 private:

@@ -45,6 +45,8 @@ public:
 	//update
 	void update();
 
+	inline HWND	wnd() { return theMainWnd.wnd(); }
+
 private:
 	//keep the layout
 	int updateLayout(WPARAM wp, LPARAM lp);

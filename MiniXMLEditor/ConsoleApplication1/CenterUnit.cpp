@@ -132,12 +132,9 @@ int CenterUnit::edit(LPARAM param, std::wstring &str)
 	return 1;
 }
 
-int CenterUnit::updateAtt(std::wstring * oldkey, std::wstring * value, std::wstring * nekey)
+int CenterUnit::updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)
 {
-	if (*oldkey == L"")
-		datapool()->setItemAtt(selection(), nekey, value, nekey);
-	else
-		datapool()->setItemAtt(selection(), oldkey, value, nekey);
+	datapool()->setItemAtt(selection(), oldkey, value, nekey);
 	
 	refreshAtt();
 	return 0;

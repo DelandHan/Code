@@ -4,18 +4,6 @@
 using namespace xml;
 using namespace std;
 
-void convertToWStr(std::wstring &dest, const std::string &source) {
-	dest.resize(source.size());
-	std::copy(source.begin(), source.end(), dest.begin());
-
-}
-
-void convertToStr(std::string &dest, const std::wstring &source)
-{
-	dest.resize(source.size());
-	WideCharToMultiByte(CP_ACP, 0, &source[0], (int)source.size(), &dest[0], dest.size(), 0, 0);
-}
-
 XMLDataHub::XMLDataHub()
 {
 }
@@ -149,17 +137,17 @@ int XMLDataHub::queryPath(LPARAM param, std::wstring &path)
 	return 0;
 }
 
-int XMLDataHub::setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey)
+int XMLDataHub::setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey)
 {
 	XMLNode *node = nullptr;
 	if (param == 0) return 1;
 	else node = (XMLNode*)param;
 
 	string buff_ok, buff_v, buff_k;
-	convertToStr(buff_ok, *oldkey);
-	convertToStr(buff_v, *value);
-	convertToStr(buff_k, *nekey);
+	convertToStr(buff_ok, oldkey);
+	convertToStr(buff_v, value);
+	convertToStr(buff_k, nekey);
 
-	node->setAttribute(buff_ok, buff_v, buff_k);
+	node->setAttribute(buff_ok, buff_k, buff_v);
 	return 0;
 }
