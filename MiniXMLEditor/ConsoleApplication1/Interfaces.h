@@ -35,6 +35,8 @@ public:
 	virtual int edit(LPARAM param, std::wstring &str) = 0;
 	virtual int goHighLevel() = 0;
 
+	virtual int delSelect() = 0;
+
 	virtual int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey) = 0;
 };
 

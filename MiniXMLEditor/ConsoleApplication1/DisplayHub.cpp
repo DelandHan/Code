@@ -23,7 +23,7 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
 
-	theMenu.addMenuItem(L"Del", 1);
+	theMenu.addMenuItem(L"Del", 300);
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
@@ -88,6 +88,18 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 		wstring *result = theAttPanel.getEditResult();
 		return theInputHub->updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
 	}
+
+	switch (LOWORD(wp))
+	{
+	case 300://delete
+	{
+		theInputHub->delSelect();
+	}
+	break;
+	default:
+		break;
+	}
+
 	return 0;
 }
 

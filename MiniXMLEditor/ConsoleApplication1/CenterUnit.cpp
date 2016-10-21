@@ -65,12 +65,19 @@ int BaseCenterUnit::refreshAtt()
 
 int BaseCenterUnit::setCurrent(LPARAM param, int i)
 {
-	ItemData data = { L"",0,param };
-	theData->queryItem(&data);
+	if (i)
+	{
+		theCurrent[i] = param;
+	}
+	else
+	{
+		ItemData data = { L"",0,param };
+		theData->queryItem(&data);
 
-	if (data.type() != 1 && data.type() != 9) return 1; //not an element node nor document node
+		if (data.type() != 1 && data.type() != 9) return 1; //not an element node nor document node
 
-	theCurrent[i] = data.param();
+		theCurrent[i] = data.param();
+	}
 
 	if (i == 0)
 	{
@@ -104,6 +111,27 @@ CenterUnit::~CenterUnit()
 int CenterUnit::goHighLevel()
 {
 	return setCurrent(datapool()->queryParent(current(0)),0);
+}
+
+int CenterUnit::delSelect()
+{
+	ItemData data = { L"",0,selection() };
+
+	LPARAM parent = datapool()->queryParent(selection());
+	if (datapool()->setItem(&data) == 0)
+	{
+		if (parent == current(0)) {
+			setCurrent(0, 1);
+			refreshCurrent();
+		}
+		else
+			refreshChild();
+
+		setSelection(0);
+		return 0;
+	}
+	else
+		return 1;
 }
 
 int CenterUnit::select(LPARAM param, int panelId)

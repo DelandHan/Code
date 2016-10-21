@@ -13,6 +13,8 @@ public:
 	void setStr(const std::string source);
 	void setStr(const std::wstring source);
 
+	int isRemove() { return !theStr.size(); }
+
 	inline void setParam(LPARAM p) { theParam = p; }
 	inline LPARAM param() { return theParam; }
 

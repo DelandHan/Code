@@ -95,6 +95,11 @@ int XMLDataHub::setItem(ItemData * source)
 	if (source->param() == 0) return 1;
 	else node = (XMLNode*)source->param();
 
+	if (source->isRemove()) {
+		delete node;
+		return 0;
+	}
+
 	node->setString(source->str());
 
 	if (source->type()) {
