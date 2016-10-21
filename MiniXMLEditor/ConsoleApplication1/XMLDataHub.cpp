@@ -4,6 +4,18 @@
 using namespace xml;
 using namespace std;
 
+void convertToWStr(std::wstring &dest, const std::string &source) {
+	dest.resize(source.size());
+	std::copy(source.begin(), source.end(), dest.begin());
+
+}
+
+void convertToStr(std::string &dest, const std::wstring &source)
+{
+	dest.resize(source.size());
+	WideCharToMultiByte(CP_ACP, 0, &source[0], (int)source.size(), &dest[0], dest.size(), 0, 0);
+}
+
 XMLDataHub::XMLDataHub()
 {
 }

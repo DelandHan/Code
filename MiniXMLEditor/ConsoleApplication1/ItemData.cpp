@@ -2,10 +2,12 @@
 #include "ItemData.h"
 
 using namespace std;
-
+/*
 ItemData::ItemData(int i)
-	: theParam(0), theStrLst(i)
+	: theParam(0), theType(i)
 {
+	if (i == 2) theStrLst.resize(2);
+	else theStrLst.resize(1);
 }
 
 ItemData::~ItemData()
@@ -45,3 +47,4 @@ void ItemData::convertToStr(std::string & dest, const std::wstring & source)
 	dest.resize(source.size());
 	WideCharToMultiByte(CP_ACP, 0, &source[0], (int)source.size(), &dest[0], dest.size(), 0, 0);
 }
+*/
