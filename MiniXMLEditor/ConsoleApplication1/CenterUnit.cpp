@@ -68,9 +68,9 @@ int BaseCenterUnit::setCurrent(LPARAM param, int i)
 	ItemData data = { L"",0,param };
 	theData->queryItem(&data);
 
-	if (data.type != 1 && data.type != 9) return 1; //not an element node nor document node
+	if (data.type() != 1 && data.type() != 9) return 1; //not an element node nor document node
 
-	theCurrent[i] = data.param;
+	theCurrent[i] = data.param();
 
 	if (i == 0)
 	{
@@ -123,10 +123,12 @@ int CenterUnit::edit(LPARAM param, std::wstring &str)
 {
 	ItemData data = { str,0,param };
 
+	if (str == L"") return 1;
+
 	if (datapool()->setItem(&data) == 0)
 	{
 		datapool()->queryItem(&data);
-		str = data.str; //it might change
+		str = data.strW(); //it might change
 		return 0;
 	}
 	return 1;

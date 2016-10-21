@@ -1,20 +1,7 @@
 #pragma once
 #include <string>
 #include <list>
-
-//passing data
-struct ItemData {
-	std::wstring str;
-	int type;
-	LPARAM param;
-};
-typedef std::list<ItemData> ItemPool;
-
-struct AttData {
-	std::wstring key;
-	std::wstring value;
-};
-typedef std::list<AttData> AttPool;
+#include "ItemData.h"
 
 //the Obj used for UI
 class IWndObj 

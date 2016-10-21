@@ -1,31 +1,61 @@
 #pragma once
-#include <vector>
-#include <list>
-/*
-class ItemData
+#include <string>
+
+class LVData
 {
 public:
-	ItemData(int type);
-	~ItemData();
+	LVData();
+	~LVData();
 
-	void setStr(int id, std::string & str);
-	void setStrW(int id, std::wstring & str);
+	std::wstring strW();
+	std::string str();
 
-	std::string getStr(int id);
-	std::wstring getStrW(int id);
+	void setStr(const std::string source);
+	void setStr(const std::wstring source);
 
-	inline int type() { return theType; }
+	inline void setParam(LPARAM p) { theParam = p; }
+	inline LPARAM param() { return theParam; }
+
+	static void convertToWStr(std::wstring &dest, const std::string &source);
+	static void convertToStr(std::string &dest, const std::wstring &source);
 
 private:
-	std::vector<std::wstring> theStrLst;
+	std::wstring theStr;
 	LPARAM theParam;
-	int theType;
+};
 
-	void convertToWStr(std::wstring &dest, const std::string &source);
-	void convertToStr(std::string &dest, const std::wstring &source);
+class ItemData
+	:public LVData
+{
+public:
+	ItemData();
+	ItemData(std::wstring str, int type, LPARAM param);
+	~ItemData();
+
+	inline int type() { return theType; }
+	inline void setType(int t) { theType = t; }
+
+private:
+	int theType;
+};
+
+class AttData
+	:public LVData
+{
+public:
+	AttData();
+	~AttData();
+
+	std::wstring valueW();
+	std::string value();
+
+	void setValue(const std::string source);
+	void setValue(const std::wstring source);
+
+private:
+	std::wstring theValue;
 
 };
 
 typedef std::list<ItemData> ItemPool;
-
-*/
+typedef std::list<AttData> AttPool;

@@ -46,7 +46,7 @@ void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
 	if (itemlist == nullptr) return;
 	for (ItemPool::iterator it = itemlist->begin(); it != itemlist->end(); it++)
 	{
-		theItemPanel[panelID].addItems(it->str, it->type == 1 ? 1 : 0, it->param);
+		theItemPanel[panelID].addItems(it->strW(), it->type() == 1 ? 1 : 0, it->param());
 	}
 //	if (sel != -1) ListView_SetItemState(theItemPanel[panelID].wnd(), sel, LVIS_SELECTED, LVIS_SELECTED);//re-select it
 }
@@ -58,7 +58,7 @@ void DisplayHub::refreshAttPanel(AttPool * attlist)
 
 	for (AttPool::iterator it = attlist->begin(); it != attlist->end(); it++)
 	{
-		theAttPanel.addAttribute(it->key, it->value);
+		theAttPanel.addAttribute(it->strW(), it->valueW());
 	}
 
 	theAttPanel.addAttribute(wstring(L""), wstring(L""));

@@ -2,49 +2,92 @@
 #include "ItemData.h"
 
 using namespace std;
-/*
-ItemData::ItemData(int i)
-	: theParam(0), theType(i)
+
+LVData::LVData()
+	:theParam(0)
 {
-	if (i == 2) theStrLst.resize(2);
-	else theStrLst.resize(1);
+}
+
+LVData::~LVData()
+{
+}
+
+std::wstring LVData::strW()
+{
+	return theStr;
+}
+
+std::string LVData::str()
+{
+	string buff;
+	convertToStr(buff, theStr);
+	return move(buff);
+}
+
+void LVData::setStr(const std::string source)
+{
+	convertToWStr(theStr, source);
+}
+
+void LVData::setStr(const std::wstring source)
+{
+	theStr = source;
+}
+
+void LVData::convertToWStr(std::wstring & dest, const std::string & source)
+{
+	dest.resize(source.size());
+	std::copy(source.begin(), source.end(), dest.begin());
+}
+
+void LVData::convertToStr(std::string & dest, const std::wstring & source)
+{
+	dest.resize(source.size());
+	WideCharToMultiByte(CP_ACP, 0, &source[0], (int)source.size(), &dest[0], dest.size(), 0, 0);
+}
+
+ItemData::ItemData()
+	:theType(0)
+{
+}
+
+ItemData::ItemData(std::wstring str, int type, LPARAM param)
+{
+	theType = type;
+	setStr(str);
+	setParam(param);
 }
 
 ItemData::~ItemData()
 {
 }
 
-void ItemData::setStr(int id, std::string & str)
+AttData::AttData()
 {
-	convertToWStr(theStrLst[id], str);
 }
 
-void ItemData::setStrW(int id, std::wstring & str)
+AttData::~AttData()
 {
-	theStrLst[id] = str;
 }
 
-std::string ItemData::getStr(int id)
+std::wstring AttData::valueW()
 {
-	string data;
-	convertToStr(data, theStrLst[id]);
-	return std::move(data);
+	return theValue;
 }
 
-std::wstring ItemData::getStrW(int id)
+std::string AttData::value()
 {
-	return theStrLst[id];
+	string buff;
+	convertToStr(buff, theValue);
+	return move(buff);
 }
 
-void ItemData::convertToWStr(std::wstring & dest, const std::string & source)
+void AttData::setValue(const std::string source)
 {
-	dest.resize(source.size());
-	std::copy(source.begin(), source.end(), dest.begin());
+	convertToWStr(theValue, source);
 }
 
-void ItemData::convertToStr(std::string & dest, const std::wstring & source)
+void AttData::setValue(const std::wstring source)
 {
-	dest.resize(source.size());
-	WideCharToMultiByte(CP_ACP, 0, &source[0], (int)source.size(), &dest[0], dest.size(), 0, 0);
+	theValue = source;
 }
-*/

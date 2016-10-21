@@ -55,7 +55,7 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="ItemData.h">
-      <Filter>头文件</Filter>
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -84,7 +84,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ItemData.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
