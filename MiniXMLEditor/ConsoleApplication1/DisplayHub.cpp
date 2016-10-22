@@ -23,8 +23,6 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
 
-	theMenu.addMenuItem(L"Del", 300);
-
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
 
@@ -69,6 +67,19 @@ void DisplayHub::displayPath(std::wstring & path)
 	SetWindowText(theUpButton.wnd(), path.c_str());
 }
 
+void DisplayHub::getClipboard(std::string & buff)
+{
+	OpenClipboard(theDisplayBoard.wnd());
+	HANDLE hmem = GetClipboardData(CF_TEXT);
+	char * data = (char *)GlobalLock(hmem);
+
+	buff = data;
+
+	GlobalUnlock(hmem);
+	CloseClipboard();
+
+}
+
 int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
 {
 	LPNMHDR data = (LPNMHDR)lp;
@@ -89,17 +100,10 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 		return theInputHub->updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
 	}
 
-	switch (LOWORD(wp))
+	if (lp == 0)
 	{
-	case 300://delete
-	{
-		theInputHub->delSelect();
+		return theInputHub->setMenuResult(LOWORD(wp));
 	}
-	break;
-	default:
-		break;
-	}
-
 	return 0;
 }
 
@@ -131,9 +135,23 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	break;
 	case NM_RCLICK:
 	{
-		RECT rect; GetWindowRect(theItemPanel[id].wnd(), &rect);
+		LPARAM sel = 0;
+		if (param->iItem != -1) sel = theItemPanel[id].getParam(param->iItem);
 
-		if (param->iItem != -1) theMenu.show(param->ptAction.x + rect.left, param->ptAction.y + rect.top, theDisplayBoard.wnd());
+		LVPool menuPool;
+		theInputHub->getMenu(&menuPool, id, sel);
+
+		if (menuPool.size() == 0) return 1;
+		
+		ContextMenu theMenu;
+		for (LVPool::iterator it = menuPool.begin(); it != menuPool.end(); it++)
+		{
+			theMenu.addMenuItem(&it->strW()[0], it->param());
+		}
+		
+		RECT rect; GetWindowRect(theItemPanel[id].wnd(), &rect);
+		theMenu.show(param->ptAction.x + rect.left, param->ptAction.y + rect.top, theDisplayBoard.wnd());
+
 		return 0;
 	}
 	break;

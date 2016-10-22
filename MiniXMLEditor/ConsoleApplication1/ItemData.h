@@ -5,6 +5,7 @@ class LVData
 {
 public:
 	LVData();
+	LVData(std::wstring str, LPARAM param);
 	~LVData();
 
 	std::wstring strW();
@@ -59,5 +60,6 @@ private:
 
 };
 
+typedef std::list<LVData> LVPool;
 typedef std::list<ItemData> ItemPool;
 typedef std::list<AttData> AttPool;

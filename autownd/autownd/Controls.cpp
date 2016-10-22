@@ -398,7 +398,7 @@ autownd::ContextMenu::ContextMenu()
 
 autownd::ContextMenu::~ContextMenu()
 {
-	DeleteObject(thePopup);
+	DestroyMenu(thePopup);
 }
 
 void autownd::ContextMenu::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT pos)

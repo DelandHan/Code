@@ -8,6 +8,11 @@ LVData::LVData()
 {
 }
 
+LVData::LVData(std::wstring str, LPARAM param)
+	: theStr(str), theParam(param)
+{
+}
+
 LVData::~LVData()
 {
 }
@@ -52,10 +57,8 @@ ItemData::ItemData()
 }
 
 ItemData::ItemData(std::wstring str, int type, LPARAM param)
+	: LVData(str, param), theType(type)
 {
-	theType = type;
-	setStr(str);
-	setParam(param);
 }
 
 ItemData::~ItemData()

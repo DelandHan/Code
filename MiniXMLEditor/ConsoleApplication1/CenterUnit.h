@@ -42,11 +42,18 @@ public:
 	int edit(LPARAM param, std::wstring &str)override;
 	int goHighLevel()override;
 
-	int delSelect() override;
+	int getMenu(LVPool * data, int panelID, LPARAM param) override;
+	int setMenuResult(int param) override;
+
+	int delSelect();
+	void deSelect(int panel);
 
 	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)override;
 
 
 private:
+
+	int theStagePanel;
+	LPARAM theStageParam;
 
 };

@@ -21,6 +21,8 @@ public:
 
 	void displayPath(std::wstring &path) override;
 
+	void getClipboard(std::string & buff) override;
+
 private:
 	WndBoard theDisplayBoard;
 
@@ -28,7 +30,6 @@ private:
 	AttPanel theAttPanel;
 
 	DisplayButton theUpButton;
-	autownd::ContextMenu theMenu;
 
 	IInputHub *theInputHub;
 
