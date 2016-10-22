@@ -489,8 +489,9 @@ namespace xml
 				theRoot = pNode;
 			}
 
-			data.plus();//do not need to continue
-			//if (data.plus()) throw CONTINUE; //skip the '>'
+			pNode = nullptr;
+			//data.plus();//do not need to continue
+			if (data.plus()) throw CONTINUE; //skip the '>'
 		}
 		catch (Result error)
 		{
