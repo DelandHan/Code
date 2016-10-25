@@ -15,9 +15,9 @@ public:
 
 	int connectToInputHub(IInputHub *inputhub);
 
-	virtual void refreshItemPanel(ItemPool *itemlist, int panelID) override;
+	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
-	virtual void refreshAttPanel(AttPool * attlist) override;
+	void refreshAttPanel(AttPool * attlist) override;
 
 	void displayPath(std::wstring &path) override;
 
