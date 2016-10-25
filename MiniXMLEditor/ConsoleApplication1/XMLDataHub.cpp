@@ -185,11 +185,11 @@ int XMLDataHub::append(LPARAM parent, std::string text)
 	XMLNode * nenode = ps.pickupDocument();
 	if (theNode == nullptr) theNode = new XMLNode(DOCUMENT_NODE);
 
-	XMLNode * temp = nenode->getLastChild();
+	XMLNode * temp = nenode->getFirstChild();
 	while (temp)
 	{
 		XMLNode *toins = temp;
-		temp = temp->getPrevious();
+		temp = temp->getNext();
 		toins->removeMe();
 		node->append(toins);
 	}
