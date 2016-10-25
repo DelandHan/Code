@@ -90,7 +90,7 @@ namespace xml
 		std::string getAttribute(const std::string &key) const;
 		const AttNode* getAttribute(const AttNode * node) const;
 		//Set the Attribute
-		void setAttribute(const std::string &key, const std::string &value, const std::string &neKey = "");
+		void setAttribute(const std::string &key, const std::string &neKey, const std::string &nevalue);
 		//Remove an Attribute
 		void removeAttribute(const std::string & key);
 

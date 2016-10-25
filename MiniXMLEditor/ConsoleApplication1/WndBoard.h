@@ -4,19 +4,26 @@
 //manage the layout
 class LayoutManager {
 public:
-	//add objs
-	void addAutoObj(IMoveableWndObj* obj, autownd::vec pos, autownd::vec size);
-	void addFixedObj(IMoveableWndObj* obj, autownd::vec pos, autownd::vec size);
+	LayoutManager(int type);
+	~LayoutManager();
 
+	//add objs
+	void addObj(IMoveableWndObj* obj, autownd::vec pos, autownd::vec size);
+
+	void move(RECT* rect);
+
+private:
 	//move objs;
 	void moveAutoObj(RECT* rect);
 	void moveFixedObj(RECT* rect);
-private:
+
+	int theType;
+
 	struct ObjDetail {
 		IMoveableWndObj* obj;
 		autownd::vec pos, size;
 	};
-	std::list<ObjDetail> theAutoObjList, theFixedObjList;
+	std::list<ObjDetail> theList;
 };
 
 //make a board for holding panels and autosize them
@@ -38,6 +45,8 @@ public:
 	//update
 	void update();
 
+	inline HWND	wnd() { return theMainWnd.wnd(); }
+
 private:
 	//keep the layout
 	int updateLayout(WPARAM wp, LPARAM lp);
@@ -48,7 +57,7 @@ private:
 	//message map
 	autownd::MsgProcSet theMsgSet;
 
-	LayoutManager theLayoutMgr;
+	LayoutManager theLayoutMgr[2];
 
 };
 

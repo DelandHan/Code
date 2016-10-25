@@ -197,7 +197,7 @@ XMLNode & xml::XMLNode::operator=(const XMLNode & other)
 		AttNode * node = other.theAtt;
 		while (node)
 		{
-			setAttribute(node->theKey, node->theValue);
+			setAttribute(node->theKey, node->theKey, node->theValue);
 			node = node->theNext;
 		}
 	}
@@ -262,30 +262,34 @@ const XMLNode::AttNode * xml::XMLNode::getAttribute(const AttNode * node) const
 	}
 }
 
-void xml::XMLNode::setAttribute(const std::string &key, const std::string &value, const std::string &neKey)
+void xml::XMLNode::setAttribute(const std::string &key, const std::string &neKey, const std::string &nevalue)
 {
-	if (key.size() == 0) return;
-	if (theType == ELEMENT_NODE) {
-		AttNode *node = theAtt, *prev = nullptr;
-		while (node) {
-			if (node->theKey == key) {
-				if (neKey.size() != 0) node->theKey.assign(neKey.c_str(), verifyString(neKey.c_str(), neKey.size(), ELEMENT_NODE));//verify att key name as element node name.
-				node->theValue = value;
-				if (node->theKey.size() == 0) //incorrect key
-				{
-					if (node == theAtt) theAtt = node->theNext;
-					delete node;
-				}
-				return;
-			}
-			prev = node;
-			node = node->theNext;
-		}
-		prev = prev->insert(key, value);
-		if (theAtt == nullptr) theAtt = prev;
-	}
+	if (theType != ELEMENT_NODE) return;
+	
+	const string *index;
+	if (key == "") index = &neKey;
+	else index = &key;
 
+	AttNode *node = theAtt, *prev = nullptr;
+	while (node) {
+		if (node->theKey == *index) {
+			node->theKey.assign(neKey.c_str(), verifyString(neKey.c_str(), neKey.size(), ELEMENT_NODE));//verify att key name as element node name.
+			node->theValue = nevalue;
+			if (node->theKey.size() == 0) //incorrect key
+			{
+				if (node == theAtt) theAtt = node->theNext;
+				delete node;
+			}
+			return;
+		}
+		prev = node;
+		node = node->theNext;
+	}
+	prev = prev->insert(neKey, nevalue);
+	if (theAtt == nullptr) theAtt = prev;
 }
+
+
 
 void xml::XMLNode::removeAttribute(const std::string & key)
 {

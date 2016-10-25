@@ -54,6 +54,9 @@
     <ClInclude Include="XMLDataHub.h">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="ItemData.h">
+      <Filter>Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -76,6 +79,12 @@
     </ClCompile>
     <ClCompile Include="XMLDataHub.cpp">
       <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemData.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

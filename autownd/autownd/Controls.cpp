@@ -398,7 +398,7 @@ autownd::ContextMenu::ContextMenu()
 
 autownd::ContextMenu::~ContextMenu()
 {
-	DeleteObject(thePopup);
+	DestroyMenu(thePopup);
 }
 
 void autownd::ContextMenu::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT pos)
@@ -408,9 +408,8 @@ void autownd::ContextMenu::addMenuItem(TCHAR * itemname, UINT_PTR param, UINT po
 
 void autownd::ContextMenu::show(int x, int y, HWND parent)
 {
-	RECT rect; GetWindowRect(parent, &rect);
 	SetForegroundWindow(parent);
-	TrackPopupMenu(thePopup, TPM_TOPALIGN | TPM_LEFTALIGN, rect.left + x, rect.top + y, 0, parent, NULL);
+	TrackPopupMenu(thePopup, TPM_TOPALIGN | TPM_LEFTALIGN, x, y, 0, parent, NULL);
 }
 
 ///////////////////////////////

@@ -13,8 +13,8 @@ protected:
 	int refreshChild();
 	int refreshAtt();
 
-	void setCurrent(LPARAM param, int i);
-	void setSelection(LPARAM param);
+	int setCurrent(LPARAM param, int i);
+	int setSelection(LPARAM param);
 
 	inline IUIHub * uimodule() { return theUI; }
 	inline IDataHub* datapool() { return theData; }
@@ -42,9 +42,18 @@ public:
 	int edit(LPARAM param, std::wstring &str)override;
 	int goHighLevel()override;
 
-	int updateAtt(std::wstring *oldkey, std::wstring *value, std::wstring *nekey)override;
+	int getMenu(LVPool * data, int panelID, LPARAM param) override;
+	int setMenuResult(int param) override;
+
+	int delSelect();
+	void deSelect(int panel);
+
+	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)override;
 
 
 private:
+
+	int theStagePanel;
+	LPARAM theStageParam;
 
 };

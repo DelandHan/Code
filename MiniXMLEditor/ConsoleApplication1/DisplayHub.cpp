@@ -21,8 +21,7 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(theItemPanel, { 0,0 }, { 50,100 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(theItemPanel + 1, { 50,0 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
-	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 5,5 }, { 20,20 }, 0)) return 1;
-
+	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
@@ -45,7 +44,7 @@ void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
 	if (itemlist == nullptr) return;
 	for (ItemPool::iterator it = itemlist->begin(); it != itemlist->end(); it++)
 	{
-		theItemPanel[panelID].addItems(it->str, it->type == 1 ? 1 : 0, it->param);
+		theItemPanel[panelID].addItems(it->strW(), it->type() == 1 ? 1 : 0, it->param());
 	}
 //	if (sel != -1) ListView_SetItemState(theItemPanel[panelID].wnd(), sel, LVIS_SELECTED, LVIS_SELECTED);//re-select it
 }
@@ -57,10 +56,28 @@ void DisplayHub::refreshAttPanel(AttPool * attlist)
 
 	for (AttPool::iterator it = attlist->begin(); it != attlist->end(); it++)
 	{
-		theAttPanel.addAttribute(it->key, it->value);
+		theAttPanel.addAttribute(it->strW(), it->valueW());
 	}
 
 	theAttPanel.addAttribute(wstring(L""), wstring(L""));
+}
+
+void DisplayHub::displayPath(std::wstring & path)
+{
+	SetWindowText(theUpButton.wnd(), path.c_str());
+}
+
+void DisplayHub::getClipboard(std::string & buff)
+{
+	OpenClipboard(theDisplayBoard.wnd());
+	HANDLE hmem = GetClipboardData(CF_TEXT);
+	char * data = (char *)GlobalLock(hmem);
+
+	buff = data;
+
+	GlobalUnlock(hmem);
+	CloseClipboard();
+
 }
 
 int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
@@ -80,7 +97,12 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 	if (lp == (LPARAM)theAttPanel.wnd()) //attpanel finish editing
 	{
 		wstring *result = theAttPanel.getEditResult();
-		return theInputHub->updateAtt(result, result + 1, result + 2);
+		return theInputHub->updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
+	}
+
+	if (lp == 0)
+	{
+		return theInputHub->setMenuResult(LOWORD(wp));
 	}
 	return 0;
 }
@@ -113,7 +135,24 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	break;
 	case NM_RCLICK:
 	{
-		return 1;
+		LPARAM sel = 0;
+		if (param->iItem != -1) sel = theItemPanel[id].getParam(param->iItem);
+
+		LVPool menuPool;
+		theInputHub->getMenu(&menuPool, id, sel);
+
+		if (menuPool.size() == 0) return 1;
+		
+		ContextMenu theMenu;
+		for (LVPool::iterator it = menuPool.begin(); it != menuPool.end(); it++)
+		{
+			theMenu.addMenuItem(&it->strW()[0], it->param());
+		}
+		
+		RECT rect; GetWindowRect(theItemPanel[id].wnd(), &rect);
+		theMenu.show(param->ptAction.x + rect.left, param->ptAction.y + rect.top, theDisplayBoard.wnd());
+
+		return 0;
 	}
 	break;
 	
@@ -131,8 +170,8 @@ int DisplayHub::activeAttPanel(LPNMHDR data)
 	{
 	case NM_CLICK:
 	{
-		if (param->iItem == -1 || param->iItem == theAttPanel.count() - 1) {
-			param->iItem = theAttPanel.count() - 1;
+		if (param->iItem == -1 || param->iItem == theAttPanel.getCount() - 1) {
+			param->iItem = theAttPanel.getCount() - 1;
 			param->iSubItem = 0;
 		}
 		theAttPanel.startEditing(param->iItem, param->iSubItem, theDisplayBoard.getMsgSet()->retrieve(WM_COMMAND));

@@ -5,19 +5,44 @@
 using namespace autownd;
 using namespace std;
 
-void LayoutManager::addAutoObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size)
+
+LayoutManager::LayoutManager(int type)
+	:theType(type)
 {
-	theAutoObjList.push_back({ obj, pos, size });
 }
 
-void LayoutManager::addFixedObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size)
+LayoutManager::~LayoutManager()
 {
-	theFixedObjList.push_back({ obj, pos, size });
 }
+
+void LayoutManager::addObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size)
+{
+	theList.push_back({ obj, pos, size });
+}
+
+void LayoutManager::move(RECT * rect)
+{
+	switch (theType)
+	{
+	case 0:
+	{
+		moveAutoObj(rect);
+	}
+	break;
+	case 1:
+	{
+		moveFixedObj(rect);
+	}
+	break;
+	default:
+		break;
+	}
+}
+
 
 void LayoutManager::moveAutoObj(RECT * rect)
 {
-	for (list<ObjDetail>::iterator it = theAutoObjList.begin(); it != theAutoObjList.end(); it++)
+	for (list<ObjDetail>::iterator it = theList.begin(); it != theList.end(); it++)
 	{
 		int width = rect->right - rect->left, height = rect->bottom - rect->top;
 
@@ -28,7 +53,7 @@ void LayoutManager::moveAutoObj(RECT * rect)
 
 void LayoutManager::moveFixedObj(RECT * rect)
 {
-	for (list<ObjDetail>::iterator it = theFixedObjList.begin(); it != theFixedObjList.end(); it++)
+	for (list<ObjDetail>::iterator it = theList.begin(); it != theList.end(); it++)
 	{
 		it->obj->drag(rect->left + it->pos.first, rect->top + it->pos.second,
 			it->size.first, it->size.second);
@@ -38,6 +63,7 @@ void LayoutManager::moveFixedObj(RECT * rect)
 /////////////////////////////////////
 
 WndBoard::WndBoard()
+	:theLayoutMgr{ 0,0 }
 {
 	//init a base msgmap
 	theMsgSet.addMsgPair(WM_DESTROY, &msg_quit);
@@ -68,9 +94,10 @@ int WndBoard::updateLayout(WPARAM wp, LPARAM lp)
 	GetClientRect(theMainWnd.wnd(), &rect);
 	OffsetRect(&rect, GetSystemMetrics(SM_CXBORDER), GetSystemMetrics(SM_CXBORDER));
 
-	theLayoutMgr.moveFixedObj(&rect);
+	RECT fixedarea = { rect.left,rect.top,rect.right,rect.top + 30 };
+	theLayoutMgr[0].move(&fixedarea);
 	rect.top += 30;// the top 30 pix are for buttons
-	theLayoutMgr.moveAutoObj(&rect);
+	theLayoutMgr[1].move(&rect);
 
 	return 0;
 }
@@ -78,8 +105,8 @@ int WndBoard::updateLayout(WPARAM wp, LPARAM lp)
 int WndBoard::connectDisplayObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size, int area)
 {
 	obj->initialize(&theMainWnd);
-	if(area) theLayoutMgr.addAutoObj(obj, pos, size);
-	else theLayoutMgr.addFixedObj(obj, pos, size);
+	if (area > 1) area = 1;
+	theLayoutMgr[area].addObj(obj, pos, size);
 
 	return 0;
 }

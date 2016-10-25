@@ -489,6 +489,8 @@ namespace xml
 				theRoot = pNode;
 			}
 
+			pNode = nullptr;
+			//data.plus();//do not need to continue
 			if (data.plus()) throw CONTINUE; //skip the '>'
 		}
 		catch (Result error)
@@ -550,7 +552,7 @@ namespace xml
 			if (count == data.eos) throw CONTINUE;
 
 			value = theChecker.getValidString(data.getData(2), data.getDiff(3));
-			parent->setAttribute(name, value);
+			parent->setAttribute("", name, value);
 
 			if (data.plus()) throw CONTINUE; //skip the "
 		}

@@ -15,7 +15,13 @@ public:
 	int queryItem(ItemData *pool) override;
 	int setItem(ItemData *source) override;
 
-	int setItemAtt(LPARAM param, std::wstring * oldkey, std::wstring * value, std::wstring * nekey) override;
+	int queryPath(LPARAM param, std::wstring &path) override;
+
+	int setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey) override;
+
+	int insertAfter(LPARAM param, std::string text) override;
+	int append(LPARAM parent, std::string text) override;
+	int insertBefore(LPARAM param) override;
 
 private:
 	xml::XMLNode *theNode;
