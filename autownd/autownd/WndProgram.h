@@ -29,8 +29,6 @@ namespace autownd
 	private:
 		friend class Seed;
 		HWND theWnd;
-
-		static std::map<HWND, const MsgSet *> theWndMap;
 	};
 
 	//make the process
@@ -68,9 +66,6 @@ namespace autownd
 	private:
 		std::wstring theName;
 		
-		static const MsgSet* theAddingMsgs;
-		static WndObj* theAddingObj;
-
 		static LRESULT CALLBACK WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 	};
 
