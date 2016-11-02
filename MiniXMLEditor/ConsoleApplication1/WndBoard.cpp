@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DisplayObj.h"
 #include "WndBoard.h"
+#include "resource.h"
 
 using namespace autownd;
 using namespace std;
@@ -82,7 +83,8 @@ int WndBoard::initialize()
 
 	if (mainSeed.create(&theMainWnd, &theMsgSet, {
 		{ "size",vec(1000,650) },
-		{ "title",L"XMLEditor" }
+		{ "title",L"XMLEditor" },
+		{ "menu", IDR_MENU1 }
 	})) return 1;
 	else
 		return 0;

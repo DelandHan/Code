@@ -29,30 +29,28 @@ private:
 };
 
 class CenterUnit
-	:public IInputHub
-	,public BaseCenterUnit
+	:public BaseCenterUnit
 {
 public:
 	CenterUnit();
 	~CenterUnit();
 
 
-	int select(LPARAM param, int panelId)override;
-	int dbClick(LPARAM param)override;
-	int edit(LPARAM param, std::wstring &str)override;
-	int goHighLevel()override;
+	int select(LPARAM param, int panelId);
+	int dbClick(LPARAM param);
+	int edit(LPARAM param, std::wstring &str);
+	int goHighLevel();
 
-	int getMenu(LVPool * data, int panelID, LPARAM param) override;
-	int setMenuResult(int param) override;
+	int getMenu(LVPool * data, int panelID, LPARAM param) ;
+	int setMenuResult(int param) ;
 
 	int delSelect();
-	void deSelect(int panel);
+	void deselect(int panel);
 
-	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)override;
+	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey);
 
 
 private:
-
 	int theStagePanel;
 	LPARAM theStageParam;
 

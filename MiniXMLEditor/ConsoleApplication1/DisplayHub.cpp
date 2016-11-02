@@ -14,7 +14,7 @@ DisplayHub::~DisplayHub()
 {
 }
 
-int DisplayHub::initialize()
+int DisplayHub::initialize(IDataHub * datasource)
 {
 	if (theDisplayBoard.initialize()) return 1;
 
@@ -28,13 +28,9 @@ int DisplayHub::initialize()
 
 	theDisplayBoard.update();
 
-	return 0;
-}
+	theCenterUnit.connect(this, datasource);
 
-int DisplayHub::connectToInputHub(IInputHub * inputhub)
-{
-	theInputHub = inputhub;
-	return inputhub == nullptr ? 1 : 0;
+	return 0;
 }
 
 void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
@@ -93,16 +89,16 @@ int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
 
 int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 {
-	if (lp == (LPARAM)theUpButton.wnd()) return theInputHub->goHighLevel();
+	if (lp == (LPARAM)theUpButton.wnd()) return theCenterUnit.goHighLevel();
 	if (lp == (LPARAM)theAttPanel.wnd()) //attpanel finish editing
 	{
-		wstring *result = theAttPanel.getEditResult();
-		return theInputHub->updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
+		const wstring *result = theAttPanel.getEditResult();
+		return theCenterUnit.updateAtt(result[0].c_str(), result[1].c_str(), result[2].c_str());
 	}
 
 	if (lp == 0)
 	{
-		return theInputHub->setMenuResult(LOWORD(wp));
+		return theCenterUnit.setMenuResult(LOWORD(wp));
 	}
 	return 0;
 }
@@ -114,13 +110,13 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	{
 	case LVN_ITEMCHANGED:
 	{
-		theInputHub->select(param->lParam, id);
+		theCenterUnit.select(param->lParam, id);
 	}
 	break;
 	case NM_DBLCLK:
 	{
 		if (param->iItem == -1) return 1;
-		theInputHub->dbClick(theItemPanel[id].getParam(param->iItem));
+		theCenterUnit.dbClick(theItemPanel[id].getParam(param->iItem));
 	}
 	break;
 	case LVN_ENDLABELEDIT:
@@ -128,7 +124,7 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 		NMLVDISPINFO* info = (NMLVDISPINFO*)data;
 		if (info->item.pszText == nullptr) return 1;
 		wstring buff = info->item.pszText;
-		if (theInputHub->edit(info->item.lParam, buff)) return 1; //failed
+		if (theCenterUnit.edit(info->item.lParam, buff)) return 1; //failed
 
 		theItemPanel[id].setItemText(info->item.iItem, info->item.iSubItem, &buff[0]);
 	}
@@ -139,7 +135,7 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 		if (param->iItem != -1) sel = theItemPanel[id].getParam(param->iItem);
 
 		LVPool menuPool;
-		theInputHub->getMenu(&menuPool, id, sel);
+		theCenterUnit.getMenu(&menuPool, id, sel);
 
 		if (menuPool.size() == 0) return 1;
 		

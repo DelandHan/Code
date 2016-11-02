@@ -9,6 +9,7 @@ enum COMMAND
 	CHANGE,
 	INSERT_A,
 	INSERT_B,
+	APPEND,
 	PASTE,
 };
 
@@ -31,6 +32,7 @@ int BaseCenterUnit::connect(IUIHub * ui, IDataHub* data)
 	setCurrent(0, 0);
 	setCurrent(0, 1);
 	setSelection(0);
+	refreshCurrent();
 
 	return ui == nullptr || data == nullptr ? 1 : 0;
 }
@@ -132,7 +134,7 @@ int CenterUnit::getMenu(LVPool * data, int panelID, LPARAM param)
 	}
 	else
 	{
-		data->emplace_back(LVData(L"New", COMMAND::INSERT_A));
+		data->emplace_back(LVData(L"New", COMMAND::APPEND));
 	}
 
 	data->emplace_back(LVData(L"Paste", COMMAND::PASTE));
@@ -153,9 +155,9 @@ int CenterUnit::setMenuResult(int param)
 	{
 		if (theStageParam) 
 		{
-			if (datapool()->insertAfter(theStageParam, "<NewNode />") == 0)
+			if (datapool()->addItem(theStageParam, "<NewNode />",IDataHub::AddAction::AFTER) == 0)
 			{
-				deSelect(theStagePanel);
+				deselect(theStagePanel);
 			}
 			else
 				return 1;
@@ -163,15 +165,15 @@ int CenterUnit::setMenuResult(int param)
 		}
 		else
 		{
-			if (datapool()->append(current(theStagePanel), "<NewNode />") == 0) deSelect(theStagePanel);
+			if (datapool()->addItem(current(theStagePanel), "<NewNode />", IDataHub::AddAction::AFTER) == 0) deselect(theStagePanel);
 		}
 	}
 	break;
 	case COMMAND::INSERT_B:
 	{
-		if (datapool()->insertBefore(theStageParam) == 0)
+		if (datapool()->addItem(theStageParam, "<NewNode />", IDataHub::AddAction::BEFORE) == 0)
 		{
-			deSelect(theStagePanel);
+			deselect(theStagePanel);
 		}
 		else
 			return 1;
@@ -183,16 +185,21 @@ int CenterUnit::setMenuResult(int param)
 		datapool()->queryItem(&data);
 		data.setType(data.type() == 1 ? 3 : 1);
 		datapool()->setItem(&data);
-		deSelect(theStagePanel);
+		deselect(theStagePanel);
 	}
 	break;
 	case COMMAND::PASTE:
 	{
 		string buff;
 		uimodule()->getClipboard(buff);
-		if(theStageParam) datapool()->insertAfter(theStageParam, move(buff));
-		else datapool()->append(current(theStagePanel), move(buff));
-		deSelect(theStagePanel);
+		if(theStageParam) datapool()->addItem(theStageParam, buff,IDataHub::AddAction::AFTER);
+		else datapool()->addItem(current(theStagePanel), buff, IDataHub::AddAction::APPEND);
+		deselect(theStagePanel);
+	}
+	break;
+	case COMMAND::APPEND:
+	{
+		if (datapool()->addItem(current(theStagePanel), "<NewNode />", IDataHub::AddAction::APPEND) == 0) deselect(theStagePanel);
 	}
 	break;
 	default:
@@ -224,7 +231,7 @@ int CenterUnit::delSelect()
 		return 1;
 }
 
-void CenterUnit::deSelect(int panel)
+void CenterUnit::deselect(int panel)
 {
 	setSelection(0);
 

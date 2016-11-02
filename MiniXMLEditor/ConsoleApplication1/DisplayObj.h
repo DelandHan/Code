@@ -34,7 +34,7 @@ public:
 	void addAttribute(std::wstring &key, std::wstring &value);
 
 	//get Editing result
-	std::wstring *getEditResult();
+	const std::wstring *getEditResult();
 
 private:
 	//call back for editing

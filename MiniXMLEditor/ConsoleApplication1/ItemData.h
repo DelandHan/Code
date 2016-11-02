@@ -22,7 +22,7 @@ public:
 	static void convertToWStr(std::wstring &dest, const std::string &source);
 	static void convertToStr(std::string &dest, const std::wstring &source);
 
-private:
+protected:
 	std::wstring theStr;
 	LPARAM theParam;
 };
@@ -35,31 +35,16 @@ public:
 	ItemData(std::wstring str, int type, LPARAM param);
 	~ItemData();
 
-	inline int type() { return theType; }
-	inline void setType(int t) { theType = t; }
+	void setValue(const std::string value);
+	void setValue(const std::wstring value);
+
+	void beFolder();
+	void beText();
 
 private:
 	int theType;
-};
-
-class AttData
-	:public LVData
-{
-public:
-	AttData();
-	~AttData();
-
-	std::wstring valueW();
-	std::string value();
-
-	void setValue(const std::string source);
-	void setValue(const std::wstring source);
-
-private:
 	std::wstring theValue;
-
 };
 
 typedef std::list<LVData> LVPool;
 typedef std::list<ItemData> ItemPool;
-typedef std::list<AttData> AttPool;

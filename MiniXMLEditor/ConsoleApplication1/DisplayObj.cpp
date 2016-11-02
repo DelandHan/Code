@@ -115,7 +115,7 @@ void AttPanel::addAttribute(wstring & key, wstring & value)
 	set.setText(1, &value[0]);
 }
 
-std::wstring * AttPanel::getEditResult()
+const std::wstring * AttPanel::getEditResult()
 {
 	if (theOnEditing == -1) return nullptr;
 	theOnEditing = -1;

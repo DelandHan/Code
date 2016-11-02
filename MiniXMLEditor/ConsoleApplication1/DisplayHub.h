@@ -1,6 +1,7 @@
 #pragma once
 #include "WndBoard.h"
 #include "DisplayObj.h"
+#include "CenterUnit.h"
 #include <map>
 
 //manage display, params and connect to the data
@@ -11,9 +12,7 @@ public:
 	DisplayHub();
 	~DisplayHub();
 
-	int initialize();
-
-	int connectToInputHub(IInputHub *inputhub);
+	int initialize(IDataHub * datasource);
 
 	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
@@ -31,12 +30,12 @@ private:
 
 	DisplayButton theUpButton;
 
-	IInputHub *theInputHub;
-
 	//msg child handel
 	int activeItemPanel(int id, LPNMHDR data);
 	int activeAttPanel(LPNMHDR data);
 
 	int beNotified(WPARAM wp, LPARAM lp);
 	int onCommand(WPARAM wp, LPARAM lp);
+
+	CenterUnit theCenterUnit;
 };

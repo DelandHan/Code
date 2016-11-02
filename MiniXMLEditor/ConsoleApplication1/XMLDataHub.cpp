@@ -6,6 +6,7 @@ using namespace std;
 
 XMLDataHub::XMLDataHub()
 {
+	theNode = new XMLNode(NodeType::DOCUMENT_NODE);
 }
 
 
@@ -153,60 +154,52 @@ int XMLDataHub::setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value
 	return 0;
 }
 
-int XMLDataHub::insertAfter(LPARAM param, std::string text)
+int XMLDataHub::addItem(LPARAM position, std::string text, AddAction action)
 {
-	XMLNode *node = (XMLNode*)param;
+	//locate
+	XMLNode *node = (XMLNode*)position;
 	if (node == nullptr) return 1;
 
+	//create new nodes
 	XMLParser ps;
 	ps.parse(&text[0], text.size());
 	XMLNode * nenode = ps.pickupDocument();
+
 	if (theNode == nullptr) theNode = new XMLNode(DOCUMENT_NODE);
 
-	XMLNode * temp = nenode->getLastChild();
-	while (temp)
+	//////////////start adding/////////////
+	XMLNode * it = nenode->getFirstChild();
+	while (it)
 	{
-		XMLNode *toins = temp;
-		temp = temp->getPrevious();
+		XMLNode *toins = it;
+		it = it->getNext();
 		toins->removeMe();
-		node->insert(toins, true);
+
+		switch (action)
+		{
+		case IDataHub::APPEND:
+		{
+			node->append(toins);
+		}
+		break;
+		case IDataHub::BEFORE:
+		{
+			node->insert(toins, false);
+		}
+		break;
+		case IDataHub::AFTER:
+		{
+			node->insert(toins, true);
+			node = toins;
+		}
+		break;
+		default:
+			break;
+		}
+
 	}
 	delete nenode;
-	return 0;
-}
-
-int XMLDataHub::append(LPARAM parent, std::string text)
-{
-	XMLNode *node = (XMLNode*)parent;
-	if (node == nullptr) return 1;
-
-	XMLParser ps;
-	ps.parse(&text[0], text.size());
-	XMLNode * nenode = ps.pickupDocument();
-	if (theNode == nullptr) theNode = new XMLNode(DOCUMENT_NODE);
-
-	XMLNode * temp = nenode->getFirstChild();
-	while (temp)
-	{
-		XMLNode *toins = temp;
-		temp = temp->getNext();
-		toins->removeMe();
-		node->append(toins);
-	}
-	delete nenode;
-
 
 	return 0;
 }
 
-int XMLDataHub::insertBefore(LPARAM param)
-{
-	XMLNode *node = (XMLNode*)param;
-	if (node == nullptr) return 1;
-
-	XMLNode * temp = new XMLNode;
-	temp->setString("NewNode");
-	node->insert(temp, false);
-
-	return 0;
-}

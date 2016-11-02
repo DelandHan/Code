@@ -65,32 +65,20 @@ ItemData::~ItemData()
 {
 }
 
-AttData::AttData()
+void ItemData::setValue(const std::string value)
+{
+	convertToWStr(theValue, value);
+}
+
+void ItemData::setValue(const std::wstring value)
+{
+	theValue = value;
+}
+
+void ItemData::beFolder()
 {
 }
 
-AttData::~AttData()
+void ItemData::beText()
 {
-}
-
-std::wstring AttData::valueW()
-{
-	return theValue;
-}
-
-std::string AttData::value()
-{
-	string buff;
-	convertToStr(buff, theValue);
-	return move(buff);
-}
-
-void AttData::setValue(const std::string source)
-{
-	convertToWStr(theValue, source);
-}
-
-void AttData::setValue(const std::wstring source)
-{
-	theValue = source;
 }
