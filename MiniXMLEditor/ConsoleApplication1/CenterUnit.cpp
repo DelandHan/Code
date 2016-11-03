@@ -41,7 +41,7 @@ int BaseCenterUnit::refreshCurrent()
 {
 	ItemPool pool;
 
-	if (theData->getChildItemData(theCurrent[0], &pool) == 0)
+	if (theData->getItemData(theCurrent[0], &pool) == 0)
 	{
 		theUI->refreshItemPanel(&pool, 0);
 		
@@ -49,7 +49,7 @@ int BaseCenterUnit::refreshCurrent()
 		if (theData->queryPath(theCurrent[0], path) == 0) theUI->displayPath(path);
 
 		refreshChild();
-		refreshAtt();
+
 		return 0;
 	}
 	else
@@ -60,16 +60,13 @@ int BaseCenterUnit::refreshCurrent()
 int BaseCenterUnit::refreshChild()
 {
 	ItemPool itempool;
-	theData->getChildItemData(theCurrent[1], &itempool);
+	theData->getItemData(theCurrent[1], &itempool);
 	theUI->refreshItemPanel(&itempool, 1);
 	return 0;
 }
 
 int BaseCenterUnit::refreshAtt()
 {
-	AttPool attpool;
-	theData->getItemAtt(theSelected, &attpool);
-	theUI->refreshAttPanel(&attpool);
 
 	return 0;
 }
@@ -82,10 +79,12 @@ int BaseCenterUnit::setCurrent(LPARAM param, int i)
 	}
 	else
 	{
-		ItemData data = { L"",0,param };
-		theData->queryItem(&data);
+		ItemPool pool;
+		pool.push_back({ L"",0,param });
+		theData->getItemData(0, &pool);
 
-		if (data.type() != 1 && data.type() != 9) return 1; //not an element node nor document node
+		ItemData &data = pool.back();
+		if (data.getType() != 1 && data.getType() != 9) return 1; //not an element node nor document node
 
 		theCurrent[1] = 0;
 		theSelected = 0;
@@ -181,9 +180,14 @@ int CenterUnit::setMenuResult(int param)
 	break;
 	case COMMAND::CHANGE:
 	{
-		ItemData data = { L"",0,theStageParam };
-		datapool()->queryItem(&data);
-		data.setType(data.type() == 1 ? 3 : 1);
+		ItemPool pool;
+		pool.push_back({ L"",0,param });
+		datapool()->getItemData(0, &pool);
+
+		ItemData &data = pool.back();
+
+
+		data.setType(data.getType() == 1 ? 3 : 1);
 		datapool()->setItem(&data);
 		deselect(theStagePanel);
 	}
@@ -261,13 +265,16 @@ int CenterUnit::dbClick(LPARAM param)
 
 int CenterUnit::edit(LPARAM param, std::wstring &str)
 {
-	ItemData data = { str,0,param };
+	ItemPool pool;
+	pool.push_back({ str, 0,param });
+
+	ItemData &data = pool.back();
 
 	if (str == L"") return 1;
 
 	if (datapool()->setItem(&data) == 0)
 	{
-		datapool()->queryItem(&data);
+		datapool()->getItemData(0, &pool);
 		str = data.strW(); //it might change
 		return 0;
 	}

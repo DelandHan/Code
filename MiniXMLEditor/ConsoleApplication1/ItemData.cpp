@@ -75,10 +75,7 @@ void ItemData::setValue(const std::wstring value)
 	theValue = value;
 }
 
-void ItemData::beFolder()
+std::wstring ItemData::getValue()
 {
-}
-
-void ItemData::beText()
-{
+	return theValue;
 }

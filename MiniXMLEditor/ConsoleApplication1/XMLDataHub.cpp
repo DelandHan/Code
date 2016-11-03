@@ -15,46 +15,48 @@ XMLDataHub::~XMLDataHub()
 	if (theNode) delete theNode;
 }
 
-int XMLDataHub::getChildItemData(LPARAM param, ItemPool * pool)
+int XMLDataHub::getItemData(LPARAM parent, ItemPool * pool)
 {
-	XMLNode *node = nullptr;
-	if (param == 0) return 1;
-	else node = (XMLNode*)param;
-
-	if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) return 1;
-
-	XMLNode * childNode = node->getFirstChild();
-
-	while (childNode)
+	if (parent)
 	{
-		pool->emplace_back();
-		ItemData &data = pool->back();
-		data.setStr(childNode->getString());
-		data.setType(childNode->getType());
-		data.setParam((LPARAM)childNode);
+		XMLNode * node = (XMLNode*)parent;
+		pool->clear();
 
-		childNode = childNode->getNext();
+		if (node->getType() != ELEMENT_NODE && node->getType() != DOCUMENT_NODE) return 1;
+
+		const XMLNode::AttNode *attnode = nullptr;
+		while (attnode = node->getAttribute(attnode))
+		{
+			pool->emplace_back();
+			ItemData &data = pool->back();
+			data.setStr(attnode->getKey());
+			data.setValue(attnode->getValue());
+			data.setType(xml::ATTRIBUTE_NODE);
+			data.setParam((LPARAM)node);
+		}
+
+		XMLNode * childNode = node->getFirstChild();
+		while (childNode)
+		{
+			pool->emplace_back();
+			ItemData &data = pool->back();
+			data.setStr(childNode->getString());
+			data.setType(childNode->getType());
+			data.setParam((LPARAM)childNode);
+
+			childNode = childNode->getNext();
+		}
 	}
-
-	return 0;
-}
-
-int XMLDataHub::getItemAtt(LPARAM param, AttPool * pool)
-{
-	XMLNode *node = nullptr;
-	if (param == 0) return 1;
-	else node = (XMLNode*)param;
-
-	if (node->getType() != ELEMENT_NODE) return 1;
-
-	const XMLNode::AttNode *attnode = nullptr;
-
-	while (attnode = node->getAttribute(attnode))
+	else
 	{
-		pool->emplace_back();
-		AttData &data = pool->back();
-		data.setStr(attnode->getKey());
-		data.setValue(attnode->getValue());
+		for (ItemPool::iterator it = pool->begin(); it != pool->end(); it++)
+		{
+			XMLNode * node = (XMLNode*)it->param();
+			if (node == nullptr) node = theNode;
+			it->setStr(node->getString());
+			it->setType(node->getType());
+			it->setParam((LPARAM)node);
+		}
 	}
 
 	return 0;
@@ -77,19 +79,6 @@ void XMLDataHub::loadFile(const char * name)
 	theNode = xp.pickupDocument();
 }
 
-int XMLDataHub::queryItem(ItemData * pool)
-{
-	XMLNode *node = nullptr;
-	if (pool->param() == 0) node = theNode;
-	else node = (XMLNode*)pool->param();
-
-	pool->setStr(node->getString());
-	pool->setType(node->getType());
-	pool->setParam((LPARAM)node);
-
-	return 0;
-}
-
 int XMLDataHub::setItem(ItemData * source)
 {
 	XMLNode *node = nullptr;
@@ -103,8 +92,8 @@ int XMLDataHub::setItem(ItemData * source)
 
 	node->setString(source->str());
 
-	if (source->type()) {
-		node->convertType((NodeType)source->type());
+	if (source->getType()) {
+		node->convertType((NodeType)source->getType());
 	}
 
 	return 0;

@@ -38,8 +38,10 @@ public:
 	void setValue(const std::string value);
 	void setValue(const std::wstring value);
 
-	void beFolder();
-	void beText();
+	std::wstring getValue();
+
+	int getType() { return theType; }
+	void setType(int type) { theType = type; }
 
 private:
 	int theType;

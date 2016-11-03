@@ -110,7 +110,12 @@ void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
 
 void AttPanel::addAttribute(wstring & key, wstring & value)
 {
-	List::LSet set = at();
+	int count = getCount();
+	if (count == 0) //add end blank line
+	{
+		this->at().setText(L"", 0).update();
+	}
+	List::LSet set = at(count);
 	set.setText(&key[0], key.size()).update();
 	set.setText(1, &value[0]);
 }

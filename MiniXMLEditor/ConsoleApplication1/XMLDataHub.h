@@ -6,13 +6,12 @@ public:
 	XMLDataHub();
 	~XMLDataHub();
 
-	int getChildItemData(LPARAM param, ItemPool *pool) override;
-	int getItemAtt(LPARAM param, AttPool *pool) override;
+	int getItemData(LPARAM parent, ItemPool *pool) override;
+
 	LPARAM queryParent(LPARAM param) override;
 
 	void loadFile(const char * name);
 
-	int queryItem(ItemData *pool) override;
 	int setItem(ItemData *source) override;
 
 	int queryPath(LPARAM param, std::wstring &path) override;

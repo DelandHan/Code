@@ -17,7 +17,7 @@ class IUIHub
 {
 public:
 	virtual void refreshItemPanel(ItemPool *itemlist, int panelID) = 0;
-	virtual void refreshAttPanel(AttPool * attlist) = 0;
+
 	virtual void displayPath(std::wstring &path) = 0;
 
 	virtual void getClipboard(std::string & buff) = 0;
@@ -27,10 +27,10 @@ public:
 class IDataHub
 {
 public:
-	virtual int getChildItemData(LPARAM param, ItemPool *pool) = 0;
-	virtual int getItemAtt(LPARAM param, AttPool *pool) = 0;
+	virtual int getItemData(LPARAM parent, ItemPool *pool) = 0;
+	
 	virtual LPARAM queryParent(LPARAM param) = 0;
-	virtual int queryItem(ItemData *pool) = 0;
+
 	virtual int queryPath(LPARAM param, std::wstring &path) = 0;
 
 	virtual int setItem(ItemData *source) = 0;

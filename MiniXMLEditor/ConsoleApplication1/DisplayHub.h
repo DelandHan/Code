@@ -16,8 +16,6 @@ public:
 
 	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
-	void refreshAttPanel(AttPool * attlist) override;
-
 	void displayPath(std::wstring &path) override;
 
 	void getClipboard(std::string & buff) override;
