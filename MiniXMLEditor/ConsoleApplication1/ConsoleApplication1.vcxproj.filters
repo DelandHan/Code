@@ -80,9 +80,6 @@
     <ClCompile Include="XMLDataHub.cpp">
       <Filter>Data</Filter>
     </ClCompile>
-    <ClCompile Include="Interfaces.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ItemData.cpp">
       <Filter>Input</Filter>
     </ClCompile>
@@ -99,9 +96,5 @@
     <Image Include="folder.ico">
       <Filter>资源文件</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>
