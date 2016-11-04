@@ -39,6 +39,9 @@
     <ClInclude Include="DisplayObj.h">
       <Filter>Display</Filter>
     </ClInclude>
+    <ClInclude Include="TreePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -52,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="DisplayObj.cpp">
       <Filter>Display</Filter>
+    </ClCompile>
+    <ClCompile Include="TreePanel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

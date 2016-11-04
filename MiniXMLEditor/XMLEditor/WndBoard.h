@@ -4,7 +4,12 @@
 //manage the layout
 class LayoutManager {
 public:
-	LayoutManager(int type);
+	enum MoveType
+	{
+		AUTOSIZE,
+		FIXED
+	};
+	LayoutManager(MoveType type);
 	~LayoutManager();
 
 	//add objs
@@ -17,7 +22,7 @@ private:
 	void moveAutoObj(RECT* rect);
 	void moveFixedObj(RECT* rect);
 
-	int theType;
+	MoveType theType;
 
 	struct ObjDetail {
 		IMoveableWndObj* obj;

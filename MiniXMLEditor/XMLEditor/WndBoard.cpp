@@ -6,7 +6,7 @@ using namespace autownd;
 using namespace std;
 
 
-LayoutManager::LayoutManager(int type)
+LayoutManager::LayoutManager(MoveType type)
 	:theType(type)
 {
 }
@@ -24,16 +24,12 @@ void LayoutManager::move(RECT * rect)
 {
 	switch (theType)
 	{
-	case 0:
-	{
+	case LayoutManager::AUTOSIZE:
 		moveAutoObj(rect);
-	}
-	break;
-	case 1:
-	{
+		break;
+	case LayoutManager::FIXED:
 		moveFixedObj(rect);
-	}
-	break;
+		break;
 	default:
 		break;
 	}
@@ -63,7 +59,7 @@ void LayoutManager::moveFixedObj(RECT * rect)
 /////////////////////////////////////
 
 WndBoard::WndBoard()
-	:theLayoutMgr{ 0,0 }
+	:theLayoutMgr{ LayoutManager::AUTOSIZE,LayoutManager::AUTOSIZE }
 {
 	//init a base msgmap
 	theMsgSet.addMsgPair(WM_DESTROY, &msg_quit);

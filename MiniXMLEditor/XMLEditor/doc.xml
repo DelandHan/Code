@@ -1,0 +1,21 @@
+
+        <Tr>
+          <Th>File name</Th>
+          <Th>SHA1 hash</Th>
+          <Th>SHA256 hash</Th>
+        </Tr>
+        <Tr>
+          <Td>Windows6.0-KB3198483-ia64.msu</Td>
+          <Td>FBBF37B1B611E56BE54C35BA57E351CDE5DDF131</Td>
+          <Td>DD5ACA46A2325D58896DEDBC0B0382889A89D9D9AC99210783E82E6EBFC9A1E0</Td>
+        </Tr>
+        <Tr>
+          <Td>Windows6.0-KB3198483-x64.msu</Td>
+          <Td>01F1967B2CB9F3033E7FCF7FFD8CEBE7E6383F2A</Td>
+          <Td>0939E72296B3085C39C07765FFABAF96C8C3869D346E8306C6C342AED33889DD</Td>
+        </Tr>
+        <Tr>
+          <Td>Windows6.0-KB3198483-x86.msu</Td>
+          <Td>6AD6DDCABBE1ADC19BA99E36BAB6F9E964772598</Td>
+          <Td>30AA085897A70705FA722BDB0711B799A2CB7BCD9D929D30960F52E15D09141A</Td>
+        </Tr>
