@@ -63,3 +63,5 @@ private:
 typedef std::list<LVData> LVPool;
 typedef std::list<ItemData> ItemPool;
 typedef std::list<AttData> AttPool;
+
+

@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "DisplayHub.h"
-#include "CenterUnit.h"
 #include "XMLDataHub.h"
 
 int main()
@@ -13,16 +12,12 @@ int main()
 	XMLDataHub xmldata;
 	xmldata.loadFile("IECU.xml");
 
-	CenterUnit cunit;
-
 	DisplayHub ui;
+
 	ui.initialize();
+	ui.connectToDataPool(&xmldata);
 
-	cunit.connect(&ui, &xmldata);
-	ui.connectToInputHub(&cunit);
 	
-	cunit.dbClick(0);
-
 	autownd::msgLoop();
     return 0;
 }

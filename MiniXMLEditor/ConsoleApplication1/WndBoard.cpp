@@ -113,6 +113,6 @@ int WndBoard::connectDisplayObj(IMoveableWndObj * obj, autownd::vec pos, autownd
 
 void WndBoard::update()
 {
-	theMainWnd.show(SW_HIDE);
 	theMainWnd.show();
+	UpdateWindow(theMainWnd.wnd());
 }

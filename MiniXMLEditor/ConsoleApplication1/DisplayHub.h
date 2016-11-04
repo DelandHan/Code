@@ -1,5 +1,6 @@
 #pragma once
 #include "WndBoard.h"
+#include "CenterUnit.h"
 #include "DisplayObj.h"
 #include <map>
 
@@ -13,7 +14,7 @@ public:
 
 	int initialize();
 
-	int connectToInputHub(IInputHub *inputhub);
+	int connectToDataPool(IDataHub *datapool);
 
 	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
@@ -31,7 +32,7 @@ private:
 
 	DisplayButton theUpButton;
 
-	IInputHub *theInputHub;
+	CenterUnit theControlCenter;
 
 	//msg child handel
 	int activeItemPanel(int id, LPNMHDR data);

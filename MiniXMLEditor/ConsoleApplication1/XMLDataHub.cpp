@@ -64,7 +64,9 @@ LPARAM XMLDataHub::queryParent(LPARAM param)
 	XMLNode *node = nullptr;
 	if (param == 0) return (LPARAM)theNode;
 	else node = (XMLNode*)param;
-	return (LPARAM)node->getParent();
+
+	LPARAM parent = (LPARAM)node->getParent();
+	return parent == 0 ? (LPARAM)theNode : parent;
 }
 
 void XMLDataHub::loadFile(const char * name)

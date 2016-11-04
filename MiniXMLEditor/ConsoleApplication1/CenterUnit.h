@@ -1,59 +1,37 @@
 #pragma once
 
-class BaseCenterUnit
-{
-public:
-	BaseCenterUnit();
-	~BaseCenterUnit();
-
-	int connect(IUIHub * ui, IDataHub* data);
-
-protected:
-	int refreshCurrent();
-	int refreshChild();
-	int refreshAtt();
-
-	int setCurrent(LPARAM param, int i);
-	int setSelection(LPARAM param);
-
-	inline IUIHub * uimodule() { return theUI; }
-	inline IDataHub* datapool() { return theData; }
-	inline LPARAM current(int i) { return theCurrent[i]; }
-	inline LPARAM selection() { return theSelected; }
-
-private:
-	IUIHub * theUI;
-	IDataHub* theData;
-
-	LPARAM theCurrent[2], theSelected;
-};
-
 class CenterUnit
-	:public IInputHub
-	,public BaseCenterUnit
 {
 public:
 	CenterUnit();
 	~CenterUnit();
 
+	int connect(IUIHub * ui, IDataHub* data);
 
-	int select(LPARAM param, int panelId)override;
-	int dbClick(LPARAM param)override;
-	int edit(LPARAM param, std::wstring &str)override;
-	int goHighLevel()override;
+	////////browse///////
 
-	int getMenu(LVPool * data, int panelID, LPARAM param) override;
-	int setMenuResult(int param) override;
+	//up
+	int goHighLevel();
+	//select
+	int select(LPARAM item, int panelId);
+	//dbclick
+	int dbClick(LPARAM param);
 
-	int delSelect();
-	void deSelect(int panel);
+	/////////modify///////
+	int edit(ItemPool *checkoutset);
+	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey);
 
-	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)override;
+	int getMenu(LVPool * menu, LPARAM param);
+	int setMenuResult(int command);
 
 
 private:
+	int changePage(LPARAM page);
+	int showDetail(LPARAM item);
+	int showAttribute(LPARAM item);
 
-	int theStagePanel;
-	LPARAM theStageParam;
+	IUIHub * theUI;
+	IDataHub* theDataPool;
 
+	LPARAM theCurrentPage;
 };
