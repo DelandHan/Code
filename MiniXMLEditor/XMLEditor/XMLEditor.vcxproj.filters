@@ -13,11 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="_Data">
-      <UniqueIdentifier>{0137a216-75c0-423f-8899-e2631cb399a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="_Wnd">
-      <UniqueIdentifier>{dd0f9dee-f812-4f42-a8fd-fbb032fcd63b}</UniqueIdentifier>
+    <Filter Include="Display">
+      <UniqueIdentifier>{111862ce-e914-4f7c-b0b3-823ce8d1657a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,35 +27,35 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IModule.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WndBoard.h">
+      <Filter>Display</Filter>
     </ClInclude>
-    <ClInclude Include="ExpWnd.h">
-      <Filter>_Wnd</Filter>
+    <ClInclude Include="Interfaces.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="XMLPool.h">
-      <Filter>_Data</Filter>
+    <ClInclude Include="DisplayObj.h">
+      <Filter>Display</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MiniXMLEditor.cpp">
+    <ClCompile Include="XMLEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpWnd.cpp">
-      <Filter>_Wnd</Filter>
+    <ClCompile Include="WndBoard.cpp">
+      <Filter>Display</Filter>
     </ClCompile>
-    <ClCompile Include="XMLPool.cpp">
-      <Filter>_Data</Filter>
+    <ClCompile Include="DisplayObj.cpp">
+      <Filter>Display</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MiniXMLEditor.rc">
+    <ResourceCompile Include="XMLEditor.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -69,8 +66,5 @@
     <Image Include="folder.ico">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="IECU.xml" />
   </ItemGroup>
 </Project>
