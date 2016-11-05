@@ -27,8 +27,17 @@ public:
 class IDataHub
 {
 public:
+	enum DOMPos
+	{
+		PARENT,
+		BEFORE,
+		AFTER,
+		CHILD
+	};
+
 	virtual int getChildItemData(LPARAM param, ItemPool *pool) = 0;
 	virtual int getItemAtt(LPARAM param, AttPool *pool) = 0;
+
 	virtual LPARAM queryParent(LPARAM param) = 0;
 	virtual int queryItem(ItemData *pool) = 0;
 	virtual int queryPath(LPARAM param, std::wstring &path) = 0;
@@ -36,8 +45,5 @@ public:
 	virtual int setItem(ItemData *source) = 0;
 	virtual int setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey) = 0;
 
-	virtual int insertAfter(LPARAM param, std::string text) = 0;
-	virtual int append(LPARAM parent, std::string text) = 0; 
-
-	virtual int insertBefore(LPARAM param) = 0;
+	virtual int addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record = nullptr) = 0;
 };

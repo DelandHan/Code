@@ -1,12 +1,36 @@
 #pragma once
 
+class BaseUnit
+{
+public:
+	BaseUnit();
+	~BaseUnit();
+
+	int connect(IUIHub * ui, IDataHub* data);
+	
+protected:
+	int changePage(LPARAM page);
+	int showDetail(LPARAM item);
+	int showAttribute(LPARAM item);
+
+	inline IUIHub * getUI() { return theUI; }
+	inline IDataHub* getData() { return theDataPool; }
+	inline LPARAM getPage(size_t i) { return thePage[i]; }
+
+private:
+	IUIHub * theUI;
+	IDataHub* theDataPool;
+
+	LPARAM thePage[2];
+
+};
+
 class CenterUnit
+	:public BaseUnit
 {
 public:
 	CenterUnit();
 	~CenterUnit();
-
-	int connect(IUIHub * ui, IDataHub* data);
 
 	////////browse///////
 
@@ -21,17 +45,10 @@ public:
 	int edit(ItemPool *checkoutset);
 	int updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey);
 
-	int getMenu(LVPool * menu, LPARAM param);
-	int setMenuResult(int command);
+	int getMenu(LVPool * menu, int panelID, int row);
+	int setMenuResult(int command, int panelId, ItemPool * checkoutset);
 
 
 private:
-	int changePage(LPARAM page);
-	int showDetail(LPARAM item);
-	int showAttribute(LPARAM item);
 
-	IUIHub * theUI;
-	IDataHub* theDataPool;
-
-	LPARAM theCurrentPage;
 };

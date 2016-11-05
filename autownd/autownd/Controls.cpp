@@ -184,6 +184,11 @@ void autownd::List::extendStyle(long style)
 	ListView_SetExtendedListViewStyle(wnd(), style);
 }
 
+int autownd::List::getNextSelectedItem(int i)
+{
+	return ListView_GetNextItem(wnd(), i, LVNI_SELECTED);
+}
+
 List::LColumn List::addColumn(int i)
 {
 	return LColumn(wnd(), i);

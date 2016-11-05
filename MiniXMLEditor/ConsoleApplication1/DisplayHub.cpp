@@ -5,6 +5,72 @@
 using namespace std;
 using namespace autownd;
 
+class ItemList
+{
+public:
+	void checkoutSelection(List * panel);
+	void checkinSelection(List * panel);
+
+	inline ItemPool * getList() { return &theList; }
+private:
+	ItemPool theList;
+};
+
+void ItemList::checkoutSelection(List * panel)
+{
+	int pos = -1; 
+	while (1)
+	{
+		pos = panel->getNextSelectedItem(pos);
+		if (pos == -1) break;
+
+		autownd::List::LSet set = panel->at(pos);
+//		TCHAR buff[255];
+		const LPLVITEM lvitem = set
+//			.setText(buff, 255)
+			.setParam(0).sync();
+		theList.push_back({ L"",0,lvitem->lParam });
+	}
+}
+
+void ItemList::checkinSelection(List * panel)
+{
+	int pos = panel->getNextSelectedItem(-1); 
+	int oldpos = List::eoi;
+	ItemPool::iterator it = theList.begin();
+	while (pos != -1 || it != theList.end())
+	{
+		if (pos == -1)
+		{
+			//add items
+			if (oldpos != List::eoi) oldpos++;
+			wstring buff = it->strW();
+			panel->at(oldpos).setText(&buff[0], buff.size()).setImage(it->type() == 1 ? 1 : 0).setParam(it->param()).update();
+			it++;
+			continue;
+		}
+		if (it == theList.end())
+		{
+			ListView_DeleteItem(panel->wnd(), pos);
+			oldpos = pos;
+			pos--;
+			pos = panel->getNextSelectedItem(pos);
+			continue;
+		}
+
+		if (it->param() == panel->at(pos).setParam(0).sync()->lParam)
+		{
+			//panel->at(pos).setText(&it->strW()[0], it->strW().size()).setParam(it->param()).setImage(it->type()).update();
+			it++;
+		}
+		oldpos = pos;
+		pos = panel->getNextSelectedItem(pos);
+
+	}
+}
+
+
+
 DisplayHub::DisplayHub()
 {
 }
@@ -25,8 +91,6 @@ int DisplayHub::initialize()
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
-
-	theControlCenter.dbClick(0);
 
 	theDisplayBoard.update();
 
@@ -104,7 +168,16 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 
 	if (lp == 0)
 	{
-		return theControlCenter.setMenuResult(LOWORD(wp));
+		int panel = -1; HWND wnd = GetFocus();
+		if (wnd == theItemPanel[0].wnd()) panel = 0;
+		if (wnd == theItemPanel[1].wnd()) panel = 1;
+		if (panel == -1) return 1;
+
+		ItemList checkoutlist;
+
+		checkoutlist.checkoutSelection(theItemPanel + panel);
+		theControlCenter.setMenuResult(LOWORD(wp), panel, checkoutlist.getList());
+		checkoutlist.checkinSelection(theItemPanel + panel);
 	}
 	return 0;
 }
@@ -139,11 +212,8 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 	break;
 	case NM_RCLICK:
 	{
-		LPARAM sel = 0;
-		if (param->iItem != -1) sel = theItemPanel[id].getParam(param->iItem);
-
 		LVPool menuPool;
-		theControlCenter.getMenu(&menuPool, sel);
+		theControlCenter.getMenu(&menuPool, id, param->iItem);
 
 		if (menuPool.size() == 0) return 1;
 		
@@ -186,4 +256,3 @@ int DisplayHub::activeAttPanel(LPNMHDR data)
 	}
 	return 0;
 }
-

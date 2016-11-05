@@ -9,7 +9,7 @@ int ItemPanel::initialize(autownd::WndObj * parent)
 {
 	//create the control
 	if (parent->addControl(this, WC_LISTVIEW, {
-		{ "style", (long)LVS_EDITLABELS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
+		{ "style", (long)LVS_EDITLABELS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER }, //LVS_SINGLESEL
 		{ "exstyle", WS_EX_CLIENTEDGE },
 	}))
 	return 1;
@@ -60,7 +60,7 @@ int AttPanel::initialize(autownd::WndObj * parent)
 {
 	//create the control
 	if (parent->addControl(this, WC_LISTVIEW, {
-		{ "style", (long)LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL | LVS_NOCOLUMNHEADER },
+		{ "style", (long)LVS_REPORT | LVS_SHOWSELALWAYS |  LVS_NOCOLUMNHEADER },
 		{ "exstyle", WS_EX_CLIENTEDGE },
 	}))
 	return 1;

@@ -92,6 +92,8 @@ namespace autownd
 		LSet selection();
 		void extendStyle(long style);
 
+		int getNextSelectedItem(int i);
+
 		LColumn addColumn(int i);
 		void resizeColumn(int column, int size = LVSCW_AUTOSIZE);
 

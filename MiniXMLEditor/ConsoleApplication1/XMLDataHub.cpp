@@ -155,7 +155,7 @@ int XMLDataHub::setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value
 	return 0;
 }
 
-int XMLDataHub::insertAfter(LPARAM param, std::string text)
+int XMLDataHub::addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record)
 {
 	XMLNode *node = (XMLNode*)param;
 	if (node == nullptr) return 1;
@@ -163,29 +163,6 @@ int XMLDataHub::insertAfter(LPARAM param, std::string text)
 	XMLParser ps;
 	ps.parse(&text[0], text.size());
 	XMLNode * nenode = ps.pickupDocument();
-	if (theNode == nullptr) theNode = new XMLNode(DOCUMENT_NODE);
-
-	XMLNode * temp = nenode->getLastChild();
-	while (temp)
-	{
-		XMLNode *toins = temp;
-		temp = temp->getPrevious();
-		toins->removeMe();
-		node->insert(toins, true);
-	}
-	delete nenode;
-	return 0;
-}
-
-int XMLDataHub::append(LPARAM parent, std::string text)
-{
-	XMLNode *node = (XMLNode*)parent;
-	if (node == nullptr) return 1;
-
-	XMLParser ps;
-	ps.parse(&text[0], text.size());
-	XMLNode * nenode = ps.pickupDocument();
-	if (theNode == nullptr) theNode = new XMLNode(DOCUMENT_NODE);
 
 	XMLNode * temp = nenode->getFirstChild();
 	while (temp)
@@ -193,22 +170,31 @@ int XMLDataHub::append(LPARAM parent, std::string text)
 		XMLNode *toins = temp;
 		temp = temp->getNext();
 		toins->removeMe();
-		node->append(toins);
+		switch (pos)
+		{
+		case IDataHub::BEFORE:
+			node->insert(toins, false);
+			break;
+		case IDataHub::AFTER:
+			node->insert(toins, true);
+			node = toins;
+			break;
+		case IDataHub::CHILD:
+			node->append(toins);
+			break;
+		default:
+			continue;
+		}
+
+		if (record)
+		{
+			record->emplace_back(); ItemData & item = record->back();
+			item.setStr(toins->getString());
+			item.setType(toins->getType());
+			item.setParam((LPARAM)toins);
+		}
 	}
 	delete nenode;
-
-
-	return 0;
-}
-
-int XMLDataHub::insertBefore(LPARAM param)
-{
-	XMLNode *node = (XMLNode*)param;
-	if (node == nullptr) return 1;
-
-	XMLNode * temp = new XMLNode;
-	temp->setString("NewNode");
-	node->insert(temp, false);
 
 	return 0;
 }
