@@ -5,61 +5,44 @@
 #include "..\main.h"
 #include <iostream>
 #include <fstream>
+#include<sstream>
 using namespace std;
 
-void work(xml::XMLNode *source, xml::XMLNode * re)
-{
-	xml::XMLNode* node = source;
-	while (node!=source->getNextByChain(false))
-	{
-		if (node->getString() == "TD")
-		{
-			xml::XMLNode * child = node->getFirstChild();
-			while (child)
-			{
-				re->append(child->clone());
-				child = child->getNext();
-			}
-			node = node->getNextByChain();
-		}
-		else 
-			node = node->getNextByChain();
-	}
-}
+
 
 int main()
 {
-	xml::XMLParser xp;
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	/*xml::XMLParser xp;
 
 	xp.parseFile("iecu.xml");
 	xml::XMLNode * docu = xp.pickupDocument();
 
-	xml::XMLNode *re = new xml::XMLNode;
 	xml::XMLNode* node = docu;
+
+	xml::XMLAnd aa;
+
+	xml::XMLEqual * ee = aa.addCondition<xml::XMLEqual>();
+
+	ee->setCondition("", xml::ELEMENT_NODE);
 
 	while (node)
 	{
+		if (aa.isMatch(node))
+		{
+			cout << node->getString() << endl;
+		}
 
-		if (node->getString() == "table")
-		{
-			work(node, re);
-			xml::XMLNode *cl = re->clone();
-			node->insert(cl, false);
-			delete re;
-			re = new xml::XMLNode;
-			xml::XMLNode * temp = node;
-			node = node->getNextByChain(false);
-			delete temp;
-		}
-		else
-		{
-			node = node->getNextByChain();
-		}
+		node = node->getNextByChain();
+
 	}
-	
-	std::ofstream of("out.xml");
-	xp.saveNode(docu, &of);
-	of.close();
+	*/
+
+	xml::XMLConsole cons;
+
+	cons.setCondition("name==\"test\" AND type==ELEMENT_NODE OR name==\"disk\"");
 
 	system("pause");
     return 0;
