@@ -25,10 +25,7 @@ void ItemList::checkoutSelection(List * panel)
 		if (pos == -1) break;
 
 		autownd::List::LSet set = panel->at(pos);
-//		TCHAR buff[255];
-		const LPLVITEM lvitem = set
-//			.setText(buff, 255)
-			.setParam(0).sync();
+		const LPLVITEM lvitem = set.setParam(0).sync();
 		theList.push_back({ L"",0,lvitem->lParam });
 	}
 }
@@ -60,9 +57,26 @@ void ItemList::checkinSelection(List * panel)
 
 		if (it->param() == panel->at(pos).setParam(0).sync()->lParam)
 		{
-			//panel->at(pos).setText(&it->strW()[0], it->strW().size()).setParam(it->param()).setImage(it->type()).update();
+			if (!it->isRemove())
+			{
+				wstring buff = it->strW();
+				List::LSet set = panel->at(pos);
+				if (buff.size()) set.setText(&buff[0], buff.size());
+				if (it->type()) set.setImage(it->type() == 1 ? 1 : 0);
+				set.update(false);
+			}
 			it++;
 		}
+		else
+		{
+			if (!it->isRemove())
+			{
+				wstring buff = it->strW();
+				panel->at(pos).setText(&buff[0], buff.size()).setImage(it->type() == 1 ? 1 : 0).setParam(it->param()).update();
+				it++;
+			}
+		}
+
 		oldpos = pos;
 		pos = panel->getNextSelectedItem(pos);
 
@@ -168,16 +182,16 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 
 	if (lp == 0)
 	{
-		int panel = -1; HWND wnd = GetFocus();
-		if (wnd == theItemPanel[0].wnd()) panel = 0;
-		if (wnd == theItemPanel[1].wnd()) panel = 1;
-		if (panel == -1) return 1;
+		int panelid = -1; HWND wnd = GetFocus();
+		if (wnd == theItemPanel[0].wnd()) panelid = 0;
+		if (wnd == theItemPanel[1].wnd()) panelid = 1;
+		if (panelid == -1) return 1;
 
 		ItemList checkoutlist;
 
-		checkoutlist.checkoutSelection(theItemPanel + panel);
-		theControlCenter.setMenuResult(LOWORD(wp), panel, checkoutlist.getList());
-		checkoutlist.checkinSelection(theItemPanel + panel);
+		checkoutlist.checkoutSelection(theItemPanel + panelid);
+		theControlCenter.setMenuResult(LOWORD(wp), panelid, checkoutlist.getList());
+		checkoutlist.checkinSelection(theItemPanel + panelid);
 	}
 	return 0;
 }
@@ -203,11 +217,14 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 		NMLVDISPINFO* info = (NMLVDISPINFO*)data;
 		if (info->item.pszText == nullptr) return 1;
 
-		ItemPool checkoutpool;
-		checkoutpool.push_back({ info->item.pszText ,0,info->item.lParam });
-		if (theControlCenter.edit(&checkoutpool)) return 1; //failed
-
-		theItemPanel[id].setItemText(info->item.iItem, info->item.iSubItem, &checkoutpool.back().strW()[0]);
+		ItemList checkoutset;
+		checkoutset.checkoutSelection(theItemPanel + id);
+		ItemData & item = checkoutset.getList()->back();
+		item.setStr(info->item.pszText);
+		item.setType(0);
+		item.setParam(info->item.lParam);
+		if (theControlCenter.edit(checkoutset.getList())) return 1; //failed
+		checkoutset.checkinSelection(theItemPanel + id);
 	}
 	break;
 	case NM_RCLICK:

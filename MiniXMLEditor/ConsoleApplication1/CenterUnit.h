@@ -16,12 +16,13 @@ protected:
 	inline IUIHub * getUI() { return theUI; }
 	inline IDataHub* getData() { return theDataPool; }
 	inline LPARAM getPage(size_t i) { return thePage[i]; }
+	inline LPARAM getAtt() { return theAttPage; }
 
 private:
 	IUIHub * theUI;
 	IDataHub* theDataPool;
 
-	LPARAM thePage[2];
+	LPARAM thePage[2], theAttPage;
 
 };
 

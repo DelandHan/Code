@@ -76,10 +76,11 @@ List::LSet::~LSet()
 	if (theItem) delete theItem;
 }
 
-void List::LSet::update()
+void List::LSet::update(bool isNew)
 {
 	if (theItem == nullptr || theList == 0) return;
-	theItem->iItem = ListView_InsertItem(theList, theItem);
+	if(isNew) theItem->iItem = ListView_InsertItem(theList, theItem);
+	else ListView_SetItem(theList, theItem);
 }
 
 const LPLVITEM List::LSet::sync()

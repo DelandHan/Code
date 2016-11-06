@@ -14,15 +14,13 @@ public:
 	void setStr(const std::string source);
 	void setStr(const std::wstring source);
 
-	int isRemove() { return !theStr.size(); }
-
 	inline void setParam(LPARAM p) { theParam = p; }
 	inline LPARAM param() { return theParam; }
 
 	static void convertToWStr(std::wstring &dest, const std::string &source);
 	static void convertToStr(std::string &dest, const std::wstring &source);
 
-private:
+protected:
 	std::wstring theStr;
 	LPARAM theParam;
 };
@@ -34,6 +32,8 @@ public:
 	ItemData();
 	ItemData(std::wstring str, int type, LPARAM param);
 	~ItemData();
+
+	int isRemove() { return !theStr.size() && !theType; }
 
 	inline int type() { return theType; }
 	inline void setType(int t) { theType = t; }

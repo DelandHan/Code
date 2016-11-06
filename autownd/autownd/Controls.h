@@ -47,7 +47,7 @@ namespace autownd
 			LSet(HWND list, int row);
 			~LSet();
 
-			void update();
+			void update(bool isNew = true);
 			const LPLVITEM sync();
 
 			LSet& setText(TCHAR * text, size_t size);

@@ -13,7 +13,7 @@ enum COMMAND
 };
 
 BaseUnit::BaseUnit()
-	:theUI(nullptr), theDataPool(nullptr), thePage{ 0,0 }
+	:theUI(nullptr), theDataPool(nullptr), thePage{ 0,0 }, theAttPage(0)
 {
 }
 
@@ -51,6 +51,7 @@ int BaseUnit::showAttribute(LPARAM item)
 {
 	AttPool pool;
 	if (item) theDataPool->getItemAtt(item, &pool);
+	theAttPage = item;
 	theUI->refreshAttPanel(&pool);
 
 	return 0;
@@ -118,6 +119,8 @@ int CenterUnit::edit(ItemPool *checkoutset)
 
 int CenterUnit::updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)
 {
+	getData()->setItemAtt(getAtt(), oldkey, value, nekey);
+	showAttribute(getAtt());
 	return 0;
 }
 
@@ -160,43 +163,38 @@ int CenterUnit::setMenuResult(int command, int panelId, ItemPool * checkoutset)
 		}
 	}
 	break;
-	/*case COMMAND::INSERT_A:
+	case COMMAND::INSERT_A:
 	{
-		if (theStageParam)
+		if (checkoutset->size())
 		{
-			if (datapool()->insertAfter(theStageParam, "<NewNode />") == 0)
-			{
-				deSelect(theStagePanel);
-			}
-			else
-				return 1;
-
+			LPARAM node = checkoutset->back().param();
+			getData()->addItem(node, "<NewNode />", IDataHub::AFTER, checkoutset);
 		}
 		else
 		{
-			if (datapool()->append(current(theStagePanel), "<NewNode />") == 0) deSelect(theStagePanel);
+			getData()->addItem(getPage(panelId), "<NewNode />", IDataHub::CHILD, checkoutset);
 		}
 	}
 	break;
 	case COMMAND::INSERT_B:
 	{
-		if (datapool()->insertBefore(theStageParam) == 0)
-		{
-			deSelect(theStagePanel);
-		}
-		else
-			return 1;
+		ItemPool record;
+		LPARAM node = checkoutset->back().param();
+		getData()->addItem(node, "<NewNode />", IDataHub::BEFORE, &record);
+		checkoutset->insert(checkoutset->begin(), record.begin(), record.end());
+
 	}
 	break;
 	case COMMAND::CHANGE:
 	{
-		ItemData data = { L"",0,theStageParam };
-		datapool()->queryItem(&data);
-		data.setType(data.type() == 1 ? 3 : 1);
-		datapool()->setItem(&data);
-		deSelect(theStagePanel);
+		for (ItemPool::iterator it = checkoutset->begin(); it != checkoutset->end(); it++)
+		{
+			getData()->queryItem(&*it);
+			it->setType(it->type() == 1 ? 3 : 1);
+			getData()->setItem(&*it);
+		}
 	}
-	break;*/
+	break;
 	case COMMAND::PASTE:
 	{
 		string buff;
@@ -219,131 +217,3 @@ int CenterUnit::setMenuResult(int command, int panelId, ItemPool * checkoutset)
 	return 0;
 }
 
-
-/*
-
-
-
-
-int CenterUnit::setMenuResult(int command)
-{
-	switch (command)
-	{
-	case COMMAND::DEL:
-	{
-		delSelect();
-	}
-	break;
-	case COMMAND::INSERT_A:
-	{
-		if (theStageParam) 
-		{
-			if (datapool()->insertAfter(theStageParam, "<NewNode />") == 0)
-			{
-				deSelect(theStagePanel);
-			}
-			else
-				return 1;
-
-		}
-		else
-		{
-			if (datapool()->append(current(theStagePanel), "<NewNode />") == 0) deSelect(theStagePanel);
-		}
-	}
-	break;
-	case COMMAND::INSERT_B:
-	{
-		if (datapool()->insertBefore(theStageParam) == 0)
-		{
-			deSelect(theStagePanel);
-		}
-		else
-			return 1;
-	}
-	break;
-	case COMMAND::CHANGE:
-	{
-		ItemData data = { L"",0,theStageParam };
-		datapool()->queryItem(&data);
-		data.setType(data.type() == 1 ? 3 : 1);
-		datapool()->setItem(&data);
-		deSelect(theStagePanel);
-	}
-	break;
-	case COMMAND::PASTE:
-	{
-		string buff;
-		uimodule()->getClipboard(buff);
-		if(theStageParam) datapool()->insertAfter(theStageParam, move(buff));
-		else datapool()->append(current(theStagePanel), move(buff));
-		deSelect(theStagePanel);
-	}
-	break;
-	default:
-		return 1;
-	}
-
-	theStagePanel = 0;
-	theStageParam = 0;
-	return 0;
-}
-
-int CenterUnit::delSelect()
-{
-	ItemData data = { L"",0,selection() };
-
-	LPARAM parent = datapool()->queryParent(selection());
-	if (datapool()->setItem(&data) == 0)
-	{
-		setSelection(0);//de-select
-		if (parent == current(0)) {
-			if (setCurrent(0, 1) == 0) 	refreshCurrent();
-		}
-		else
-			refreshChild();
-
-		return 0;
-	}
-	else
-		return 1;
-}
-
-void CenterUnit::deSelect(int panel)
-{
-	setSelection(0);
-
-	if (panel == 0) {
-		setCurrent(0, 1);
-		refreshCurrent();
-	}
-	refreshChild();
-	refreshAtt();
-}
-
-int CenterUnit::select(LPARAM param, int panelId)
-{
-	if (panelId == 0) {
-		if (setCurrent(param, 1) == 0) refreshChild();
-	}
-	if (setSelection(param) == 0) refreshAtt();
-
-	return 0;
-}
-
-int CenterUnit::dbClick(LPARAM param)
-{
-	if (setCurrent(param, 0) == 0) return refreshCurrent();
-	else return 1;
-}
-
-
-int CenterUnit::updateAtt(const TCHAR * oldkey, const TCHAR * value, const TCHAR * nekey)
-{
-	datapool()->setItemAtt(selection(), oldkey, value, nekey);
-	
-	refreshAtt();
-	return 0;
-}
-
-*/
