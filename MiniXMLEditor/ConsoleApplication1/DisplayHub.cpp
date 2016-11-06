@@ -199,7 +199,16 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 
 	if (lp == 0)
 	{
-		if (LOWORD(wp) == ID_FILE_NEW) theControlCenter.fileOperation("new");
+		if (LOWORD(wp) == ID_FILE_NEW)
+		{
+			theControlCenter.fileOperation("new");
+			return 0;
+		}
+		if (LOWORD(wp) == ID_FILE_GO)
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
 		int panelid = -1; HWND wnd = GetFocus();
 		if (wnd == theItemPanel[0].wnd()) panelid = 0;

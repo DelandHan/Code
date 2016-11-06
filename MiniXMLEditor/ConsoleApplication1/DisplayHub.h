@@ -14,6 +14,8 @@ public:
 
 	int initialize();
 
+	HWND wnd() { return theDisplayBoard.wnd(); }
+
 	int connectToDataPool(IDataHub *datapool);
 
 	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
