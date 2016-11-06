@@ -6,6 +6,7 @@ using namespace std;
 
 XMLDataHub::XMLDataHub()
 {
+	theNode = new XMLNode(DOCUMENT_NODE);
 }
 
 
@@ -78,15 +79,15 @@ void XMLDataHub::loadFile(const char * name)
 	theNode = xp.pickupDocument();
 }
 
-int XMLDataHub::queryItem(ItemData * pool)
+int XMLDataHub::queryItem(ItemData * data)
 {
 	XMLNode *node = nullptr;
-	if (pool->param() == 0) node = theNode;
-	else node = (XMLNode*)pool->param();
+	if (data->param() == 0) node = theNode;
+	else node = (XMLNode*)data->param();
 
-	pool->setStr(node->getString());
-	pool->setType(node->getType());
-	pool->setParam((LPARAM)node);
+	data->setStr(node->getString());
+	data->setType(node->getType());
+	data->setParam((LPARAM)node);
 
 	return 0;
 }

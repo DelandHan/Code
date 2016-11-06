@@ -6,13 +6,13 @@
 #include "XMLDataHub.h"
 #include "resource.h"
 
+
+
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	XMLDataHub xmldata;
-	xmldata.loadFile("IECU.xml");
-
 	DisplayHub ui;
 
 	ui.initialize();
@@ -23,3 +23,13 @@ int main()
     return 0;
 }
 
+
+int _stdcall WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	int nCmdShow
+	)
+{
+	return main();
+}
