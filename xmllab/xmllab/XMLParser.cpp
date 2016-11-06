@@ -278,7 +278,7 @@ namespace xml
 		delete theDocument;
 	}
 
-	void XMLParser::parse(char * source, size_t size)
+	void XMLParser::parse(char * source, size_t size, bool allowEndWithText)
 	{
 		if (theStatus == CONTINUE)
 		{
@@ -332,11 +332,19 @@ namespace xml
 
 		if (theTextStart != nullptr)
 		{
-			theSavedData.saveString(theTextStart, theTextEnd - theTextStart + 1);
-			theTextStart = nullptr;
-			theTextEnd = nullptr;
+			if (allowEndWithText)
+			{
+				finishText();
+				theStatus = SUCCESS;
+			}
+			else
+			{
+				theSavedData.saveString(theTextStart, theTextEnd - theTextStart + 1);
+				theTextStart = nullptr;
+				theTextEnd = nullptr;
 
-			theStatus = CONTINUE;
+				theStatus = CONTINUE;
+			}
 		}
 	}
 

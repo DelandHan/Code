@@ -152,6 +152,8 @@ void DisplayHub::getClipboard(std::string & buff)
 {
 	OpenClipboard(theDisplayBoard.wnd());
 	HANDLE hmem = GetClipboardData(CF_TEXT);
+
+	if (hmem == nullptr) return;
 	char * data = (char *)GlobalLock(hmem);
 
 	buff = data;

@@ -117,7 +117,7 @@ namespace xml
 
 			void setAllowBlank(bool q) {
 				theBlankFlag = q;
-			}
+			}//the option is not available now
 			
 			std::string getValidString(const char* source, size_t count);
 			std::string getOrignalString(xml::XMLNode *node, int isCloseTag);
@@ -138,7 +138,7 @@ namespace xml
 
 		
 
-		void parse(char * source, size_t size);
+		void parse(char * source, size_t size, bool allowEndWithText = false);
 		void parseFile(const char * filename, size_t buffSize = 1024);
 
 		Result getStatus() { return theStatus; }

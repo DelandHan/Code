@@ -176,7 +176,7 @@ int XMLDataHub::addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *re
 	if (node == nullptr) return 1;
 
 	XMLParser ps;
-	ps.parse(&text[0], text.size());
+	ps.parse(&text[0], text.size(), true);
 	XMLNode * nenode = ps.pickupDocument();
 
 	XMLNode * temp = nenode->getFirstChild();

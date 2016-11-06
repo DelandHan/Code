@@ -212,6 +212,7 @@ int CenterUnit::setMenuResult(int command, int panelId, ItemPool * checkoutset)
 	{
 		string buff;
 		getUI()->getClipboard(buff);
+		if (buff.size() == 0) return 1;
 
 		if (checkoutset->size())
 		{
