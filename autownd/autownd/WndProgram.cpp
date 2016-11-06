@@ -5,10 +5,19 @@ using namespace autownd;
 using namespace std;
 using namespace memory;
 
+namespace
+{
+	struct WndMsgSet
+	{
+		WndObj * _obj;
+		const MsgSet * _set;
+	};
+}
+
 IMsgProcess * MsgSet::retrieve(UINT msg) const
 {
 	map<UINT, IMsgProcess*>::const_iterator it = theMap.find(msg);
-	if(it==theMap.end()) return nullptr;
+	if (it == theMap.end()) return nullptr;
 	else return it->second;
 }
 
@@ -43,17 +52,14 @@ void Seed::init(memory::ParamChain params)
 
 	/*
 	wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WIN32PROJECT1));
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WIN32PROJECT1);
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.cbWndExtra     = 0;
+	wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WIN32PROJECT1));
+	wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WIN32PROJECT1);
+	wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 	*/
 
 	RegisterClassEx(&wndclass);
 }
-
-const MsgSet* Seed::theAddingMsgs = nullptr;
-WndObj* Seed::theAddingObj = nullptr;
 
 int Seed::create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params)
 {
@@ -80,18 +86,13 @@ int Seed::create(WndObj *obj, const MsgSet *msgmap, memory::ParamChain params)
 	find(params, "menu", imenu);
 
 	//creating
-	theAddingMsgs = msgmap;
-	theAddingObj = obj;
-
 	HMENU hmenu = LoadMenu(GetModuleHandle(0), MAKEINTRESOURCE(imenu));
 
+	WndMsgSet wmset = { obj,msgmap };
 	CreateWindowEx(exstyle, theName.c_str(), title, style,
-		pos.first, pos.second, size.first, size.second, parent, hmenu, GetModuleHandle(0), nullptr);
+		pos.first, pos.second, size.first, size.second, parent, hmenu, GetModuleHandle(0), &wmset);
 
 	DeleteObject(hmenu);
-
-	theAddingMsgs = nullptr;
-	theAddingObj = nullptr;
 
 	if (obj->theWnd == nullptr) return GetLastError();
 	else return 0;
@@ -101,20 +102,19 @@ LRESULT Seed::WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	const MsgSet * current = nullptr;
 
-	if (theAddingMsgs && theAddingObj && msg == WM_CREATE)
+	if (msg == WM_NCCREATE)
 	{
-		WndObj::theWndMap.insert(pair<HWND, const MsgSet*>(wnd, theAddingMsgs));
-		current = theAddingMsgs;
-		theAddingObj->theWnd = wnd;
+		WndMsgSet* pSetData = static_cast<WndMsgSet *>((reinterpret_cast<LPCREATESTRUCT>(lp))->lpCreateParams);
 
-		theAddingMsgs = nullptr;
-		theAddingObj = nullptr;
+		pSetData->_obj->theWnd = wnd;
+		SetWindowLongPtr(wnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pSetData->_set));
+
+		current = pSetData->_set;
 	}
 	else
 	{
-		map<HWND, const MsgSet*>::iterator it = WndObj::theWndMap.find(wnd);
-		if (it == WndObj::theWndMap.end()) return DefWindowProc(wnd, msg, wp, lp);
-		current = it->second;
+		current = reinterpret_cast<MsgSet*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+		if (current == 0) return DefWindowProc(wnd, msg, wp, lp);
 	}
 
 	IMsgProcess * proc = current->retrieve(msg);
@@ -125,17 +125,15 @@ LRESULT Seed::WndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 //////////////////////////
 
-map<HWND, const MsgSet *> WndObj::theWndMap;
-
 WndObj::WndObj()
 	:theWnd(nullptr)
 {
 }
 
 WndObj::~WndObj()
-{	
+{
+	SetWindowLongPtr(theWnd, GWLP_USERDATA, 0);
 	DestroyWindow(theWnd);
-	theWndMap.erase(theWnd);
 }
 
 int autownd::WndObj::addControl(WndObj * obj, TCHAR * cname, ParamChain params)
