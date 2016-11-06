@@ -23,6 +23,7 @@ public:
 	void displayPath(std::wstring &path) override;
 
 	void getClipboard(std::string & buff) override;
+	void saveClipboard(std::string & buff) override;
 
 private:
 	WndBoard theDisplayBoard;

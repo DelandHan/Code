@@ -146,6 +146,7 @@ namespace xml
 		const XMLNode * getDocument() { return theDocument; }
 		XMLNode * pickupDocument();
 		void saveNode(XMLNode *node, std::ostream * stdstream);
+		void saveNode(XMLNode *node, std::string *out);
 
 		void clear();
 
@@ -177,6 +178,6 @@ namespace xml
 		virtual Result createCDATA();
 
 		//recursive usage for reading nodes
-		void checkNode(xml::XMLNode* node, int level, std::ostream * stdstream);
+		void checkNode(xml::XMLNode* node, int level, std::ostream * stdstream, std::string *str);
 	};
 }

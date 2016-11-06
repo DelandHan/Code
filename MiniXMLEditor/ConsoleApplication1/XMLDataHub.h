@@ -19,8 +19,11 @@ public:
 
 	int setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey) override;
 
+	std::string parse(ItemPool * data) override;
 
 	int addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record) override;
+
+	int reset() override;
 
 private:
 	xml::XMLNode *theNode;

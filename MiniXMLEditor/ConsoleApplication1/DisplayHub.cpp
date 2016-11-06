@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DisplayHub.h"
 #include <map>
+#include "resource.h"
 
 using namespace std;
 using namespace autownd;
@@ -160,6 +161,22 @@ void DisplayHub::getClipboard(std::string & buff)
 
 }
 
+void DisplayHub::saveClipboard(std::string & buff)
+{
+	OpenClipboard(theDisplayBoard.wnd());
+	EmptyClipboard();
+
+	HANDLE hmem = GlobalAlloc(GMEM_MOVEABLE, buff.size() + 1);
+
+	LPSTR lpStr = (LPSTR)GlobalLock(hmem);
+	memcpy(lpStr, buff.c_str(), buff.size() + 1);
+	GlobalUnlock(hmem);
+
+	HANDLE hd = SetClipboardData(CF_TEXT, hmem);
+	CloseClipboard();
+
+}
+
 int DisplayHub::beNotified(WPARAM wp, LPARAM lp)
 {
 	LPNMHDR data = (LPNMHDR)lp;
@@ -182,6 +199,8 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 
 	if (lp == 0)
 	{
+		if (LOWORD(wp) == ID_FILE_NEW) theControlCenter.fileOperation("new");
+
 		int panelid = -1; HWND wnd = GetFocus();
 		if (wnd == theItemPanel[0].wnd()) panelid = 0;
 		if (wnd == theItemPanel[1].wnd()) panelid = 1;
@@ -237,7 +256,8 @@ int DisplayHub::activeItemPanel(int id, LPNMHDR data)
 		ContextMenu theMenu;
 		for (LVPool::iterator it = menuPool.begin(); it != menuPool.end(); it++)
 		{
-			theMenu.addMenuItem(&it->strW()[0], it->param());
+			if(it->strW().size()) theMenu.addMenuItem(&it->strW()[0], it->param());
+			else theMenu.addMenuItem(nullptr, 0);
 		}
 		
 		RECT rect; GetWindowRect(theItemPanel[id].wnd(), &rect);

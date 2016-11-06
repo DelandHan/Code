@@ -10,6 +10,7 @@ enum COMMAND
 	INSERT_A,
 	INSERT_B,
 	PASTE,
+	COPY
 };
 
 BaseUnit::BaseUnit()
@@ -148,6 +149,8 @@ int CenterUnit::getMenu(LVPool * menu, int panelID, int row)
 		menu->emplace_back(LVData(L"New", COMMAND::INSERT_A));
 	}
 
+	menu->emplace_back();
+	if (row != -1) menu->emplace_back(LVData(L"Copy", COMMAND::COPY));
 	menu->emplace_back(LVData(L"Paste", COMMAND::PASTE));
 
 	return 0;
@@ -199,6 +202,12 @@ int CenterUnit::setMenuResult(int command, int panelId, ItemPool * checkoutset)
 		}
 	}
 	break;
+	case COMMAND::COPY:
+	{
+		string buff = getData()->parse(checkoutset);
+		getUI()->saveClipboard(buff);
+	}
+	break;
 	case COMMAND::PASTE:
 	{
 		string buff;
@@ -218,6 +227,17 @@ int CenterUnit::setMenuResult(int command, int panelId, ItemPool * checkoutset)
 	default:
 		return 1;
 	}
+	return 0;
+}
+
+int CenterUnit::fileOperation(std::string command)
+{
+	if (command.substr(0, 3) == "new") 
+	{
+		getData()->reset();
+		connect(getUI(), getData()); //reset
+	}
+
 	return 0;
 }
 

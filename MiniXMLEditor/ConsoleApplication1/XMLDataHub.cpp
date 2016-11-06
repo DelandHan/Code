@@ -155,6 +155,20 @@ int XMLDataHub::setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value
 	return 0;
 }
 
+std::string XMLDataHub::parse(ItemPool * data)
+{
+	string buff;
+	XMLParser xp;
+
+	for (ItemPool::iterator it = data->begin(); it != data->end(); it++)
+	{
+		XMLNode * node = (XMLNode *)it->param();
+		xp.saveNode(node, &buff);
+	}
+
+	return buff;
+}
+
 int XMLDataHub::addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record)
 {
 	XMLNode *node = (XMLNode*)param;
@@ -196,5 +210,12 @@ int XMLDataHub::addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *re
 	}
 	delete nenode;
 
+	return 0;
+}
+
+int XMLDataHub::reset()
+{
+	if (theNode) delete theNode;
+	theNode = new XMLNode(DOCUMENT_NODE);
 	return 0;
 }

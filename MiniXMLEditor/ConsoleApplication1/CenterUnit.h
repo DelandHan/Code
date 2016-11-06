@@ -49,6 +49,8 @@ public:
 	int getMenu(LVPool * menu, int panelID, int row);
 	int setMenuResult(int command, int panelId, ItemPool * checkoutset);
 
+	int fileOperation(std::string command);
+
 
 private:
 

@@ -369,7 +369,12 @@ namespace xml
 
 	void XMLParser::saveNode(XMLNode *node, std::ostream * stdstream)
 	{
-		checkNode(node, 0, stdstream);
+		checkNode(node, 0, stdstream, nullptr);
+	}
+
+	void XMLParser::saveNode(XMLNode * node, std::string * out)
+	{
+		checkNode(node, 0, nullptr, out);
 	}
 
 	void XMLParser::clear()
@@ -384,22 +389,24 @@ namespace xml
 		theTextEnd = nullptr;
 	}
 
-	void XMLParser::checkNode(XMLNode* node, int level, ostream * stdstream)
+	void XMLParser::checkNode(XMLNode* node, int level, ostream * stdstream, string *str)
 	{
 		while (node)
 		{
 			if (node->getType() != DOCUMENT_NODE) {
-				(*stdstream) << theChecker.getOrignalString(node, false);// << endl;
+				if(stdstream) (*stdstream) << theChecker.getOrignalString(node, false);// << endl;
+				if (str) str->append(theChecker.getOrignalString(node, false));
 			}
 
 			if (node->getFirstChild())
-				checkNode(node->getFirstChild(), level + 1, stdstream);
+				checkNode(node->getFirstChild(), level + 1, stdstream, str);
 
 			if (node->getType() == ELEMENT_NODE) {
-				//for (int i = 0; i < level; i++) (*stdstream) << "   ";
-				(*stdstream) << theChecker.getOrignalString(node, true);// << endl;
+				if(stdstream) (*stdstream) << theChecker.getOrignalString(node, true);// << endl;
+				if (str) str->append(theChecker.getOrignalString(node, true));
 			}
 			node = node->getNext();
+			if (level == 0) node = nullptr;
 		}
 	}
 

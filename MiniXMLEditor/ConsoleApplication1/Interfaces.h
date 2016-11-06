@@ -21,6 +21,8 @@ public:
 	virtual void displayPath(std::wstring &path) = 0;
 
 	virtual void getClipboard(std::string & buff) = 0;
+	virtual void saveClipboard(std::string & buff) = 0;
+
 };
 
 //DataHub
@@ -46,4 +48,8 @@ public:
 	virtual int setItemAtt(LPARAM param, std::wstring oldkey, std::wstring value, std::wstring nekey) = 0;
 
 	virtual int addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record = nullptr) = 0;
+
+	virtual std::string parse(ItemPool * data) = 0;
+
+	virtual int reset() = 0;
 };
