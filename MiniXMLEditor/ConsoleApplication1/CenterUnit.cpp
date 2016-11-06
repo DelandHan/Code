@@ -29,6 +29,10 @@ int BaseUnit::changePage(LPARAM page)
 	thePage[0] = page;
 	theUI->refreshItemPanel(&pool, 0);
 
+	wstring path;
+	theDataPool->queryPath(page, path);
+	theUI->displayPath(path);
+
 	showDetail(0);
 
 	return 0;
