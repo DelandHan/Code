@@ -113,16 +113,16 @@ namespace xml
 			m_StrMap.insert(pair<string, string>("<", "&lt;"));
 
 			m_StrMap.insert(pair<string, string>("&gt;", ">"));
-			m_StrMap.insert(pair<string, string>(">", "&gt;"));
+			//m_StrMap.insert(pair<string, string>(">", "&gt;"));
 
 			m_StrMap.insert(pair<string, string>("&amp;", "&"));
 			m_StrMap.insert(pair<string, string>("&", "&amp;"));
 
 			m_StrMap.insert(pair<string, string>("&apos;", "'"));
-			m_StrMap.insert(pair<string, string>("'", "&apos;"));
+			//m_StrMap.insert(pair<string, string>("'", "&apos;"));
 
 			m_StrMap.insert(pair<string, string>("&quot;", "\""));
-			m_StrMap.insert(pair<string, string>("\"", "&quot;"));
+			//m_StrMap.insert(pair<string, string>("\"", "&quot;"));
 
 		}
 

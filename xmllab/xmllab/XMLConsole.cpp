@@ -1,5 +1,6 @@
 #include "XMLConsole.h"
 #include <sstream>
+#include <iterator>
 
 using namespace xml;
 using namespace xml::condition;
@@ -20,7 +21,13 @@ XMLConsole::~XMLConsole()
 
 int xml::XMLConsole::setCondition(std::string cmd)
 {
-	theRoot = getContainer(cmd);
+	if (theRoot) delete theRoot;
+
+	std::istringstream iss(cmd);
+
+	list<string> tokens{ istream_iterator<string>{iss},istream_iterator<string>{} };
+
+	theRoot = getContainer(tokens);
 	if (theRoot == nullptr) return 1;
 	else return 0;
 }
@@ -36,18 +43,23 @@ int xml::XMLConsole::run()
 	XMLNode * end = theNode->getNextByChain(false);
 	XMLNode * node = theNode->getNextByChain();
 
+
 	while (node != end)
 	{
-		XMLNode * temp = nullptr;
 		if (theRoot->isMatch(node))
 		{
+			XMLNode * temp = nullptr;
 			for (auto it : theActions)
 			{
 				temp = it->handle(node);
 				if (temp != node) break;
 			}
-			if (temp) node = temp;
-			else node = node->getNextByChain();
+			if (temp != node)
+			{
+				node = temp;
+			}
+			else 
+				node = node->getNextByChain();
 		}
 		else
 			node = node->getNextByChain();
@@ -56,24 +68,41 @@ int xml::XMLConsole::run()
 	return 0;
 }
 
-XMLLogic * xml::XMLConsole::getContainer(std::string cmd)
+IXMLCondition * xml::XMLConsole::getContainer(list<string> & tokens)
 {
-	std::istringstream iss(cmd);
-	std::string sub1, sub2;
-
 	XMLLogic * result = nullptr;
 	IXMLCondition* firstCon = nullptr;
 
-	std::getline(iss, sub1, ' ');
-	firstCon = strMapCondition(sub1);
+	firstCon = strMapCondition(*tokens.begin());
+	tokens.pop_front();
 
-	do
+	bool endbracket = false;
+
+	while (tokens.size())
 	{
-		std::getline(iss, sub1, ' ');
-		std::getline(iss, sub2, ' ');
+		XMLLogic * container = strMapContainer(*tokens.begin());
+		tokens.pop_front();
 
-		XMLLogic * container = strMapContainer(sub1);
-		IXMLCondition * con = strMapCondition(sub2);
+		list<string>::iterator it = tokens.begin();
+
+		if ((*it)[it->size() - 1] == ')')
+		{
+			endbracket = true;
+			(*it)[it->size() - 1] = 0;
+		}
+
+
+		IXMLCondition * con = nullptr;
+		if ((*it)[0] == '(')
+		{
+			it->assign(it->c_str() + 1);
+			con = getContainer(tokens);
+		}
+		else
+		{
+			con = strMapCondition(*it);
+			tokens.pop_front();
+		}
 
 		if (container == nullptr || con == nullptr) continue; //maybe error
 
@@ -95,7 +124,11 @@ XMLLogic * xml::XMLConsole::getContainer(std::string cmd)
 			container->addCondition(con);
 			result = container;
 		}
-	} while (!iss.eof());
+
+		if (endbracket) return result;
+	}
+
+	if (result == nullptr && firstCon) return firstCon;
 
 	return result;
 }
@@ -135,8 +168,33 @@ XMLLogic * xml::XMLConsole::strMapContainer(std::string cmd)
 
 action::IXMLAction * xml::XMLConsole::strMapAction(std::string cmd)
 {
-	if (cmd == "DEL") return new XMLDel;
-	if (cmd == "REMOVE") return new XMLRemove;
+	std::istringstream iss(cmd);
+	list<string> tokens{ istream_iterator<string>{iss},istream_iterator<string>{} };
+
+	list<string>::iterator it = tokens.begin();
+
+	if (*it == "DEL") return new XMLDel;
+	if (*it == "REMOVE") return new XMLRemove;
+	if (*it == "SET")
+	{
+		XMLReplace *replace = new XMLReplace;
+		string str; NodeType type = GENERAL_NODE;
+
+		for (it++; it != tokens.end(); it++)
+		{
+			size_t sym = it->find('=');
+			if (!memcmp(it->c_str(), "name", 4))
+			{
+				str.assign(it->c_str() + 6, it->size() - 7);
+			}
+			if (!memcmp(it->c_str(), "type", 4))
+			{
+				type = xml::getTypeByStr(it->c_str() + 5);
+			}
+		}
+		replace->setNewStatus(str, type);
+		return replace;
+	}
 
 	return nullptr;
 }

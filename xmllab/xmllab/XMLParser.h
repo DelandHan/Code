@@ -139,7 +139,7 @@ namespace xml
 		
 
 		void parse(char * source, size_t size, bool allowEndWithText = false);
-		void parseFile(const char * filename, size_t buffSize = 1024);
+		void parseFile(const char * filename, size_t buffSize = 10240);
 
 		Result getStatus() { return theStatus; }
 

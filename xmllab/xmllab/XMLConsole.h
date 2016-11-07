@@ -22,8 +22,8 @@ namespace xml
 	private:
 		XMLNode * theNode;
 
-		condition::XMLLogic *theRoot;
-		condition::XMLLogic *getContainer(std::string cmd);		
+		condition::IXMLCondition *theRoot;
+		condition::IXMLCondition *getContainer(std::list<std::string> & tokens);
 		condition::IXMLCondition * strMapCondition(std::string cmd);
 		condition::XMLLogic * strMapContainer(std::string cmd);
 

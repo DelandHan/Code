@@ -44,18 +44,19 @@ int main()
 
 	xp.parseFile("iecu.xml");
 	xml::XMLNode * docu = xp.pickupDocument();
-
+	
 	xml::XMLConsole cons;
 
-	cons.setCondition("name==\"para\" AND type==ELEMENT_NODE OR name==\"list\"");
-	cons.addAction("REMOVE");
+	cons.setCondition("name==\"para\" OR (name==\"list\" AND type==TEXT_NODE) OR name==\"table\"");// OR name==\"list\" AND type==TEXT_NODE
+	cons.addAction("SET name=\"stop\" type=TEXT_NODE");
 	cons.connectTo(docu);
 	cons.run();
-
+	
 	ofstream of;
 	of.open("out.xml", ios::binary);
 	xp.saveNode(docu, &of);
 
+	delete docu;
 	system("pause");
     return 0;
 }
