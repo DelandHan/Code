@@ -57,7 +57,7 @@ private:
 	//message map
 	autownd::MsgProcSet theMsgSet;
 
-	LayoutManager theLayoutMgr[2];
+	LayoutManager theLayoutMgr[3];
 
 };
 

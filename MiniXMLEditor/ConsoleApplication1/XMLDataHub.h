@@ -23,6 +23,8 @@ public:
 
 	int addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *record) override;
 
+	int inputCmd(LPARAM param, std::string cmd) override;
+
 	int reset() override;
 
 private:

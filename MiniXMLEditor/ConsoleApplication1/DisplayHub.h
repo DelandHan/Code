@@ -32,6 +32,7 @@ private:
 
 	ItemPanel theItemPanel[2];
 	AttPanel theAttPanel;
+	DisplayCmdBox theCMDBox;
 
 	DisplayButton theUpButton;
 
@@ -43,4 +44,5 @@ private:
 
 	int beNotified(WPARAM wp, LPARAM lp);
 	int onCommand(WPARAM wp, LPARAM lp);
+	int inputCommand(WPARAM wp, LPARAM lp);
 };

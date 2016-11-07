@@ -214,6 +214,25 @@ int XMLDataHub::addItem(LPARAM param, std::string text, DOMPos pos, ItemPool *re
 	return 0;
 }
 
+int XMLDataHub::inputCmd(LPARAM param, std::string cmd)
+{
+	XMLNode *node = (XMLNode*)param;
+	if (node == nullptr) return 1;
+
+	size_t sym = cmd.find("WHERE");
+
+	if (sym == string::npos) return 1;
+
+	XMLConsole console;
+
+	if (console.addAction(string(cmd.c_str(), sym))) return 1;
+	if (console.setCondition(string(cmd.c_str() + sym + 6, cmd.size() - sym - 6))) return 1;
+	console.connectTo(node);
+
+	return console.run();
+
+}
+
 int XMLDataHub::reset()
 {
 	if (theNode) delete theNode;

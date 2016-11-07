@@ -51,5 +51,7 @@ public:
 
 	virtual std::string parse(ItemPool * data) = 0;
 
+	virtual int inputCmd(LPARAM param, std::string cmd) = 0;
+
 	virtual int reset() = 0;
 };

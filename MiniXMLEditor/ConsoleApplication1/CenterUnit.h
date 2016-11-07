@@ -51,6 +51,7 @@ public:
 
 	int fileOperation(std::string command);
 
+	int inputCmd(std::wstring cmd);
 
 private:
 

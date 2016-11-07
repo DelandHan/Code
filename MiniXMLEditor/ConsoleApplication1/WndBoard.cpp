@@ -64,7 +64,7 @@ void LayoutManager::moveFixedObj(RECT * rect)
 /////////////////////////////////////
 
 WndBoard::WndBoard()
-	:theLayoutMgr{ 0,0 }
+	:theLayoutMgr{ 0, 0 ,0 }
 {
 	//init a base msgmap
 	theMsgSet.addMsgPair(WM_DESTROY, &msg_quit);
@@ -99,7 +99,11 @@ int WndBoard::updateLayout(WPARAM wp, LPARAM lp)
 	RECT fixedarea = { rect.left,rect.top,rect.right,rect.top + 30 };
 	theLayoutMgr[0].move(&fixedarea);
 	rect.top += 30;// the top 30 pix are for buttons
+	rect.bottom -= 25;
 	theLayoutMgr[1].move(&rect);
+
+	rect.top = rect.bottom; rect.bottom = rect.top + 25;
+	theLayoutMgr[2].move(&rect);
 
 	return 0;
 }
@@ -107,7 +111,7 @@ int WndBoard::updateLayout(WPARAM wp, LPARAM lp)
 int WndBoard::connectDisplayObj(IMoveableWndObj * obj, autownd::vec pos, autownd::vec size, int area)
 {
 	obj->initialize(&theMainWnd);
-	if (area > 1) area = 1;
+	if (area > 2) area = 2;
 	theLayoutMgr[area].addObj(obj, pos, size);
 
 	return 0;

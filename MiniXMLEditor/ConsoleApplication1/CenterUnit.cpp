@@ -242,3 +242,17 @@ int CenterUnit::fileOperation(std::string command)
 	return 0;
 }
 
+int CenterUnit::inputCmd(std::wstring cmd)
+{
+	ItemData temp = { cmd,0,0 };
+	if (getData()->inputCmd(getPage(0), temp.str()))
+	{
+		return 1;
+	}
+	else
+	{
+		changePage(getPage(0));
+		return 0;
+	}
+}
+

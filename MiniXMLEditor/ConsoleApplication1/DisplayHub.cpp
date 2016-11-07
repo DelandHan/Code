@@ -103,9 +103,11 @@ int DisplayHub::initialize()
 	if (theDisplayBoard.connectDisplayObj(theItemPanel + 1, { 50,0 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theAttPanel, { 50,50 }, { 50,50 }, 1)) return 1;
 	if (theDisplayBoard.connectDisplayObj(&theUpButton, { 0,5 }, { 100,90 }, 0)) return 1;
+	if (theDisplayBoard.connectDisplayObj(&theCMDBox, { 0,5 }, { 95,90 }, 2)) return 1;
 
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_NOTIFY, this, &DisplayHub::beNotified);
 	theDisplayBoard.getMsgSet()->addMsgProc(WM_COMMAND, this, &DisplayHub::onCommand);
+	theDisplayBoard.getMsgSet()->addMsgProc(WM_LBUTTONDOWN, this, &DisplayHub::inputCommand);
 
 	theDisplayBoard.update();
 
@@ -226,6 +228,20 @@ int DisplayHub::onCommand(WPARAM wp, LPARAM lp)
 		checkoutlist.checkoutSelection(theItemPanel + panelid);
 		theControlCenter.setMenuResult(LOWORD(wp), panelid, checkoutlist.getList());
 		checkoutlist.checkinSelection(theItemPanel + panelid);
+	}
+	return 0;
+}
+
+int DisplayHub::inputCommand(WPARAM wp, LPARAM lp)
+{
+	if (theCMDBox.wnd() == 0)
+	{
+		theCMDBox.startEditing(theDisplayBoard.getMsgSet()->retrieve(WM_LBUTTONDOWN));
+	}
+	else
+	{
+		theControlCenter.inputCmd((TCHAR*)wp);
+		return 0;
 	}
 	return 0;
 }

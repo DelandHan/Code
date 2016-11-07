@@ -56,3 +56,23 @@ public:
 	int initialize(autownd::WndObj *parent) override;
 	void drag(int x, int y, int width, int height) override;
 };
+
+class DisplayCmdBox
+	:public IMoveableWndObj
+{
+public:
+	DisplayCmdBox();
+	~DisplayCmdBox();
+
+	int initialize(autownd::WndObj *parent) override;
+	void drag(int x, int y, int width, int height) override;
+
+	void startEditing(autownd::IMsgProcess *proc);
+	HWND wnd() { return theEdit.wnd(); }
+
+private:
+	autownd::Edit theEdit;
+	RECT theBoxRect;
+
+	HWND theParent;
+};

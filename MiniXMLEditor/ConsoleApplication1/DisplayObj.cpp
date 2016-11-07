@@ -147,4 +147,30 @@ void DisplayButton::drag(int x, int y, int width, int height)
 	MoveWindow(wnd(), x, y, width, height, TRUE);
 }
 
+DisplayCmdBox::DisplayCmdBox()
+	:theBoxRect{0,0,0,0}, theParent(nullptr)
+{
+}
 
+DisplayCmdBox::~DisplayCmdBox()
+{
+}
+
+int DisplayCmdBox::initialize(autownd::WndObj * parent)
+{
+	theParent = parent->wnd();
+	return 0;
+}
+
+void DisplayCmdBox::drag(int x, int y, int width, int height)
+{
+	theBoxRect.left = x;
+	theBoxRect.top = y;
+	theBoxRect.right = x + width;
+	theBoxRect.bottom = y + height;
+}
+
+void DisplayCmdBox::startEditing(autownd::IMsgProcess * proc)
+{
+	theEdit.init(theParent, &theBoxRect, L"", proc);
+}
