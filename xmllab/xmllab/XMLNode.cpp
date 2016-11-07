@@ -1,7 +1,23 @@
 #include "XMLNode.h"
+#include <map>
 
 using namespace std;
 using namespace xml;
+
+
+NodeType xml::getTypeByStr(std::string str)
+{
+	//map element and str;
+	static map<std::string, NodeType> type_map = {
+		{ "ELEMENT_NODE",ELEMENT_NODE },
+		{ "TEXT_NODE",TEXT_NODE }
+	};
+
+	map<std::string, NodeType>::iterator it = type_map.find(str);
+
+	if (it == type_map.end()) return NodeType::GENERAL_NODE;
+	else return it->second;
+}
 
 ///////////////////////AttNode///////////////////////
 XMLNode::AttNode::AttNode()
@@ -353,3 +369,4 @@ return std::pair<std::string, std::string>("", "");
 
 }
 */
+

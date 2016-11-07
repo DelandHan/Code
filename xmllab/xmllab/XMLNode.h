@@ -20,6 +20,8 @@ namespace xml
 		NOTATION_NODE,
 	};
 
+	NodeType getTypeByStr(std::string str);
+
 	class XMLNode
 	{
 	public:

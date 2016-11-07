@@ -4,79 +4,82 @@
 
 namespace xml
 {
-	class IXMLCondition
+	namespace condition
 	{
-	public:
-		virtual ~IXMLCondition() = default;
+		class IXMLCondition
+		{
+		public:
+			virtual ~IXMLCondition() = default;
 
-		virtual int isMatch(XMLNode * node) = 0;
-	};
+			virtual int isMatch(XMLNode * node) = 0;
+		};
 
-	class XMLConditionContainer
-		:public IXMLCondition
-	{
-	public:
-		XMLConditionContainer() = default;
-		~XMLConditionContainer();
+		class XMLLogic
+			:public IXMLCondition
+		{
+		public:
+			XMLLogic() = default;
+			~XMLLogic();
 
-		virtual std::string getString() = 0;
+			virtual std::string getString() = 0;
 
-		template<class T>
-		typename std::enable_if<std::is_base_of<xml::IXMLCondition, T>::value, T>::type * addCondition() {
-			T * temp = new T;
-			theChilds.push_back(temp);
-			return temp;
-		}
+			template<class T>
+			typename std::enable_if<std::is_base_of<xml::IXMLCondition, T>::value, T>::type * addCondition() {
+				T * temp = new T;
+				theChilds.push_back(temp);
+				return temp;
+			}
 
-		void addCondition(IXMLCondition * con);
+			void addCondition(IXMLCondition * con);
 
-	protected:
-		std::list<IXMLCondition*> theChilds;
-	};
+		protected:
+			std::list<IXMLCondition*> theChilds;
+		};
 
-	class XMLAnd
-		:public XMLConditionContainer
-	{
-	public:
-		XMLAnd() = default;
-		~XMLAnd() = default;
+		class XMLAnd
+			:public XMLLogic
+		{
+		public:
+			XMLAnd() = default;
+			~XMLAnd() = default;
 
-		std::string getString() override { return "AND"; }
+			std::string getString() override { return "AND"; }
 
-		int isMatch(XMLNode *node) override;
+			int isMatch(XMLNode *node) override;
 
-	private:
-	};
+		private:
+		};
 
-	class XMLOr
-		:public XMLConditionContainer
-	{
-	public:
-		XMLOr() = default;
-		~XMLOr() = default;
+		class XMLOr
+			:public XMLLogic
+		{
+		public:
+			XMLOr() = default;
+			~XMLOr() = default;
 
-		std::string getString() override { return "OR"; }
+			std::string getString() override { return "OR"; }
 
-		int isMatch(XMLNode *node) override;
+			int isMatch(XMLNode *node) override;
 
-	private:
-	};
-	
-	class XMLEqual
-		:public IXMLCondition
-	{
-	public:
-		XMLEqual();
-		~XMLEqual() = default;
+		private:
+		};
 
-		int isMatch(XMLNode *node) override;
+		class XMLEqual
+			:public IXMLCondition
+		{
+		public:
+			XMLEqual();
+			~XMLEqual() = default;
 
-		void setCondition(std::string str, NodeType type);
+			int isMatch(XMLNode *node) override;
 
-	private:
-		NodeType theType;
-		std::string theStr;
-	};
+			void setCondition(std::string str, NodeType type);
+
+		private:
+			NodeType theType;
+			std::string theStr;
+		};
+	}
 }
 
 

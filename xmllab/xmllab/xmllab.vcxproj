@@ -138,6 +138,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="XMLAction.h" />
     <ClInclude Include="XMLCondition.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="XMLConsole.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="XMLParser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="XMLAction.cpp" />
     <ClCompile Include="XMLCondition.cpp" />
     <ClCompile Include="XMLConsole.cpp" />
     <ClCompile Include="XMLNode.cpp" />

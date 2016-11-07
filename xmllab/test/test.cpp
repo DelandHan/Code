@@ -40,9 +40,21 @@ int main()
 	}
 	*/
 
+	xml::XMLParser xp;
+
+	xp.parseFile("iecu.xml");
+	xml::XMLNode * docu = xp.pickupDocument();
+
 	xml::XMLConsole cons;
 
-	cons.setCondition("name==\"test\" AND type==ELEMENT_NODE OR name==\"disk\"");
+	cons.setCondition("name==\"para\" AND type==ELEMENT_NODE OR name==\"list\"");
+	cons.addAction("REMOVE");
+	cons.connectTo(docu);
+	cons.run();
+
+	ofstream of;
+	of.open("out.xml", ios::binary);
+	xp.saveNode(docu, &of);
 
 	system("pause");
     return 0;

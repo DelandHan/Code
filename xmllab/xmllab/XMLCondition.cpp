@@ -1,14 +1,15 @@
 #include "XMLCondition.h"
 
 using namespace xml;
+using namespace xml::condition;
 using namespace std;
 
-XMLConditionContainer::~XMLConditionContainer()
+XMLLogic::~XMLLogic()
 {
 	for (auto it : theChilds) delete it;
 }
 
-void xml::XMLConditionContainer::addCondition(IXMLCondition * con)
+void XMLLogic::addCondition(IXMLCondition * con)
 {
 	theChilds.push_back(con);
 }
@@ -37,7 +38,7 @@ int XMLOr::isMatch(XMLNode * node)
 	return result;
 }
 
-xml::XMLEqual::XMLEqual()
+XMLEqual::XMLEqual()
 	:theType(NodeType::GENERAL_NODE)
 {
 }

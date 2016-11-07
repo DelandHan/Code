@@ -1,11 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ddue.schemas.microsoft.com/authoring/2003/5 http://dduestorage.blob.core.windows.net/ddueschema/developer.xsd">
+﻿<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://ddue.schemas.microsoft.com/authoring/2003/5 http://dduestorage.blob.core.windows.net/ddueschema/developer.xsd">
   <introduction>
     <para>The following examples demonstrate the syntax for setting a metabase property using different technologies, such as Windows Management Instrumentation (WMI) and Active Directory Service Interfaces (ADSI). The code examples are written in Microsoft® Visual Basic® Scripting Edition (VBScript), JScript®, and Perl.</para>
     <para>The examples are simplified to show the essential code that is needed to change a metabase property. If you use these examples, add error checking code and security checking code before using them to configure your server.</para>
   </introduction>
   <section>
-    <title>Implementation Guidelines</title>
+    <title>para</title>
     <content />
     <sections>
       <section>
