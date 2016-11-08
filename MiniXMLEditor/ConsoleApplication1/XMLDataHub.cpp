@@ -53,7 +53,12 @@ int XMLDataHub::getItemAtt(LPARAM param, ItemPool * pool)
 	{
 		pool->emplace_back();
 		ItemData &data = pool->back();
-		string str = attnode->getKey() + "=\"" + attnode->getValue() + "\"";
+		string str;
+		str.reserve(attnode->getKey().size() + attnode->getValue().size() + 3);
+		str += attnode->getKey();
+		str += "=\"";
+		str += attnode->getValue();
+		str += "\"";
 		data.setStr(str);
 		data.setType(NodeType::ATTRIBUTE_NODE);
 		data.setParam((LPARAM)node);
