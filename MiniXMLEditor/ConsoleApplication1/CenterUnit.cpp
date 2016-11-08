@@ -42,10 +42,17 @@ int BaseUnit::changePage(LPARAM page)
 int BaseUnit::showDetail(LPARAM item)
 {
 	ItemPool pool;
-	if (item) theDataPool->getChildItemData(item, &pool);
+	if (item)
+	{
+		theDataPool->getChildItemData(item, &pool);
+		theUI->refreshItemPanel(&pool, 1);
+	}
+	else
+	{
+		theUI->refreshItemPanel(nullptr, 1);
+	}
 
 	thePage[1] = item;
-	theUI->refreshItemPanel(&pool, 1);
 
 	showAttribute(item);
 
@@ -55,9 +62,17 @@ int BaseUnit::showDetail(LPARAM item)
 int BaseUnit::showAttribute(LPARAM item)
 {
 	ItemPool pool;
-	if (item) theDataPool->getItemAtt(item, &pool);
+	if (item)
+	{
+		theDataPool->getItemAtt(item, &pool);
+		theUI->refreshAttPanel(&pool);
+	}
+	else
+	{
+		theUI->refreshAttPanel(nullptr);
+	}
+
 	theAttPage = item;
-	theUI->refreshAttPanel(&pool);
 
 	return 0;
 }
