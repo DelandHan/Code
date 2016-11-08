@@ -20,7 +20,7 @@ public:
 
 	void refreshItemPanel(ItemPool *itemlist, int panelID) override;
 
-	void refreshAttPanel(AttPool * attlist) override;
+	void refreshAttPanel(ItemPool * attlist) override;
 
 	void displayPath(std::wstring &path) override;
 

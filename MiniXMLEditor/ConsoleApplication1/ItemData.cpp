@@ -64,33 +64,3 @@ ItemData::ItemData(std::wstring str, int type, LPARAM param)
 ItemData::~ItemData()
 {
 }
-
-AttData::AttData()
-{
-}
-
-AttData::~AttData()
-{
-}
-
-std::wstring AttData::valueW()
-{
-	return theValue;
-}
-
-std::string AttData::value()
-{
-	string buff;
-	convertToStr(buff, theValue);
-	return move(buff);
-}
-
-void AttData::setValue(const std::string source)
-{
-	convertToWStr(theValue, source);
-}
-
-void AttData::setValue(const std::wstring source)
-{
-	theValue = source;
-}

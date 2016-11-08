@@ -108,11 +108,15 @@ void AttPanel::startEditing(int item, int subitem, autownd::IMsgProcess *proc)
 	theParentCallBack = proc;
 }
 
-void AttPanel::addAttribute(wstring & key, wstring & value)
+void AttPanel::addAttribute(wstring str)
 {
+	size_t sym = str.find('=');
+	//To do here we might also check the " after = and the " in the end.
+	if (sym == string::npos) return;
+	str[str.size() - 1] = 0; str[sym] = 0;
 	List::LSet set = at();
-	set.setText(&key[0], key.size()).update();
-	set.setText(1, &value[0]);
+	set.setText(&str[0], sym).update();
+	set.setText(1, &str[sym + 2]);
 }
 
 std::wstring * AttPanel::getEditResult()

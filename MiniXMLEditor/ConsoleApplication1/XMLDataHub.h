@@ -7,7 +7,7 @@ public:
 	~XMLDataHub();
 
 	int getChildItemData(LPARAM param, ItemPool *pool) override;
-	int getItemAtt(LPARAM param, AttPool *pool) override;
+	int getItemAtt(LPARAM param, ItemPool *pool) override;
 	LPARAM queryParent(LPARAM param) override;
 
 	void loadFile(const char * name);

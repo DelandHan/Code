@@ -39,7 +39,7 @@ int XMLDataHub::getChildItemData(LPARAM param, ItemPool * pool)
 	return 0;
 }
 
-int XMLDataHub::getItemAtt(LPARAM param, AttPool * pool)
+int XMLDataHub::getItemAtt(LPARAM param, ItemPool * pool)
 {
 	XMLNode *node = nullptr;
 	if (param == 0) return 1;
@@ -52,9 +52,11 @@ int XMLDataHub::getItemAtt(LPARAM param, AttPool * pool)
 	while (attnode = node->getAttribute(attnode))
 	{
 		pool->emplace_back();
-		AttData &data = pool->back();
-		data.setStr(attnode->getKey());
-		data.setValue(attnode->getValue());
+		ItemData &data = pool->back();
+		string str = attnode->getKey() + "=\"" + attnode->getValue() + "\"";
+		data.setStr(str);
+		data.setType(NodeType::ATTRIBUTE_NODE);
+		data.setParam((LPARAM)node);
 	}
 
 	return 0;

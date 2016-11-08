@@ -31,7 +31,7 @@ public:
 	void startEditing(int item, int subitem, autownd::IMsgProcess *proc);
 
 	//add att
-	void addAttribute(std::wstring &key, std::wstring &value);
+	void addAttribute(std::wstring str);
 
 	//get Editing result
 	std::wstring *getEditResult();

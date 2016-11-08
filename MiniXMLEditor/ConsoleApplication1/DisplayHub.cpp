@@ -132,17 +132,17 @@ void DisplayHub::refreshItemPanel(ItemPool * itemlist, int panelID)
 //	if (sel != -1) ListView_SetItemState(theItemPanel[panelID].wnd(), sel, LVIS_SELECTED, LVIS_SELECTED);//re-select it
 }
 
-void DisplayHub::refreshAttPanel(AttPool * attlist)
+void DisplayHub::refreshAttPanel(ItemPool * attlist)
 {
 	theAttPanel.clear();
 	if (attlist == nullptr) return;
 
-	for (AttPool::iterator it = attlist->begin(); it != attlist->end(); it++)
+	for (ItemPool::iterator it = attlist->begin(); it != attlist->end(); it++)
 	{
-		theAttPanel.addAttribute(it->strW(), it->valueW());
+		theAttPanel.addAttribute(it->strW());
 	}
 
-	theAttPanel.addAttribute(wstring(L""), wstring(L""));
+	theAttPanel.addAttribute(wstring(L"=\"\""));
 }
 
 void DisplayHub::displayPath(std::wstring & path)

@@ -42,26 +42,7 @@ private:
 	int theType;
 };
 
-class AttData
-	:public LVData
-{
-public:
-	AttData();
-	~AttData();
-
-	std::wstring valueW();
-	std::string value();
-
-	void setValue(const std::string source);
-	void setValue(const std::wstring source);
-
-private:
-	std::wstring theValue;
-
-};
-
 typedef std::list<LVData> LVPool;
 typedef std::list<ItemData> ItemPool;
-typedef std::list<AttData> AttPool;
 
 

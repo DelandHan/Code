@@ -54,7 +54,7 @@ int BaseUnit::showDetail(LPARAM item)
 
 int BaseUnit::showAttribute(LPARAM item)
 {
-	AttPool pool;
+	ItemPool pool;
 	if (item) theDataPool->getItemAtt(item, &pool);
 	theAttPage = item;
 	theUI->refreshAttPanel(&pool);
