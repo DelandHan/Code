@@ -47,7 +47,7 @@ int main()
 	
 	xml::XMLConsole cons;
 
-	cons.setCondition("name==\"para\" OR (name==\"list\" AND type==TEXT_NODE) OR name==\"table\"");// OR name==\"list\" AND type==TEXT_NODE
+	cons.setCondition("name==\"para\" AND CONTAIN (name==\"JScript\" AND type==TEXT_NODE)");// OR name==\"list\" AND type==TEXT_NODE
 	cons.addAction("SET name=\"stop\" type=TEXT_NODE");
 	cons.connectTo(docu);
 	cons.run();

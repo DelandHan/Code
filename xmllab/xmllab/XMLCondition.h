@@ -10,6 +10,7 @@ namespace xml
 		{
 		public:
 			virtual ~IXMLCondition() = default;
+			virtual std::string getString() = 0;
 
 			virtual int isMatch(XMLNode * node) = 0;
 		};
@@ -20,8 +21,6 @@ namespace xml
 		public:
 			XMLLogic() = default;
 			~XMLLogic();
-
-			virtual std::string getString() = 0;
 
 			template<class T>
 			typename std::enable_if<std::is_base_of<xml::IXMLCondition, T>::value, T>::type * addCondition() {
@@ -71,6 +70,8 @@ namespace xml
 			XMLEqual();
 			~XMLEqual() = default;
 
+			std::string getString() override { return "=="; }
+
 			int isMatch(XMLNode *node) override;
 
 			void setCondition(std::string str, NodeType type);
@@ -78,6 +79,23 @@ namespace xml
 		private:
 			NodeType theType;
 			std::string theStr;
+		};
+
+		class XMLChildContain
+			:public IXMLCondition
+		{
+		public:
+			XMLChildContain();
+			~XMLChildContain() = default;
+
+			std::string getString() override { return "CONTAIN"; }
+
+			int isMatch(XMLNode *node) override;
+
+			void setChildConditon(IXMLCondition * con) { theChildCondition = con; }
+
+		private:
+			IXMLCondition *theChildCondition;
 		};
 	}
 }

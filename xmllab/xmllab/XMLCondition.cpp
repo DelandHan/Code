@@ -59,3 +59,24 @@ void XMLEqual::setCondition(std::string str, NodeType type)
 	theStr = str;
 	theType = type;
 }
+
+xml::condition::XMLChildContain::XMLChildContain()
+	:theChildCondition(nullptr)
+{
+}
+
+int xml::condition::XMLChildContain::isMatch(XMLNode * node)
+{
+	int result = 0;
+	if (theChildCondition == nullptr) return 0;
+
+	XMLNode *child = node->getFirstChild();
+
+	while (child)
+	{
+		result = result || theChildCondition->isMatch(child);
+		child = child->getNext();
+	}
+
+	return result;
+}

@@ -72,25 +72,28 @@ IXMLCondition * xml::XMLConsole::getContainer(list<string> & tokens)
 {
 	XMLLogic * result = nullptr;
 	IXMLCondition* firstCon = nullptr;
+	list<string>::iterator it = tokens.begin();
+	bool endbracket = false;
 
-	firstCon = strMapCondition(*tokens.begin());
+	if ((*it)[it->size() - 1] == ')')
+	{
+		endbracket = true;
+		(*it)[it->size() - 1] = 0;
+	}
+
+	firstCon = strMapCondition(*it);
 	tokens.pop_front();
 
-	bool endbracket = false;
+	if (endbracket) return firstCon;
 
 	while (tokens.size())
 	{
+		//the logic
 		XMLLogic * container = strMapContainer(*tokens.begin());
 		tokens.pop_front();
 
-		list<string>::iterator it = tokens.begin();
-
-		if ((*it)[it->size() - 1] == ')')
-		{
-			endbracket = true;
-			(*it)[it->size() - 1] = 0;
-		}
-
+		//the sub2
+		it = tokens.begin();
 
 		IXMLCondition * con = nullptr;
 		if ((*it)[0] == '(')
@@ -100,12 +103,36 @@ IXMLCondition * xml::XMLConsole::getContainer(list<string> & tokens)
 		}
 		else
 		{
-			con = strMapCondition(*it);
-			tokens.pop_front();
+			if (*it == "CONTAIN")
+			{
+				it++;
+				tokens.pop_front();
+				XMLChildContain *temp = new XMLChildContain;
+
+				if ((*it)[0] == '(')
+				{
+					it->assign(it->c_str() + 1);
+				}
+
+				temp->setChildConditon(getContainer(tokens));
+				con = temp;
+			}
+			else
+			{
+				if ((*it)[it->size() - 1] == ')')
+				{
+					endbracket = true;
+					(*it)[it->size() - 1] = 0;
+				}
+
+				con = strMapCondition(*it);
+				tokens.pop_front();
+			}
 		}
 
 		if (container == nullptr || con == nullptr) continue; //maybe error
-
+		
+		//combine the three ones
 		if (result == nullptr)
 		{
 			result = container;
